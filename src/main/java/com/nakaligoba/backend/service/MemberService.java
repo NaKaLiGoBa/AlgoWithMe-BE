@@ -1,7 +1,7 @@
 package com.nakaligoba.backend.service;
 
 import com.nakaligoba.backend.controller.MemberController.*;
-import com.nakaligoba.backend.entity.MemberEntity;
+import com.nakaligoba.backend.entity.Member;
 import com.nakaligoba.backend.repository.MemberRepository;
 import com.nakaligoba.backend.utils.AuthNumberManager;
 import com.nakaligoba.backend.utils.BasicUtils;
@@ -40,7 +40,7 @@ public class MemberService {
             throw new IllegalArgumentException("이미 등록된 이메일입니다.");
         }
 
-        MemberEntity memberEntity = MemberEntity.builder()
+        Member memberEntity = Member.builder()
                 .email(memberDto.getEmail())
                 .password(passwordEncoder.encode(memberDto.getPassword()))
                 .name(memberDto.getName())
