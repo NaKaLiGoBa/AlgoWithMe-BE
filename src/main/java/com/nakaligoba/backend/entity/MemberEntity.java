@@ -29,9 +29,6 @@ public class MemberEntity extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
-    private List<MemberProjectEntity> memberProjects = new ArrayList<>();
-
     @Builder
     public MemberEntity(String email, String password, String name) {
         this.email = email;
