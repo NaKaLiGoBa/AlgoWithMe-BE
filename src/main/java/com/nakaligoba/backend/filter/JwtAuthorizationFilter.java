@@ -3,7 +3,7 @@ package com.nakaligoba.backend.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.nakaligoba.backend.domain.JwtDetails;
-import com.nakaligoba.backend.entity.MemberEntity;
+import com.nakaligoba.backend.entity.Member;
 import com.nakaligoba.backend.jwt.JwtProperties;
 import com.nakaligoba.backend.repository.MemberRepository;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,7 +43,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String email = JWT.require(Algorithm.HMAC512(jwtProperties.getSECRET_KEY())).build().verify(jwt).getClaim(jwtProperties.getCLAIM()).asString();
 
         if (email != null) {
-            MemberEntity memberEntity = memberRepository.findByEmail(email);
+            Member memberEntity = memberRepository.findByEmail(email);
 
             JwtDetails jwtDetails = new JwtDetails(memberEntity);
             Authentication authentication = new UsernamePasswordAuthenticationToken(jwtDetails, null, jwtDetails.getAuthorities());

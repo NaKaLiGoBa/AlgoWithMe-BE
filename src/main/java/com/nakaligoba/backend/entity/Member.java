@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class MemberEntity extends BaseEntity {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,13 +26,16 @@ public class MemberEntity extends BaseEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "nickname", nullable = false)
+    private String nickname;
+
+    @OneToMany(mappedBy = "member")
+    private List<Submit> submits = new ArrayList<>();
 
     @Builder
-    public MemberEntity(String email, String password, String name) {
+    public Member(String email, String password, String name) {
         this.email = email;
         this.password = password;
-        this.name = name;
+        this.nickname = name;
     }
 }
