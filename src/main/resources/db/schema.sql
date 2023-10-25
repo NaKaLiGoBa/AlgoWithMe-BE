@@ -44,6 +44,8 @@ CREATE TABLE `problems`
     `title`       VARCHAR(255) NOT NULL,
     `difficulty`  VARCHAR(255) NOT NULL,
     `acceptance`  DECIMAL      NOT NULL,
+    `created_at`  DATETIME     NOT NULL,
+    `updated_at`  DATETIME     NOT NULL,
     PRIMARY KEY (`id`)
 );
 
@@ -59,9 +61,11 @@ CREATE TABLE `submissions`
 
 CREATE TABLE `submits`
 (
-    `member_id`     BIGINT NOT NULL,
-    `problem_id`    BIGINT NOT NULL,
-    `submission_id` BIGINT NOT NULL,
+    `member_id`     BIGINT   NOT NULL,
+    `problem_id`    BIGINT   NOT NULL,
+    `submission_id` BIGINT   NOT NULL,
+    `created_at`    DATETIME NOT NULL,
+    `updated_at`    DATETIME NOT NULL,
 );
 
 CREATE TABLE `answer_testcases`
@@ -69,6 +73,8 @@ CREATE TABLE `answer_testcases`
     `id`         BIGINT       NOT NULL AUTO_INCREMENT,
     `output`     VARCHAR(255) NOT NULL,
     `problem_id` BIGINT       NOT NULL,
+    `created_at` DATETIME     NOT NULL,
+    `updated_at` DATETIME     NOT NULL,
     PRIMARY KEY (`id`)
 );
 
@@ -78,6 +84,8 @@ CREATE TABLE `answer_testcase_inputs`
     `name`               VARCHAR(255) NOT NULL,
     `value`              VARCHAR(255) NOT NULL,
     `answer_testcase_id` BIGINT       NOT NULL,
+    `created_at`         DATETIME     NOT NULL,
+    `updated_at`         DATETIME     NOT NULL,
     PRIMARY KEY (`id`)
 );
 
@@ -86,6 +94,8 @@ CREATE TABLE `testcases`
     `id`         BIGINT       NOT NULL AUTO_INCREMENT,
     `expected`   VARCHAR(255) NOT NULL,
     `problem_id` BIGINT       NOT NULL,
+    `created_at` DATETIME     NOT NULL,
+    `updated_at` DATETIME     NOT NULL,
     PRIMARY KEY (`id`)
 );
 
@@ -95,32 +105,42 @@ CREATE TABLE `testcase_inputs`
     `name`        VARCHAR(255) NOT NULL,
     `value`       VARCHAR(255) NOT NULL,
     `testcase_id` BIGINT       NOT NULL,
+    `created_at` DATETIME      NOT NULL,
+    `updated_at` DATETIME      NOT NULL,
     PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `available_languages`
 (
-    `problem_id`              BIGINT NOT NULL,
-    `programming_language_id` BIGINT NOT NULL,
+    `problem_id`              BIGINT   NOT NULL,
+    `programming_language_id` BIGINT   NOT NULL,
+    `created_at`              DATETIME NOT NULL,
+    `updated_at`              DATETIME NOT NULL,
 );
 
 CREATE TABLE `programming_languages`
 (
-    `id`   BIGINT       NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(255) NOT NULL,
+    `id`         BIGINT       NOT NULL AUTO_INCREMENT,
+    `name`       VARCHAR(255) NOT NULL,
+    `created_at` DATETIME     NOT NULL,
+    `updated_at` DATETIME     NOT NULL,
     PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `problem_tags`
 (
-    `problem_id` BIGINT NOT NULL,
-    `tag_id`     BIGINT NOT NULL,
+    `problem_id` BIGINT   NOT NULL,
+    `tag_id`     BIGINT   NOT NULL,
+    `created_at` DATETIME NOT NULL,
+    `updated_at` DATETIME NOT NULL,
 );
 
 CREATE TABLE `tags`
 (
-    `id`   BIGINT       NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(255) NOT NULL,
+    `id`         BIGINT       NOT NULL AUTO_INCREMENT,
+    `name`       VARCHAR(255) NOT NULL,
+    `created_at` DATETIME     NOT NULL,
+    `updated_at` DATETIME     NOT NULL,
     PRIMARY KEY (`id`)
 );
 
