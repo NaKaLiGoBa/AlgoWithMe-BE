@@ -1,6 +1,6 @@
 package com.nakaligoba.backend.domain;
 
-import com.nakaligoba.backend.entity.MemberEntity;
+import com.nakaligoba.backend.entity.Member;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,9 +10,9 @@ import java.util.Collection;
 @Data
 public class JwtDetails implements UserDetails {
 
-    private MemberEntity memberEntity;
+    private Member memberEntity;
 
-    public JwtDetails(MemberEntity memberEntity) {
+    public JwtDetails(Member memberEntity) {
         this.memberEntity = memberEntity;
     }
 

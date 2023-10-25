@@ -1,7 +1,7 @@
 package com.nakaligoba.backend.service;
 
 import com.nakaligoba.backend.domain.JwtDetails;
-import com.nakaligoba.backend.entity.MemberEntity;
+import com.nakaligoba.backend.entity.Member;
 import com.nakaligoba.backend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class JwtMemberDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        MemberEntity memberEntity = memberRepository.findByEmail(email);
+        Member memberEntity = memberRepository.findByEmail(email);
         log.info("email : " + memberEntity.getEmail());
 
         return new JwtDetails(memberEntity);
