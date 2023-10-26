@@ -1,6 +1,7 @@
 package com.nakaligoba.backend.entity;
 
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,8 +12,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "problems")
-@NoArgsConstructor
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Problem extends BaseEntity {
 
     @Id
