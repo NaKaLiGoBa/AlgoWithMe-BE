@@ -1,5 +1,6 @@
 package com.nakaligoba.backend.entity;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -7,8 +8,8 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "answer_testcase_inputs")
-@NoArgsConstructor
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AnswerTestcaseInput extends BaseEntity {
 
     @Id
