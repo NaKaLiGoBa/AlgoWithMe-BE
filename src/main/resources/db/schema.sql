@@ -61,6 +61,7 @@ CREATE TABLE `submissions`
 
 CREATE TABLE `submits`
 (
+    `id`     BIGINT       NOT NULL AUTO_INCREMENT,
     `member_id`     BIGINT   NOT NULL,
     `problem_id`    BIGINT   NOT NULL,
     `submission_id` BIGINT   NOT NULL,
@@ -112,6 +113,7 @@ CREATE TABLE `testcase_inputs`
 
 CREATE TABLE `available_languages`
 (
+    `id`     BIGINT       NOT NULL AUTO_INCREMENT,
     `problem_id`              BIGINT   NOT NULL,
     `programming_language_id` BIGINT   NOT NULL,
     `created_at`              DATETIME NOT NULL,
@@ -129,6 +131,7 @@ CREATE TABLE `programming_languages`
 
 CREATE TABLE `problem_tags`
 (
+    `id`     BIGINT       NOT NULL AUTO_INCREMENT,
     `problem_id` BIGINT   NOT NULL,
     `tag_id`     BIGINT   NOT NULL,
     `created_at` DATETIME NOT NULL,
