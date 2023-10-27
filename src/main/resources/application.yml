@@ -33,3 +33,9 @@ cloud:
     credentials:
       access-key: ${AWS_ACCESS_KEY}
       secret-key: ${AWS_SECRET_KEY}
+
+kakao:
+  client-id: ${KAKAO_CLIENT_ID}
+  login:
+    grant-type: ${KAKAO_LOGIN_GRANT_TYPE}
+    redirect-url: ${KAKAO_LOGIN_REDIRECT_URL}

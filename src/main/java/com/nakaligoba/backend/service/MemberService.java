@@ -1,7 +1,10 @@
 package com.nakaligoba.backend.service;
 
 import com.nakaligoba.backend.controller.MemberController.*;
+import com.nakaligoba.backend.domain.JwtDetails;
 import com.nakaligoba.backend.entity.Member;
+import com.nakaligoba.backend.jwt.JwtProvider;
+import com.nakaligoba.backend.network.KakaoWebClient;
 import com.nakaligoba.backend.repository.MemberRepository;
 import com.nakaligoba.backend.utils.AuthNumberManager;
 import com.nakaligoba.backend.utils.BasicUtils;
@@ -11,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +38,8 @@ public class MemberService {
     private final JavaMailSender javaMailSender;
     private final AuthNumberManager authNumberManager;
     private final BasicUtils basicUtils;
+    private final KakaoWebClient kakaoWebClient;
+    private final JwtProvider jwtProvider;
 
     @Transactional
     public void signup(MemberDto memberDto) {
@@ -47,6 +54,42 @@ public class MemberService {
                 .build();
 
         memberRepository.save(memberEntity);
+    }
+
+    public KakaoSigninTokenResponse getKakaoSigninToken(String kakaoAuthCode) {
+        return kakaoWebClient.getKakaoSigninToken(kakaoAuthCode);
+    }
+
+    public KakaoSigninUserInfoResponse getKakaoSigninUserInfo(String accessToken) {
+        return kakaoWebClient.getKakaoSigninUserInfo(accessToken);
+    }
+
+    @Transactional
+    public SigninResponse kakaoSignin(String kakaoAuthCode) {
+        log.info("인가코드 : " + kakaoAuthCode);
+
+        KakaoSigninTokenResponse kakaoSigninToken = getKakaoSigninToken(kakaoAuthCode);
+        log.info("토큰 : " + kakaoSigninToken.getAccess_token());
+
+        KakaoSigninUserInfoResponse kakaoSigninUserInfo = getKakaoSigninUserInfo(kakaoSigninToken.getAccess_token());
+        log.info("이메일 : " + kakaoSigninUserInfo.getKakao_account().getEmail() + ", 닉네임 : " + kakaoSigninUserInfo.getKakao_account().getProfile().getNickname());
+
+        if(memberRepository.existsByEmail(kakaoSigninUserInfo.getKakao_account().getEmail())) {
+            String jwt = getMemberJwt(kakaoSigninUserInfo.getKakao_account().getEmail());
+            log.info("JWT 토큰 : " + jwt);
+            return new SigninResponse(jwt, "로그인이 완료되었습니다.", kakaoSigninUserInfo.getKakao_account().getEmail(), kakaoSigninUserInfo.getKakao_account().getProfile().getNickname());
+        } else {
+            return new SigninResponse("", "회원가입이 필요합니다", "", "");
+        }
+    }
+
+    public String getMemberJwt(String email) {
+        Member memberEntity = memberRepository.findByEmail(email);
+
+        JwtDetails jwtDetails = new JwtDetails(memberEntity);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(jwtDetails, null, jwtDetails.getAuthorities());
+
+        return jwtProvider.createJwt(authentication);
     }
 
     @Transactional
