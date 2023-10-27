@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtils {
 
-    public String getEmailFromSpringSession() {
+    public static String getEmailFromSpringSession() {
         JwtDetails principalDetails = (JwtDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return principalDetails.getUsername();
     }

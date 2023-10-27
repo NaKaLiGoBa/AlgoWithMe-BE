@@ -1,15 +1,20 @@
 package com.nakaligoba.backend.controller;
 
+import com.nakaligoba.backend.domain.JwtDetails;
+import com.nakaligoba.backend.entity.Member;
 import com.nakaligoba.backend.service.MemberService;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Slf4j
 @RequestMapping("/api/v1/auth")
@@ -32,6 +37,17 @@ public class MemberController {
         memberService.signup(memberDto);
 
         return ResponseEntity.ok(new SignupResponse("회원가입이 완료되었습니다."));
+    }
+
+    @PostMapping("/signin/kakao")
+    public ResponseEntity<SigninResponse> kakaoSignin(@Valid @RequestBody KakaoSigninRequest request) {
+        SigninResponse signinResponse = memberService.kakaoSignin(request.getAuthCode());
+
+        if (!"".equals(signinResponse.accessToken)) {
+            return ResponseEntity.status(HttpStatus.OK).body(signinResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(signinResponse);
+        }
     }
 
     @PostMapping("/email")
@@ -133,9 +149,37 @@ public class MemberController {
     }
 
     @Data
-    static class SigninResponse {
+    public static class SigninResponse {
         private final String accessToken;
         private final String message;
+        private final String email;
+        private final String nickname;
+    }
+
+    @Data
+    @NoArgsConstructor
+    static class KakaoSigninRequest {
+        @NotBlank
+        private String authCode;
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class KakaoSigninTokenResponse {
+        private String access_token;
+        private String token_type;
+        private String refresh_token;
+        private String id_token;
+        private int expires_in;
+        private int refresh_token_expires_in;
+        private String scope;
+    }
+
+    @Data
+    public static class KakaoSigninUserInfoResponse {
+        private long id;
+        private LocalDateTime connected_at;
+        private KakaoSigninUserInfoDto kakao_account;
     }
 
     @Data
@@ -184,6 +228,7 @@ public class MemberController {
     static class PasswordResetCheckRequest {
         @NotBlank
         private String newPassword;
+
         @NotBlank
         private String token;
     }
@@ -202,6 +247,23 @@ public class MemberController {
         private String email;
         private String password;
         private String name;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class KakaoSigninUserInfoDto {
+        private KakaoProfileDto profile;
+        private String email;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class KakaoProfileDto {
+        private String nickname;
     }
 
     @Data
