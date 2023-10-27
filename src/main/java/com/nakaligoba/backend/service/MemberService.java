@@ -7,7 +7,6 @@ import com.nakaligoba.backend.jwt.JwtProvider;
 import com.nakaligoba.backend.network.KakaoWebClient;
 import com.nakaligoba.backend.repository.MemberRepository;
 import com.nakaligoba.backend.utils.AuthNumberManager;
-import com.nakaligoba.backend.utils.BasicUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 
 @Slf4j
 @PropertySource("classpath:application.yml")
@@ -37,7 +38,6 @@ public class MemberService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JavaMailSender javaMailSender;
     private final AuthNumberManager authNumberManager;
-    private final BasicUtils basicUtils;
     private final KakaoWebClient kakaoWebClient;
     private final JwtProvider jwtProvider;
 
@@ -56,34 +56,29 @@ public class MemberService {
         memberRepository.save(memberEntity);
     }
 
-    public KakaoSigninTokenResponse getKakaoSigninToken(String kakaoAuthCode) {
-        return kakaoWebClient.getKakaoSigninToken(kakaoAuthCode);
-    }
-
-    public KakaoSigninUserInfoResponse getKakaoSigninUserInfo(String accessToken) {
-        return kakaoWebClient.getKakaoSigninUserInfo(accessToken);
-    }
-
     @Transactional
     public SigninResponse kakaoSignin(String kakaoAuthCode) {
-        log.info("인가코드 : " + kakaoAuthCode);
-
         KakaoSigninTokenResponse kakaoSigninToken = getKakaoSigninToken(kakaoAuthCode);
-        log.info("토큰 : " + kakaoSigninToken.getAccess_token());
-
         KakaoSigninUserInfoResponse kakaoSigninUserInfo = getKakaoSigninUserInfo(kakaoSigninToken.getAccess_token());
-        log.info("이메일 : " + kakaoSigninUserInfo.getKakao_account().getEmail() + ", 닉네임 : " + kakaoSigninUserInfo.getKakao_account().getProfile().getNickname());
 
-        if(memberRepository.existsByEmail(kakaoSigninUserInfo.getKakao_account().getEmail())) {
+        if (memberRepository.existsByEmail(kakaoSigninUserInfo.getKakao_account().getEmail())) {
             String jwt = getMemberJwt(kakaoSigninUserInfo.getKakao_account().getEmail());
-            log.info("JWT 토큰 : " + jwt);
+            log.info("jwt : " + jwt);
             return new SigninResponse(jwt, "로그인이 완료되었습니다.", kakaoSigninUserInfo.getKakao_account().getEmail(), kakaoSigninUserInfo.getKakao_account().getProfile().getNickname());
         } else {
             return new SigninResponse("", "회원가입이 필요합니다", "", "");
         }
     }
 
-    public String getMemberJwt(String email) {
+    private KakaoSigninTokenResponse getKakaoSigninToken(String kakaoAuthCode) {
+        return kakaoWebClient.getKakaoSigninToken(kakaoAuthCode);
+    }
+
+    private KakaoSigninUserInfoResponse getKakaoSigninUserInfo(String accessToken) {
+        return kakaoWebClient.getKakaoSigninUserInfo(accessToken);
+    }
+
+    private String getMemberJwt(String email) {
         Member memberEntity = memberRepository.findByEmail(email);
 
         JwtDetails jwtDetails = new JwtDetails(memberEntity);
@@ -94,10 +89,15 @@ public class MemberService {
 
     @Transactional
     public void authEmail(AuthEmailDto authEmailDto) {
-        String authNumber = basicUtils.getAuthNumber();
+        String authNumber = getAuthNumber();
 
         authNumberManager.setData(authEmailDto.getEmail(), authNumber);
         sendAuthEmail(authEmailDto, authNumber);
+    }
+
+    private String getAuthNumber() {
+        Random random = new Random();
+        return String.valueOf(111111 + random.nextInt(888889));
     }
 
     private void sendAuthEmail(AuthEmailDto authEmailDto, String authNumber) {
@@ -141,12 +141,17 @@ public class MemberService {
 
     @Transactional
     public void passwordReset(PasswordResetDto passwordResetDto) {
-        String resetPasswordToken = basicUtils.getUUID();
+        String resetPasswordToken = getUUID();
 
         log.info("resetPasswordToken : " + resetPasswordToken);
 
         authNumberManager.setData(resetPasswordToken, passwordResetDto.getEmail());
         passwordResetEmail(passwordResetDto, resetPasswordToken);
+    }
+
+    private String getUUID() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
     }
 
     private void passwordResetEmail(PasswordResetDto passwordResetDto, String resetPasswordToken) {

@@ -1,14 +1,11 @@
 package com.nakaligoba.backend.controller;
 
-import com.nakaligoba.backend.domain.JwtDetails;
-import com.nakaligoba.backend.entity.Member;
 import com.nakaligoba.backend.service.MemberService;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -43,7 +40,7 @@ public class MemberController {
     public ResponseEntity<SigninResponse> kakaoSignin(@Valid @RequestBody KakaoSigninRequest request) {
         SigninResponse signinResponse = memberService.kakaoSignin(request.getAuthCode());
 
-        if (!"".equals(signinResponse.accessToken)) {
+        if (StringUtils.hasText(signinResponse.accessToken)) {
             return ResponseEntity.status(HttpStatus.OK).body(signinResponse);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(signinResponse);
