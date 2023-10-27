@@ -1,11 +1,11 @@
 package com.nakaligoba.backend.filter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nakaligoba.backend.controller.MemberController.MemberDto;
 import com.nakaligoba.backend.controller.MemberController.SigninResponse;
 import com.nakaligoba.backend.domain.JwtDetails;
 import com.nakaligoba.backend.jwt.JwtProvider;
-import com.nakaligoba.backend.utils.BasicUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +26,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -52,7 +53,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(BasicUtils.convertObjectToString(signinResponse));
+        response.getWriter().write(convertObjectToString(signinResponse));
     }
 
     @Override
@@ -62,6 +63,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(BasicUtils.convertObjectToString(signinResponse));
+        response.getWriter().write(convertObjectToString(signinResponse));
+    }
+
+    private String convertObjectToString(Object object) {
+        try {
+            return objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("JSON 변환 중 오류가 발생하였습니다.", e);
+        }
     }
 }
