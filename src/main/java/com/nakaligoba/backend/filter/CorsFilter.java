@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.http.HttpHeaders.*;
 
@@ -32,6 +33,11 @@ public class CorsFilter implements Filter {
 
         // Set the allowed headers
         String origin = httpRequest.getHeader(ORIGIN);
+        if (Objects.isNull(origin)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         if (ALLOW_ORIGINS.contains(origin)) {
             httpResponse.setHeader(ACCESS_CONTROL_ALLOW_ORIGIN, origin);
             httpResponse.setHeader(ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
