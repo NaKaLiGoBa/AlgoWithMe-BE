@@ -42,12 +42,8 @@ public class Problem extends BaseEntity {
     private List<Testcase> testcases = new ArrayList<>();
 
     @OneToMany(mappedBy = "problem")
-    private List<AnswerTestcase> answerTestcases = new ArrayList<>();
-
-    @OneToMany(mappedBy = "problem")
     private List<AvailableLanguage> availableLanguages = new ArrayList<>();
 
     @OneToMany(mappedBy = "problem")
     private List<ProblemTag> problemTags = new ArrayList<>();
-
 }
