@@ -18,14 +18,16 @@ public class Testcase extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "expected", nullable = false)
-    private String expected;
+    @Column(name = "input", nullable = false)
+    private String input;
+
+    @Column(name = "output", nullable = false)
+    private String output;
+
+    @Column(name = "isPublic", nullable = false)
+    private Boolean isPublic;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)
     private Problem problem;
-
-    @OneToMany(mappedBy = "testcases")
-    private List<TestcaseInput> testcaseInputs = new ArrayList<>();
-
 }
