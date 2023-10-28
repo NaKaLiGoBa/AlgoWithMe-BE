@@ -7,6 +7,7 @@ import com.nakaligoba.backend.jwt.JwtProvider;
 import com.nakaligoba.backend.network.KakaoWebClient;
 import com.nakaligoba.backend.repository.MemberRepository;
 import com.nakaligoba.backend.utils.AuthNumberManager;
+import com.nakaligoba.backend.utils.RedisUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,12 +35,16 @@ public class MemberService {
     @Value("${spring.mail.username}")
     private String sender;
 
+    @Value("${spring.redis.auth-num-valid-time}")
+    public int authNumberValidSeconds;
+
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JavaMailSender javaMailSender;
     private final AuthNumberManager authNumberManager;
     private final KakaoWebClient kakaoWebClient;
     private final JwtProvider jwtProvider;
+    private final RedisUtils redisUtils;
 
     @Transactional
     public boolean signup(MemberDto memberDto) {
@@ -89,11 +94,17 @@ public class MemberService {
     }
 
     @Transactional
-    public void authEmail(AuthEmailDto authEmailDto) {
-        String authNumber = getAuthNumber();
+    public boolean authEmail(AuthEmailDto authEmailDto) {
+        if (!memberRepository.existsByEmail(authEmailDto.getEmail())) {
+            String authNumber = getAuthNumber();
 
-        authNumberManager.setData(authEmailDto.getEmail(), authNumber);
-        sendAuthEmail(authEmailDto, authNumber);
+            redisUtils.setData(authEmailDto.getEmail(), authNumber, authNumberValidSeconds);
+            sendAuthEmail(authEmailDto, authNumber);
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private String getAuthNumber() {
@@ -129,15 +140,17 @@ public class MemberService {
     }
 
     @Transactional
-    public String authEmailCheck(AuthEmailCheckDto authEmailCheckDto) {
-        return Optional.ofNullable(authNumberManager.getData(authEmailCheckDto.getEmail()))
+    public boolean authEmailCheck(AuthEmailCheckDto authEmailCheckDto) {
+        return Optional.ofNullable(redisUtils.getData(authEmailCheckDto.getEmail()))
                 .map(value -> {
                     if (value.equals(authEmailCheckDto.getAuthNumber())) {
-                        authNumberManager.removeCode(authEmailCheckDto.getAuthNumber());
-                        return AuthEmailCheckDto.AUTH_SUCCESS;
-                    } else return AuthEmailCheckDto.AUTH_FAIL;
+                        redisUtils.deleteData(authEmailCheckDto.getEmail());
+                        return true;
+                    } else {
+                        return false;
+                    }
                 })
-                .orElse(AuthEmailCheckDto.AUTH_FAIL);
+                .orElse(false);
     }
 
     @Transactional
