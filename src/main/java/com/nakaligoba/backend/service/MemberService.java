@@ -36,7 +36,7 @@ public class MemberService {
     private String sender;
 
     @Value("${spring.redis.auth-num-valid-time}")
-    public int authNumberValidSeconds;
+    private int authNumberValidSeconds;
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
