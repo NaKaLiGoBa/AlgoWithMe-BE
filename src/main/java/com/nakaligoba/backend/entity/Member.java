@@ -30,9 +30,9 @@ public class Member extends BaseEntity {
     private List<Submit> submits = new ArrayList<>();
 
     @Builder
-    public Member(String email, String password, String name) {
+    public Member(String email, String password, String nickname) {
         this.email = email;
         this.password = password;
-        this.nickname = name;
+        this.nickname = nickname;
     }
 }

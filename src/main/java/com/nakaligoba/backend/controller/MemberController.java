@@ -27,13 +27,14 @@ public class MemberController {
         MemberDto memberDto = MemberDto.builder()
                 .email(request.getEmail())
                 .password(request.getPassword())
-                .name(request.getName())
+                .nickname(request.getNickname())
                 .build();
 
-        // TODO : 추후 예외처리 필요
-        memberService.signup(memberDto);
-
-        return ResponseEntity.ok(new SignupResponse("회원가입이 완료되었습니다."));
+        if (memberService.signup(memberDto)) {
+            return ResponseEntity.status(HttpStatus.OK).body(new SignupResponse("회원가입이 완료되었습니다."));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new SignupResponse("이미 사용 중입니다. 다른 이메일을 입력해주세요."));
+        }
     }
 
     @PostMapping("/signin/kakao")
@@ -128,7 +129,7 @@ public class MemberController {
         private final String password;
 
         @NotBlank
-        private final String name;
+        private final String nickname;
     }
 
     @Data
@@ -243,7 +244,7 @@ public class MemberController {
     public static class MemberDto {
         private String email;
         private String password;
-        private String name;
+        private String nickname;
     }
 
     @Data

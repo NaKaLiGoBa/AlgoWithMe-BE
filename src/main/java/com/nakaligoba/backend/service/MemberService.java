@@ -42,18 +42,19 @@ public class MemberService {
     private final JwtProvider jwtProvider;
 
     @Transactional
-    public void signup(MemberDto memberDto) {
-        if (memberRepository.existsByEmail(memberDto.getEmail())) {
-            throw new IllegalArgumentException("이미 등록된 이메일입니다.");
+    public boolean signup(MemberDto memberDto) {
+        if (!memberRepository.existsByEmail(memberDto.getEmail())) {
+            Member memberEntity = Member.builder()
+                    .email(memberDto.getEmail())
+                    .password(passwordEncoder.encode(memberDto.getPassword()))
+                    .nickname(memberDto.getNickname())
+                    .build();
+            memberRepository.save(memberEntity);
+
+            return true;
+        } else {
+            return false;
         }
-
-        Member memberEntity = Member.builder()
-                .email(memberDto.getEmail())
-                .password(passwordEncoder.encode(memberDto.getPassword()))
-                .name(memberDto.getName())
-                .build();
-
-        memberRepository.save(memberEntity);
     }
 
     @Transactional
