@@ -159,7 +159,8 @@ public class MemberService {
 
         log.info("resetPasswordToken : " + resetPasswordToken);
 
-        authNumberManager.setData(resetPasswordToken, passwordResetDto.getEmail());
+        redisUtils.setData(resetPasswordToken, passwordResetDto.getEmail(), authNumberValidSeconds);
+        // authNumberManager.setData(resetPasswordToken, passwordResetDto.getEmail());
         passwordResetEmail(passwordResetDto, resetPasswordToken);
     }
 
@@ -170,7 +171,10 @@ public class MemberService {
 
     private void passwordResetEmail(PasswordResetDto passwordResetDto, String resetPasswordToken) {
         String title = "[NakaLiGoBa] 비밀번호 재설정 메일입니다.";
-        String passwordResetAuthLink = "http://50.19.246.89:8080/api/v1/auth/password/reset/email/" + resetPasswordToken;
+        // String passwordResetAuthLink = "http://50.19.246.89:8080/api/v1/auth/password/reset/email/" + resetPasswordToken;
+
+        // todo : 추후 우리 서버 주소로 수정 필요
+        String passwordResetAuthLink = "http://localhost:8080/api/v1/auth/password/reset/email/" + resetPasswordToken;
         String contents = "";
         contents += "NakaLiGoBa 비밀번호 재설정 안내 메일입니다.<br/>";
         contents += "비밀번호 재발급을 원하시면 아래의 버튼을 누르세요.<br/><br/>";
@@ -180,27 +184,28 @@ public class MemberService {
     }
 
     @Transactional
-    public String passwordResetAuth(PasswordResetAuthDto passwordResetAuthDto) {
-        String email = authNumberManager.getData(passwordResetAuthDto.getToken());
+    public boolean passwordResetAuth(PasswordResetAuthDto passwordResetAuthDto) {
+        // String email = authNumberManager.getData(passwordResetAuthDto.getToken());
+        String email = redisUtils.getData(passwordResetAuthDto.getToken());
 
-        return Optional.ofNullable(memberRepository.findByEmail(email))
-                .map(value -> PasswordResetAuthDto.AUTH_SUCCESS)
-                .orElse(PasswordResetAuthDto.AUTH_FAIL);
+        return Optional.ofNullable(memberRepository.findByEmail(email)).isPresent();
     }
 
     @Transactional
-    public String passwordResetCheck(PasswordResetCheckDto passwordResetCheckDto) {
-        String email = authNumberManager.getData(passwordResetCheckDto.getToken());
+    public boolean passwordResetCheck(PasswordResetCheckDto passwordResetCheckDto) {
+        // String email = authNumberManager.getData(passwordResetCheckDto.getToken());
+        String email = redisUtils.getData(passwordResetCheckDto.getToken());
         log.info("email : " + email);
 
         return Optional.ofNullable(memberRepository.findByEmail(email))
                 .map(updatedMemberEntity -> {
                     updatedMemberEntity.setPassword(passwordEncoder.encode(passwordResetCheckDto.getNewPassword()));
                     memberRepository.save(updatedMemberEntity);
-                    authNumberManager.removeCode(passwordResetCheckDto.getToken());
+                    // authNumberManager.removeCode(passwordResetCheckDto.getToken());
+                    redisUtils.deleteData(passwordResetCheckDto.getToken());
 
-                    return PasswordResetCheckDto.RESET_SUCCESS;
+                    return true;
                 })
-                .orElse(PasswordResetCheckDto.RESET_FAIL);
+                .orElse(false);
     }
 }

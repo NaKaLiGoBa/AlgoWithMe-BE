@@ -88,15 +88,15 @@ public class MemberController {
 
     @GetMapping("/password/reset/email/{token}")
     public ResponseEntity<?> passwordResetAuth(@PathVariable("token") String token) throws IOException {
+        String resetPageUrl = "";
         PasswordResetAuthDto passwordResetAuthDto = PasswordResetAuthDto.builder()
                 .token(token)
                 .build();
 
-        String result = memberService.passwordResetAuth(passwordResetAuthDto);
-        String resetPageUrl = "";
-
-        if (PasswordResetAuthDto.AUTH_SUCCESS.equals(result)) {
-            resetPageUrl = "http://static-resource-web-ide.s3-website-us-east-1.amazonaws.com/password/reset?token=" + token;
+        // todo : 성공 및 실패 시 보여줄 클라이언트 페이지 추가 필요
+        if (memberService.passwordResetAuth(passwordResetAuthDto)) {
+            // resetPageUrl = "http://static-resource-web-ide.s3-website-us-east-1.amazonaws.com/password/reset?token=" + token;
+            resetPageUrl = "https://www.naver.com"; // 성공 했을 경우 보여줄 페이지
         } else {
             resetPageUrl = "https://www.google.com"; // 실패 했을 경우 보여줄 페이지(임시)
         }
@@ -111,12 +111,10 @@ public class MemberController {
                 .token(request.getToken())
                 .build();
 
-        String result = memberService.passwordResetCheck(passwordResetCheckDto);
-
-        if (PasswordResetCheckDto.RESET_SUCCESS.equals(result)) {
-            return ResponseEntity.ok(new PasswordResetCheckResponse("200", "비밀번호 재설정이 완료되었습니다."));
+        if (memberService.passwordResetCheck(passwordResetCheckDto)) {
+            return ResponseEntity.status(HttpStatus.OK).body(new PasswordResetCheckResponse("비밀번호 재설정이 완료되었습니다."));
         } else {
-            return ResponseEntity.badRequest().body(new PasswordResetCheckResponse("400", "비밀번호 재설정에 실패하였습니다."));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PasswordResetCheckResponse("비밀번호 재설정에 실패하였습니다."));
         }
     }
 
@@ -232,7 +230,6 @@ public class MemberController {
 
     @Data
     static class PasswordResetCheckResponse {
-        private final String code;
         private final String message;
     }
 
@@ -293,9 +290,6 @@ public class MemberController {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class PasswordResetAuthDto {
-        public static final String AUTH_FAIL = "0";
-        public static final String AUTH_SUCCESS = "1";
-
         private String token;
     }
 
@@ -304,9 +298,6 @@ public class MemberController {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class PasswordResetCheckDto {
-        public static final String RESET_FAIL = "0";
-        public static final String RESET_SUCCESS = "1";
-
         private String newPassword;
         private String token;
     }
