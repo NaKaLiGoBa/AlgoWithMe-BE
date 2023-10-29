@@ -6,7 +6,6 @@ import com.nakaligoba.backend.entity.Member;
 import com.nakaligoba.backend.jwt.JwtProvider;
 import com.nakaligoba.backend.network.KakaoWebClient;
 import com.nakaligoba.backend.repository.MemberRepository;
-import com.nakaligoba.backend.utils.AuthNumberManager;
 import com.nakaligoba.backend.utils.RedisUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +40,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JavaMailSender javaMailSender;
-    private final AuthNumberManager authNumberManager;
     private final KakaoWebClient kakaoWebClient;
     private final JwtProvider jwtProvider;
     private final RedisUtils redisUtils;
@@ -86,7 +84,6 @@ public class MemberService {
 
     private String getMemberJwt(String email) {
         Member memberEntity = memberRepository.findByEmail(email);
-
         JwtDetails jwtDetails = new JwtDetails(memberEntity);
         Authentication authentication = new UsernamePasswordAuthenticationToken(jwtDetails, null, jwtDetails.getAuthorities());
 
@@ -97,7 +94,6 @@ public class MemberService {
     public boolean authEmail(AuthEmailDto authEmailDto) {
         if (!memberRepository.existsByEmail(authEmailDto.getEmail())) {
             String authNumber = getAuthNumber();
-
             redisUtils.setData(authEmailDto.getEmail(), authNumber, authNumberValidSeconds);
             sendAuthEmail(authEmailDto, authNumber);
 
@@ -156,11 +152,7 @@ public class MemberService {
     @Transactional
     public void passwordReset(PasswordResetDto passwordResetDto) {
         String resetPasswordToken = getUUID();
-
-        log.info("resetPasswordToken : " + resetPasswordToken);
-
         redisUtils.setData(resetPasswordToken, passwordResetDto.getEmail(), authNumberValidSeconds);
-        // authNumberManager.setData(resetPasswordToken, passwordResetDto.getEmail());
         passwordResetEmail(passwordResetDto, resetPasswordToken);
     }
 
@@ -171,9 +163,8 @@ public class MemberService {
 
     private void passwordResetEmail(PasswordResetDto passwordResetDto, String resetPasswordToken) {
         String title = "[NakaLiGoBa] 비밀번호 재설정 메일입니다.";
-        // String passwordResetAuthLink = "http://50.19.246.89:8080/api/v1/auth/password/reset/email/" + resetPasswordToken;
-
         // todo : 추후 우리 서버 주소로 수정 필요
+        // String passwordResetAuthLink = "http://50.19.246.89:8080/api/v1/auth/password/reset/email/" + resetPasswordToken;
         String passwordResetAuthLink = "http://localhost:8080/api/v1/auth/password/reset/email/" + resetPasswordToken;
         String contents = "";
         contents += "NakaLiGoBa 비밀번호 재설정 안내 메일입니다.<br/>";
@@ -185,15 +176,12 @@ public class MemberService {
 
     @Transactional
     public boolean passwordResetAuth(PasswordResetAuthDto passwordResetAuthDto) {
-        // String email = authNumberManager.getData(passwordResetAuthDto.getToken());
         String email = redisUtils.getData(passwordResetAuthDto.getToken());
-
         return Optional.ofNullable(memberRepository.findByEmail(email)).isPresent();
     }
 
     @Transactional
     public boolean passwordResetCheck(PasswordResetCheckDto passwordResetCheckDto) {
-        // String email = authNumberManager.getData(passwordResetCheckDto.getToken());
         String email = redisUtils.getData(passwordResetCheckDto.getToken());
         log.info("email : " + email);
 
@@ -201,7 +189,6 @@ public class MemberService {
                 .map(updatedMemberEntity -> {
                     updatedMemberEntity.setPassword(passwordEncoder.encode(passwordResetCheckDto.getNewPassword()));
                     memberRepository.save(updatedMemberEntity);
-                    // authNumberManager.removeCode(passwordResetCheckDto.getToken());
                     redisUtils.deleteData(passwordResetCheckDto.getToken());
 
                     return true;

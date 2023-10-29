@@ -80,10 +80,9 @@ public class MemberController {
         PasswordResetDto passwordResetDto = PasswordResetDto.builder()
                 .email(request.getEmail())
                 .build();
-
         memberService.passwordReset(passwordResetDto);
 
-        return ResponseEntity.ok(new PasswordResetResponse("200", "인증 메일이 전송되었습니다."));
+        return ResponseEntity.status(HttpStatus.OK).body(new PasswordResetResponse("비밀번호 재설정을 위한 이메일이 전송되었습니다."));
     }
 
     @GetMapping("/password/reset/email/{token}")
@@ -214,7 +213,6 @@ public class MemberController {
 
     @Data
     static class PasswordResetResponse {
-        private final String code;
         private final String message;
     }
 
