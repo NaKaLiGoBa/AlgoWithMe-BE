@@ -8,7 +8,7 @@ spring:
 
   mail:
     host: ${SMTP_HOST}
-    port: ${SMTP_PORT}
+    port: 465
     username: ${SMTP_ID}
     password: ${SMTP_PW}
     properties:
