@@ -163,9 +163,7 @@ public class MemberService {
 
     private void passwordResetEmail(PasswordResetDto passwordResetDto, String resetPasswordToken) {
         String title = "[NakaLiGoBa] 비밀번호 재설정 메일입니다.";
-        // todo : 추후 우리 서버 주소로 수정 필요
-        // String passwordResetAuthLink = "http://50.19.246.89:8080/api/v1/auth/password/reset/email/" + resetPasswordToken;
-        String passwordResetAuthLink = "http://localhost:8080/api/v1/auth/password/reset/email/" + resetPasswordToken;
+        String passwordResetAuthLink = "https://k08e0a348244ea.user-app.krampoline.com/api/v1/auth/password/reset/email/" + resetPasswordToken;
         String contents = "";
         contents += "NakaLiGoBa 비밀번호 재설정 안내 메일입니다.<br/>";
         contents += "비밀번호 재발급을 원하시면 아래의 버튼을 누르세요.<br/><br/>";
