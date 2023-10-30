@@ -12,4 +12,4 @@ FROM openjdk:11-jre-slim
 
 COPY --from=build /usr/src/app/build/libs/*.jar ./app.jar
 
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=test", "app.jar"]
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=test", "-Dhttp.proxyHost=http://krmp-proxy.9rum.cc", "3128", "app.jar"]
