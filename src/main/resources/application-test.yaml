@@ -15,4 +15,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create
-
+logging:
+  level:
+    web: debug
