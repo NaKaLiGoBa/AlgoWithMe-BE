@@ -6,24 +6,21 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Table(name = "solution_languages")
 @Entity
-@Table(name = "available_languages")
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AvailableLanguage extends BaseEntity {
+@Getter
+public class SolutionLanguage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
-    @Column(name = "template_code")
-    private String templateCode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "solution_id")
+    private Solution solution;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "problem_id", nullable = false)
-    private Problem problem;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "programming_language_id", nullable = false)
+    @JoinColumn(name = "programming_language_id")
     private ProgrammingLanguage programmingLanguage;
 }

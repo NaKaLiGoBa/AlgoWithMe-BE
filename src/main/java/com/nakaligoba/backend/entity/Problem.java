@@ -47,6 +47,9 @@ public class Problem extends BaseEntity {
     @OneToMany(mappedBy = "problem")
     private List<ProblemTag> problemTags = new ArrayList<>();
 
+    @OneToMany(mappedBy = "problem")
+    private List<Solution> solutions = new ArrayList<>();
+
     public Problem(Long number, String description, String title, String difficulty, BigDecimal acceptance) {
         this.number = number;
         this.description = description;
