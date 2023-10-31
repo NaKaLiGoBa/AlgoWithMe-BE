@@ -18,14 +18,20 @@ public class Testcase extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "input", nullable = false)
-    private String input;
+    @Column(name = "number", nullable = false)
+    private Long number;
+
+    @Column(name = "input_names", nullable = false)
+    private String inputNames;
+
+    @Column(name = "input_values", nullable = false)
+    private String inputValues;
 
     @Column(name = "output", nullable = false)
     private String output;
 
-    @Column(name = "isPublic", nullable = false)
-    private Boolean isPublic;
+    @Column(name = "isGrading", nullable = false)
+    private Boolean isGrading;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)

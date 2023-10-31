@@ -23,4 +23,7 @@ public class ProgrammingLanguage extends BaseEntity {
 
     @OneToMany(mappedBy = "programmingLanguage")
     private List<AvailableLanguage> availableLanguages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "programmingLanguage")
+    private List<SolutionLanguage> solutionLanguages = new ArrayList<>();
 }
