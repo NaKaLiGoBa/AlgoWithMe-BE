@@ -19,7 +19,7 @@ public class Testcase extends BaseEntity {
     private Long id;
 
     @Column(name = "number", nullable = false)
-    private Long number;
+    private Integer number;
 
     @Column(name = "input_names", nullable = false)
     private String inputNames;
