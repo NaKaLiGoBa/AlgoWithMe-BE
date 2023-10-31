@@ -24,7 +24,8 @@ public class Submit extends BaseEntity {
     private String code;
 
     @Column(name = "result", nullable = false)
-    private String result;
+    @Enumerated(EnumType.STRING)
+    private Result result;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)
