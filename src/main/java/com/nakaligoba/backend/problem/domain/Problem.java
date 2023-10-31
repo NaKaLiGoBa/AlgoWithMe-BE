@@ -27,7 +27,7 @@ public class Problem extends BaseEntity {
     private Long id;
 
     @Column(name = "number", nullable = false)
-    private Long number;
+    private Integer number;
 
     @Column(name = "description", nullable = false)
     private String description;
@@ -56,7 +56,7 @@ public class Problem extends BaseEntity {
     @OneToMany(mappedBy = "problem")
     private List<Solution> solutions = new ArrayList<>();
 
-    public Problem(Long number, String description, String title, String difficulty, BigDecimal acceptance) {
+    public Problem(Integer number, String description, String title, String difficulty, BigDecimal acceptance) {
         this.number = number;
         this.description = description;
         this.title = title;
