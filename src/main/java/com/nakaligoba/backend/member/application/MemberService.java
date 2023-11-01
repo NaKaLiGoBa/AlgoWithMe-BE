@@ -1,9 +1,11 @@
 package com.nakaligoba.backend.member.application;
 
-import com.nakaligoba.backend.member.controller.MemberController.*;
+import com.nakaligoba.backend.member.application.dto.*;
+import com.nakaligoba.backend.member.application.jwt.JwtProvider;
+import com.nakaligoba.backend.member.controller.dto.SigninResponse;
+import com.nakaligoba.backend.member.controller.dto.SignupResponse;
 import com.nakaligoba.backend.member.domain.JwtDetails;
 import com.nakaligoba.backend.member.domain.Member;
-import com.nakaligoba.backend.member.application.jwt.JwtProvider;
 import com.nakaligoba.backend.member.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +45,12 @@ public class MemberService {
     private final RedisUtils redisUtils;
 
     @Transactional
-    public boolean signup(MemberDto memberDto) {
-        if (!memberRepository.existsByEmail(memberDto.getEmail())) {
+    public String signup(MemberDto memberDto) {
+        if (memberRepository.existsByEmail(memberDto.getEmail())) {
+            return SignupResponse.DUPLICATE_EMAIL;
+        } else if (memberRepository.existsByNickname(memberDto.getNickname())) {
+            return SignupResponse.DUPLICATE_NICKNAME;
+        } else {
             Member memberEntity = Member.builder()
                     .email(memberDto.getEmail())
                     .password(passwordEncoder.encode(memberDto.getPassword()))
@@ -52,9 +58,7 @@ public class MemberService {
                     .build();
             memberRepository.save(memberEntity);
 
-            return true;
-        } else {
-            return false;
+            return SignupResponse.COMPLETE_SIGNUP;
         }
     }
 
