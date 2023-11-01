@@ -17,7 +17,7 @@ import java.util.List;
 public class ProblemPagingDto {
 
     private Long id;
-    private Long number;
+    private Integer number;
     private String status;
     private String title;
     private BigDecimal acceptance;
