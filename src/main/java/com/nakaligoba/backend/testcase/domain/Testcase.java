@@ -45,11 +45,8 @@ public class Testcase extends BaseEntity {
     @JoinColumn(name = "problem_id", nullable = false)
     private Problem problem;
 
-    public static Testcase of(List<String> parameters, String testcase, boolean isGrading) {
+    public static Testcase of(List<String> parameters, String inputValues, String output, boolean isGrading) {
         String inputNames = String.join(INPUT_DELIMITER, parameters);
-        String[] split = testcase.split(TESTCASE_DELIMITER);
-        String inputValues = split[0];
-        String output = split[1];
         return Testcase.builder()
                 .id(null)
                 .number(null)
