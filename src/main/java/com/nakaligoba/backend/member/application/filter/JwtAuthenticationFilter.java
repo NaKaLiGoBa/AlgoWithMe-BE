@@ -2,10 +2,10 @@ package com.nakaligoba.backend.member.application.filter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nakaligoba.backend.member.controller.MemberController.MemberDto;
-import com.nakaligoba.backend.member.controller.MemberController.SigninResponse;
-import com.nakaligoba.backend.member.domain.JwtDetails;
+import com.nakaligoba.backend.member.application.dto.MemberDto;
 import com.nakaligoba.backend.member.application.jwt.JwtProvider;
+import com.nakaligoba.backend.member.controller.dto.SigninResponse;
+import com.nakaligoba.backend.member.domain.JwtDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;

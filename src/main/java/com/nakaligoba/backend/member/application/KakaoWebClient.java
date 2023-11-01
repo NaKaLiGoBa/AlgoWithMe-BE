@@ -1,7 +1,8 @@
 package com.nakaligoba.backend.member.application;
 
-import com.nakaligoba.backend.member.controller.MemberController.KakaoSigninTokenResponse;
-import com.nakaligoba.backend.member.controller.MemberController.KakaoSigninUserInfoResponse;
+
+import com.nakaligoba.backend.member.application.dto.KakaoSigninTokenResponse;
+import com.nakaligoba.backend.member.application.dto.KakaoSigninUserInfoResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
