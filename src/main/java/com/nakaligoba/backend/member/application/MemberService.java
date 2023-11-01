@@ -1,9 +1,11 @@
 package com.nakaligoba.backend.member.application;
 
-import com.nakaligoba.backend.member.controller.MemberController.*;
+import com.nakaligoba.backend.member.application.dto.*;
+import com.nakaligoba.backend.member.application.jwt.JwtProvider;
+import com.nakaligoba.backend.member.controller.dto.SigninResponse;
+import com.nakaligoba.backend.member.controller.dto.SignupResponse;
 import com.nakaligoba.backend.member.domain.JwtDetails;
 import com.nakaligoba.backend.member.domain.Member;
-import com.nakaligoba.backend.member.application.jwt.JwtProvider;
 import com.nakaligoba.backend.member.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +45,12 @@ public class MemberService {
     private final RedisUtils redisUtils;
 
     @Transactional
-    public boolean signup(MemberDto memberDto) {
-        if (!memberRepository.existsByEmail(memberDto.getEmail())) {
+    public String signup(MemberDto memberDto) {
+        if (memberRepository.existsByEmail(memberDto.getEmail())) {
+            return SignupResponse.DUPLICATE_EMAIL;
+        } else if (memberRepository.existsByNickname(memberDto.getNickname())) {
+            return SignupResponse.DUPLICATE_NICKNAME;
+        } else {
             Member memberEntity = Member.builder()
                     .email(memberDto.getEmail())
                     .password(passwordEncoder.encode(memberDto.getPassword()))
@@ -52,9 +58,7 @@ public class MemberService {
                     .build();
             memberRepository.save(memberEntity);
 
-            return true;
-        } else {
-            return false;
+            return SignupResponse.COMPLETE_SIGNUP;
         }
     }
 
@@ -161,9 +165,7 @@ public class MemberService {
 
     private void passwordResetEmail(PasswordResetDto passwordResetDto, String resetPasswordToken) {
         String title = "[NakaLiGoBa] 비밀번호 재설정 메일입니다.";
-        // todo : 추후 우리 서버 주소로 수정 필요
-        // String passwordResetAuthLink = "http://50.19.246.89:8080/api/v1/auth/password/reset/email/" + resetPasswordToken;
-        String passwordResetAuthLink = "http://localhost:8080/api/v1/auth/password/reset/email/" + resetPasswordToken;
+        String passwordResetAuthLink = "https://k08e0a348244ea.user-app.krampoline.com/api/v1/auth/password/reset/email/" + resetPasswordToken;
         String contents = "";
         contents += "NakaLiGoBa 비밀번호 재설정 안내 메일입니다.<br/>";
         contents += "비밀번호 재발급을 원하시면 아래의 버튼을 누르세요.<br/><br/>";
