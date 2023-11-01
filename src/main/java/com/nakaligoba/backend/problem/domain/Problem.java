@@ -8,6 +8,8 @@ import com.nakaligoba.backend.solution.domain.Solution;
 import com.nakaligoba.backend.submit.domain.Submit;
 import com.nakaligoba.backend.testcase.domain.Testcase;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,11 +31,11 @@ public class Problem extends BaseEntity {
     @Column(name = "number", nullable = false)
     private Integer number;
 
-    @Column(name = "description", nullable = false)
-    private String description;
-
     @Column(name = "title", nullable = false)
     private String title;
+
+    @Column(name = "description", nullable = false)
+    private String description;
 
     @Column(name = "difficulty", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -43,25 +45,36 @@ public class Problem extends BaseEntity {
     private BigDecimal acceptance;
 
     @OneToMany(mappedBy = "problem")
-    private List<Submit> submits = new ArrayList<>();
+    private final List<Submit> submits = new ArrayList<>();
 
     @OneToMany(mappedBy = "problem")
-    private List<Testcase> testcases = new ArrayList<>();
+    private final List<Testcase> testcases = new ArrayList<>();
 
     @OneToMany(mappedBy = "problem")
-    private List<AvailableLanguage> availableLanguages = new ArrayList<>();
+    private final List<AvailableLanguage> availableLanguages = new ArrayList<>();
 
     @OneToMany(mappedBy = "problem")
-    private List<ProblemTag> problemTags = new ArrayList<>();
+    private final List<ProblemTag> problemTags = new ArrayList<>();
 
     @OneToMany(mappedBy = "problem")
-    private List<Solution> solutions = new ArrayList<>();
+    private final List<Solution> solutions = new ArrayList<>();
 
-    public Problem(Integer number, String description, String title, String difficulty, BigDecimal acceptance) {
-        this.number = number;
-        this.description = description;
-        this.title = title;
-        this.difficulty = Difficulty.getByKorean(difficulty);
-        this.acceptance = acceptance;
+    @Builder(builderMethodName = "defaultBuilder")
+    public static Problem of(final Integer number,
+                             final String title,
+                             final String description,
+                             final Difficulty difficulty) {
+        Problem newInstance = new Problem();
+        newInstance.number = number;
+        newInstance.title = title;
+        newInstance.description = description;
+        newInstance.difficulty = difficulty;
+        newInstance.acceptance = BigDecimal.ZERO;
+        return newInstance;
+    }
+
+    public void addTestcase(final Testcase testcase) {
+        this.testcases.add(testcase);
+        testcase.setProblem(this);
     }
 }
