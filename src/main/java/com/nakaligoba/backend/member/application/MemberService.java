@@ -48,18 +48,20 @@ public class MemberService {
     public String signup(MemberDto memberDto) {
         if (memberRepository.existsByEmail(memberDto.getEmail())) {
             return SignupResponse.DUPLICATE_EMAIL;
-        } else if (memberRepository.existsByNickname(memberDto.getNickname())) {
-            return SignupResponse.DUPLICATE_NICKNAME;
-        } else {
-            Member memberEntity = Member.builder()
-                    .email(memberDto.getEmail())
-                    .password(passwordEncoder.encode(memberDto.getPassword()))
-                    .nickname(memberDto.getNickname())
-                    .build();
-            memberRepository.save(memberEntity);
-
-            return SignupResponse.COMPLETE_SIGNUP;
         }
+
+        if (memberRepository.existsByNickname(memberDto.getNickname())) {
+            return SignupResponse.DUPLICATE_NICKNAME;
+        }
+
+        Member memberEntity = Member.builder()
+                .email(memberDto.getEmail())
+                .password(passwordEncoder.encode(memberDto.getPassword()))
+                .nickname(memberDto.getNickname())
+                .build();
+        memberRepository.save(memberEntity);
+
+        return SignupResponse.COMPLETE_SIGNUP;
     }
 
     @Transactional

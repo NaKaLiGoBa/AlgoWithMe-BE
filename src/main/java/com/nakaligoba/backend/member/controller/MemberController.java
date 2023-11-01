@@ -34,11 +34,13 @@ public class MemberController {
 
         if (SignupResponse.DUPLICATE_EMAIL.equals(signUpResult)) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new SignupResponse("이미 사용 중입니다. 다른 이메일을 입력해주세요."));
-        } else if (SignupResponse.DUPLICATE_NICKNAME.equals(signUpResult)) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new SignupResponse("닉네임 중복"));
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(new SignupResponse("회원가입이 완료되었습니다."));
         }
+
+        if (SignupResponse.DUPLICATE_NICKNAME.equals(signUpResult)) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new SignupResponse("닉네임 중복"));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(new SignupResponse("회원가입이 완료되었습니다."));
     }
 
     @PostMapping("/signin/kakao")
