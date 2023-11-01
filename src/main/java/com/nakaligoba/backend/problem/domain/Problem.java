@@ -36,7 +36,8 @@ public class Problem extends BaseEntity {
     private String title;
 
     @Column(name = "difficulty", nullable = false)
-    private String difficulty;
+    @Enumerated(EnumType.STRING)
+    private Difficulty difficulty;
 
     @Column(name = "acceptance", nullable = false)
     private BigDecimal acceptance;
@@ -60,7 +61,7 @@ public class Problem extends BaseEntity {
         this.number = number;
         this.description = description;
         this.title = title;
-        this.difficulty = difficulty;
+        this.difficulty = Difficulty.getByKorean(difficulty);
         this.acceptance = acceptance;
     }
 }

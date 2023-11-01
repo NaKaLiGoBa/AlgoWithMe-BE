@@ -37,7 +37,7 @@ public class ProblemService {
                         getStatus(problem),
                         problem.getTitle(),
                         problem.getAcceptance(),
-                        problem.getDifficulty(),
+                        problem.getDifficulty().getKorean(),
                         getTags(problem)
                 ))
                 .collect(Collectors.toList());
@@ -64,7 +64,7 @@ public class ProblemService {
                 .title(problem.getTitle())
                 .status(getStatus(problem))
                 .acceptance(problem.getAcceptance().toString())
-                .difficulty(problem.getDifficulty())
+                .difficulty(problem.getDifficulty().getKorean())
                 .description(problem.getDescription())
                 .defaultCodes(getDefaultCodes(problem))
                 .testcases(getTestcases(problem))
