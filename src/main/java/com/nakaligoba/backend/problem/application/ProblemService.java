@@ -2,6 +2,7 @@ package com.nakaligoba.backend.problem.application;
 
 import com.nakaligoba.backend.availablelanguage.domain.AvailableLanguage;
 import com.nakaligoba.backend.problem.application.dto.ProblemPagingDto;
+import com.nakaligoba.backend.problem.controller.dto.CustomPageResponse;
 import com.nakaligoba.backend.problem.controller.dto.InputDto;
 import com.nakaligoba.backend.problem.controller.dto.ProblemResponse;
 import com.nakaligoba.backend.problem.domain.Problem;
@@ -27,9 +28,31 @@ public class ProblemService {
 
     private final ProblemRepository problemRepository;
 
-    public Page<ProblemPagingDto> getProblemList(Pageable pageable) {
+    public CustomPageResponse<ProblemPagingDto> getProblemList(Pageable pageable) {
         Page<Problem> page = problemRepository.findAll(pageable);
-        return page.map(problem -> new ProblemPagingDto(problem));
+        List<ProblemPagingDto> dtos = page.getContent().stream()
+                .map(problem -> new ProblemPagingDto(
+                        problem.getId(),
+                        problem.getNumber(),
+                        getStatus(problem),
+                        problem.getTitle(),
+                        problem.getAcceptance(),
+                        problem.getDifficulty(),
+                        getTags(problem)
+                ))
+                .collect(Collectors.toList());
+
+        CustomPageResponse<ProblemPagingDto> response = CustomPageResponse.<ProblemPagingDto>builder()
+                .problems(dtos)
+                .pageNumber(page.getNumber())
+                .totalPages(page.getTotalPages())
+                .totalElements(page.getTotalElements())
+                .size(page.getSize())
+                .numberOfElements(page.getNumberOfElements())
+                .first(page.isFirst())
+                .last(page.isLast())
+                .build();
+        return response;
     }
 
     public ProblemResponse readProblem(Long id) {
