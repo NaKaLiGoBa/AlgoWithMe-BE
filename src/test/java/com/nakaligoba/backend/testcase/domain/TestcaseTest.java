@@ -13,14 +13,15 @@ class TestcaseTest {
     @DisplayName("파라미터 이름, 테스트케이스 입출력, 채점용인지로 테스트케이스 생성")
     void of() {
         List<String> parameters = List.of("a", "b", "result");
-        String inputAndOutput = "1 2\n3";
+        String inputValues = "1 2";
+        String output = "3";
         boolean isGrading = false;
 
-        Testcase testcase = Testcase.of(parameters, inputAndOutput, isGrading);
+        Testcase testcase = Testcase.of(parameters, inputValues, output, isGrading);
 
         assertThat(testcase.getId()).isNull();
         assertThat(testcase.getInputNames()).isEqualTo("a b result");
-        assertThat(testcase.getInputValues()).isEqualTo("1 2");
-        assertThat(testcase.getOutput()).isEqualTo("3");
+        assertThat(testcase.getInputValues()).isEqualTo(inputValues);
+        assertThat(testcase.getOutput()).isEqualTo(output);
     }
 }
