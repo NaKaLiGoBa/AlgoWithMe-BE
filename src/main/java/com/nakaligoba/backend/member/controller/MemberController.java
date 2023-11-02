@@ -21,7 +21,6 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest request) {
         MemberDto memberDto = MemberDto.builder()
