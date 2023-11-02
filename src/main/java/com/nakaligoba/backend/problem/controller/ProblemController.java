@@ -1,6 +1,6 @@
 package com.nakaligoba.backend.problem.controller;
 
-import com.nakaligoba.backend.problem.application.ProblemAggregateService;
+import com.nakaligoba.backend.problem.application.ProblemFacade;
 import com.nakaligoba.backend.problem.controller.dto.CreateProblemRequest;
 import com.nakaligoba.backend.problem.controller.dto.CustomPageResponse;
 import com.nakaligoba.backend.problem.application.dto.ProblemPagingDto;
@@ -20,7 +20,7 @@ import java.net.URI;
 public class ProblemController {
 
     private final ProblemService problemService;
-    private final ProblemAggregateService problemAggregateService;
+    private final ProblemFacade problemAggregateService;
 
     @GetMapping
     public ResponseEntity<CustomPageResponse<ProblemPagingDto>> readAllProblems(Pageable pageable) {
