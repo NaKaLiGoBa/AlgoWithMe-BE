@@ -36,8 +36,6 @@ public class ProblemService {
 
     private final ProblemRepository problemRepository;
 
-    private final ProgrammingLanguageService programmingLanguageService;
-
     public CustomPageResponse<ProblemPagingDto> getProblemList(Pageable pageable) {
         Page<Problem> page = problemRepository.findAll(pageable);
         List<ProblemPagingDto> dtos = page.getContent().stream()
