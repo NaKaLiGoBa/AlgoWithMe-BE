@@ -3,8 +3,6 @@ package com.nakaligoba.backend.testcase.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TestcaseTest {
@@ -12,12 +10,20 @@ class TestcaseTest {
     @Test
     @DisplayName("파라미터 이름, 테스트케이스 입출력, 채점용인지로 테스트케이스 생성")
     void of() {
-        List<String> parameters = List.of("a", "b", "result");
+        Integer number = 1;
+        String parameters = "a b result";
         String inputValues = "1 2";
         String output = "3";
         boolean isGrading = false;
 
-        Testcase testcase = Testcase.of(parameters, inputValues, output, isGrading);
+        Testcase testcase = Testcase.builder()
+                .number(number)
+                .inputNames(parameters)
+                .inputValues(inputValues)
+                .output(output)
+                .isGrading(isGrading)
+                .build();
+
 
         assertThat(testcase.getId()).isNull();
         assertThat(testcase.getInputNames()).isEqualTo("a b result");
