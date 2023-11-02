@@ -19,7 +19,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
-public class ProblemAggregateService {
+public class ProblemFacade {
 
     private final ProblemService problemService;
     private final TestcaseService testcaseService;
