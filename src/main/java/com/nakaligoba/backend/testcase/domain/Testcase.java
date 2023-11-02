@@ -9,18 +9,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "testcases")
 @Getter
-@Builder(access = AccessLevel.PRIVATE)
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Testcase extends BaseEntity {
-
-    private static final String INPUT_DELIMITER = " ";
-    private static final String TESTCASE_DELIMITER = "\n";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,19 +40,6 @@ public class Testcase extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)
     private Problem problem;
-
-    public static Testcase of(List<String> parameters, String inputValues, String output, boolean isGrading) {
-        String inputNames = String.join(INPUT_DELIMITER, parameters);
-        return Testcase.builder()
-                .id(null)
-                .number(null)
-                .inputNames(inputNames)
-                .inputValues(inputValues)
-                .output(output)
-                .isGrading(isGrading)
-                .problem(null)
-                .build();
-    }
 
     public void setProblem(final Problem problem) {
         this.problem = problem;
