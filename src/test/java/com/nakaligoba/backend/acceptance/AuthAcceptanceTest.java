@@ -38,7 +38,7 @@ public class AuthAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("이메일과 비밀번호와 닉네임으로 회원가입을 할 수 있다.")
+    @DisplayName("잘못된 이메일 형식으로 회원가입을 할 수 없다.")
     void givenInvalidEmail_whenRegister_thenBadRequest() throws JSONException {
         String email = "test";
         String password = "test123";
