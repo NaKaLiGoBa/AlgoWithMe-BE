@@ -15,7 +15,7 @@ import java.util.List;
 public class TestcaseService {
 
     private static final String INPUT_DELIMITER = " ";
-    private final static Integer ANSWER_CASE_NUMBER = 1;
+    private static final Integer ANSWER_CASE_NUMBER = 1;
 
     private final TestcaseRepository testcaseRepository;
 
