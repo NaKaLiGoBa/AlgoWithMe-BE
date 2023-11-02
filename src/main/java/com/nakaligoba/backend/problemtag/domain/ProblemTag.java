@@ -26,4 +26,17 @@ public class ProblemTag extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
+
+    public ProblemTag(Problem problem, Tag tag) {
+        this.problem = problem;
+        this.tag = tag;
+    }
+
+    public void setProblem(final Problem problem) {
+        this.problem = problem;
+    }
+
+    public void setTag(Tag tag) {
+        this.tag = tag;
+    }
 }
