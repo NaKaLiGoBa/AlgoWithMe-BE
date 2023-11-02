@@ -1,12 +1,10 @@
 package com.nakaligoba.backend.solution.domain;
 
 import com.nakaligoba.backend.global.BaseEntity;
-import com.nakaligoba.backend.solutionlanguage.domain.SolutionLanguage;
 import com.nakaligoba.backend.member.domain.Member;
 import com.nakaligoba.backend.problem.domain.Problem;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.nakaligoba.backend.solutionlanguage.domain.SolutionLanguage;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,6 +13,7 @@ import java.util.List;
 @Table(name = "solutions")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
 public class Solution extends BaseEntity {
 
@@ -38,4 +37,12 @@ public class Solution extends BaseEntity {
 
     @OneToMany(mappedBy = "solution")
     private List<SolutionLanguage> solutionLanguages = new ArrayList<>();
+
+    @Builder
+    public Solution(String title, String content, Member member, Problem problem) {
+        this.title = title;
+        this.content = content;
+        this.member = member;
+        this.problem = problem;
+    }
 }
