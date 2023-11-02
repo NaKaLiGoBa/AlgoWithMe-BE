@@ -2,6 +2,7 @@ package com.nakaligoba.backend.solution.controller;
 
 import com.nakaligoba.backend.solution.application.SolutionService;
 import com.nakaligoba.backend.solution.controller.dto.SolutionCreateRequest;
+import com.nakaligoba.backend.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,8 @@ public class SolutionController {
 
     @PostMapping("/{id}/solutions")
     public ResponseEntity<Void> createSolution(@PathVariable("id") long id, @RequestBody @Valid SolutionCreateRequest request) {
-        long createdSolutionId = solutionService.createSolution(id, request);
+        String writerEmail = JwtUtils.getEmailFromSpringSession();
+        long createdSolutionId = solutionService.createSolution(writerEmail, id, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Location", "https://k08e0a348244ea.user-app.krampoline.com/api/v1/problems/" + id + "/solutions/" + createdSolutionId)
