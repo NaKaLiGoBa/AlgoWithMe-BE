@@ -11,9 +11,10 @@ import com.nakaligoba.backend.solution.domain.Solution;
 import com.nakaligoba.backend.solution.domain.SolutionRepository;
 import com.nakaligoba.backend.solutionlanguage.domain.SolutionLanguage;
 import com.nakaligoba.backend.solutionlanguage.domain.SolutionLanguageRepository;
-import com.nakaligoba.backend.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 
 @RequiredArgsConstructor
 @Service
@@ -25,11 +26,10 @@ public class SolutionService {
     private final ProgrammingLanguageRepository programmingLanguageRepository;
     private final SolutionLanguageRepository solutionLanguageRepository;
 
-    public long createSolution(long problemId, SolutionCreateRequest request) {
-        Member member = memberRepository.findByEmail(JwtUtils.getEmailFromSpringSession());
+    public long createSolution(String writerEmail, long problemId, SolutionCreateRequest request) {
+        Member member = memberRepository.findByEmail(writerEmail);
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(IllegalArgumentException::new);
-
         Solution solution = Solution.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
@@ -38,6 +38,8 @@ public class SolutionService {
                 .build();
 
         solutionRepository.save(solution);
+
+        ArrayList<SolutionLanguage> solutionLanguages = new ArrayList<>();
 
         for (String language : request.getLanguages()) {
             ProgrammingLanguage programmingLanguage = programmingLanguageRepository.findByName(language)
@@ -48,8 +50,10 @@ public class SolutionService {
                     .programmingLanguage(programmingLanguage)
                     .build();
 
-            solutionLanguageRepository.save(solutionLanguage);
+            solutionLanguages.add(solutionLanguage);
         }
+
+        solutionLanguageRepository.saveAll(solutionLanguages);
 
         return solution.getId();
     }
