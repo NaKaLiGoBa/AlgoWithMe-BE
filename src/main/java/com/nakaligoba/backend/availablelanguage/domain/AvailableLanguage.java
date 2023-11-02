@@ -29,4 +29,9 @@ public class AvailableLanguage extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "programming_language_id", nullable = false)
     private ProgrammingLanguage programmingLanguage;
+
+    public AvailableLanguage(Problem problem, ProgrammingLanguage programmingLanguage) {
+        this.problem = problem;
+        this.programmingLanguage = programmingLanguage;
+    }
 }

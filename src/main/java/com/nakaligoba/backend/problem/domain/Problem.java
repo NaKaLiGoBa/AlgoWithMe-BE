@@ -4,16 +4,25 @@ package com.nakaligoba.backend.problem.domain;
 import com.nakaligoba.backend.availablelanguage.domain.AvailableLanguage;
 import com.nakaligoba.backend.global.BaseEntity;
 import com.nakaligoba.backend.problemtag.domain.ProblemTag;
+import com.nakaligoba.backend.programminglanguage.domain.ProgrammingLanguage;
 import com.nakaligoba.backend.solution.domain.Solution;
 import com.nakaligoba.backend.submit.domain.Submit;
+import com.nakaligoba.backend.tag.domain.Tag;
 import com.nakaligoba.backend.testcase.domain.Testcase;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,5 +85,17 @@ public class Problem extends BaseEntity {
     public void addTestcase(final Testcase testcase) {
         this.testcases.add(testcase);
         testcase.setProblem(this);
+    }
+
+    public void addAvailableLanguage(final ProgrammingLanguage programmingLanguage) {
+        AvailableLanguage availableLanguage = new AvailableLanguage(this, programmingLanguage);
+        this.availableLanguages.add(availableLanguage);
+        programmingLanguage.getAvailableLanguages().add(availableLanguage);
+    }
+
+    public void addProblemTag(final Tag tag) {
+        ProblemTag problemTag = new ProblemTag(this, tag);
+        this.problemTags.add(problemTag);
+        tag.getProblemTags().add(problemTag);
     }
 }
