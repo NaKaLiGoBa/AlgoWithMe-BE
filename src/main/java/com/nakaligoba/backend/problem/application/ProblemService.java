@@ -2,15 +2,21 @@ package com.nakaligoba.backend.problem.application;
 
 import com.nakaligoba.backend.availablelanguage.domain.AvailableLanguage;
 import com.nakaligoba.backend.problem.application.dto.ProblemPagingDto;
+import com.nakaligoba.backend.problem.controller.dto.CreateProblemRequest;
 import com.nakaligoba.backend.problem.controller.dto.CustomPageResponse;
 import com.nakaligoba.backend.problem.controller.dto.InputDto;
 import com.nakaligoba.backend.problem.controller.dto.ProblemResponse;
+import com.nakaligoba.backend.problem.domain.Difficulty;
 import com.nakaligoba.backend.problem.domain.Problem;
 import com.nakaligoba.backend.problem.domain.ProblemRepository;
+import com.nakaligoba.backend.problemtag.application.ProblemTagService;
 import com.nakaligoba.backend.problemtag.domain.ProblemTag;
+import com.nakaligoba.backend.programminglanguage.application.ProgrammingLanguageService;
 import com.nakaligoba.backend.submit.domain.Result;
 import com.nakaligoba.backend.submit.domain.Submit;
+import com.nakaligoba.backend.tag.application.TagService;
 import com.nakaligoba.backend.tag.domain.Tag;
+import com.nakaligoba.backend.testcase.application.TestcaseService;
 import com.nakaligoba.backend.testcase.domain.Testcase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +24,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -27,6 +35,8 @@ import java.util.stream.Collectors;
 public class ProblemService {
 
     private final ProblemRepository problemRepository;
+
+    private final ProgrammingLanguageService programmingLanguageService;
 
     public CustomPageResponse<ProblemPagingDto> getProblemList(Pageable pageable) {
         Page<Problem> page = problemRepository.findAll(pageable);
@@ -130,4 +140,24 @@ public class ProblemService {
 
         return inputs;
     }
+
+    @Transactional
+    public Problem createProblem(String title, String description, String difficulty) {
+        int lastProblemNumber = getLastProblemNumber() + 1;
+
+        Problem problem = Problem.defaultBuilder()
+                .number(lastProblemNumber + 1)
+                .title(title)
+                .description(description)
+                .difficulty(Difficulty.getByKorean(difficulty))
+                .build();
+
+        return problemRepository.save(problem);
+    }
+
+    private Integer getLastProblemNumber() {
+        return problemRepository.findMaxNumber()
+                .orElse(0);
+    }
+
 }
