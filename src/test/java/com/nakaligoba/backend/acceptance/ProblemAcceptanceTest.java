@@ -3,17 +3,12 @@ package com.nakaligoba.backend.acceptance;
 import com.nakaligoba.backend.problem.controller.dto.CreateProblemRequest;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.util.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
