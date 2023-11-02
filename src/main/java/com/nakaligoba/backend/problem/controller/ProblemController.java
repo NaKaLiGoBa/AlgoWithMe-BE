@@ -1,5 +1,7 @@
 package com.nakaligoba.backend.problem.controller;
 
+import com.nakaligoba.backend.problem.application.ProblemAggregateService;
+import com.nakaligoba.backend.problem.controller.dto.CreateProblemRequest;
 import com.nakaligoba.backend.problem.controller.dto.CustomPageResponse;
 import com.nakaligoba.backend.problem.application.dto.ProblemPagingDto;
 import com.nakaligoba.backend.problem.application.ProblemService;
@@ -7,10 +9,10 @@ import com.nakaligoba.backend.problem.controller.dto.ProblemResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProblemController {
 
     private final ProblemService problemService;
+    private final ProblemAggregateService problemAggregateService;
 
     @GetMapping
     public ResponseEntity<CustomPageResponse<ProblemPagingDto>> readAllProblems(Pageable pageable) {
@@ -30,5 +33,12 @@ public class ProblemController {
         ProblemResponse response = problemService.readProblem(id);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> createProblem(@Valid @RequestBody CreateProblemRequest request) {
+        Long id = problemAggregateService.createProblem(request);
+        return ResponseEntity.created(URI.create("https://k08e0a348244ea.user-app.krampoline.com/problems/" + id))
+                .build();
     }
 }
