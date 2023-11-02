@@ -38,6 +38,8 @@ public class MailConfig {
 
         properties.put("mail.smtp.socks.host", "krmp-proxy.9rum.cc");
         properties.put("mail.smtp.socks.port", "3128");
+        properties.put("mail.smtp.proxy.host", "krmp-proxy.9rum.cc");
+        properties.put("mail.smtp.proxy.port", "3128");
 
         return mailSender;
     }
