@@ -3,15 +3,14 @@ package com.nakaligoba.backend.solutionlanguage.domain;
 import com.nakaligoba.backend.global.BaseEntity;
 import com.nakaligoba.backend.programminglanguage.domain.ProgrammingLanguage;
 import com.nakaligoba.backend.solution.domain.Solution;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Table(name = "solution_languages")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
 public class SolutionLanguage extends BaseEntity {
 
@@ -26,4 +25,10 @@ public class SolutionLanguage extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "programming_language_id")
     private ProgrammingLanguage programmingLanguage;
+
+    @Builder
+    public SolutionLanguage(Solution solution, ProgrammingLanguage programmingLanguage) {
+        this.solution = solution;
+        this.programmingLanguage = programmingLanguage;
+    }
 }
