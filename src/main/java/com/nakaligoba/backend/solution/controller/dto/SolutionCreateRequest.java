@@ -3,7 +3,7 @@ package com.nakaligoba.backend.solution.controller.dto;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 
 @Data
@@ -14,6 +14,6 @@ public class SolutionCreateRequest {
     @NotBlank
     private String content;
 
-    @NotNull
+    @NotEmpty
     private ArrayList<String> languages;
 }
