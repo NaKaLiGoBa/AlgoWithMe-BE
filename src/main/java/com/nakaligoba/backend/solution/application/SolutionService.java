@@ -6,7 +6,7 @@ import com.nakaligoba.backend.problem.domain.Problem;
 import com.nakaligoba.backend.problem.domain.ProblemRepository;
 import com.nakaligoba.backend.programminglanguage.domain.ProgrammingLanguage;
 import com.nakaligoba.backend.programminglanguage.domain.ProgrammingLanguageRepository;
-import com.nakaligoba.backend.solution.controller.dto.SolutionCreateRequest;
+import com.nakaligoba.backend.solution.controller.dto.SolutionRequest;
 import com.nakaligoba.backend.solution.domain.Solution;
 import com.nakaligoba.backend.solution.domain.SolutionRepository;
 import com.nakaligoba.backend.solutionlanguage.domain.SolutionLanguage;
@@ -14,7 +14,10 @@ import com.nakaligoba.backend.solutionlanguage.domain.SolutionLanguageRepository
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -26,7 +29,7 @@ public class SolutionService {
     private final ProgrammingLanguageRepository programmingLanguageRepository;
     private final SolutionLanguageRepository solutionLanguageRepository;
 
-    public long createSolution(String writerEmail, long problemId, SolutionCreateRequest request) {
+    public long createSolution(String writerEmail, long problemId, SolutionRequest request) {
         Member member = memberRepository.findByEmail(writerEmail);
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(IllegalArgumentException::new);
@@ -54,6 +57,30 @@ public class SolutionService {
         }
 
         solutionLanguageRepository.saveAll(solutionLanguages);
+
+        return solution.getId();
+    }
+
+    public Long updateSolution(String writerEmail, Long problemId, Long solutionId, SolutionRequest request) {
+        Member member = memberRepository.findByEmail(writerEmail);
+        if (member == null) {
+            throw new EntityNotFoundException("회원을 찾을 수 없습니다.");
+        }
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(IllegalAccessError::new);
+        Solution solution = solutionRepository.findById(solutionId)
+                .orElseThrow(IllegalAccessError::new);
+
+        solution.changeTitle(request.getTitle());
+        solution.changeContent(request.getContent());
+
+        List<ProgrammingLanguage> programmingLanguages = request.getLanguages().stream()
+                .map(language -> programmingLanguageRepository.findByName(language)
+                .orElseThrow(IllegalAccessError::new))
+                .collect(Collectors.toList());
+
+        solution.updateSolutionLanguages(programmingLanguages);
+        solutionRepository.save(solution);
 
         return solution.getId();
     }
