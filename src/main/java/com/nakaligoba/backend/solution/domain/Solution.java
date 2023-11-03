@@ -36,7 +36,7 @@ public class Solution extends BaseEntity {
     @JoinColumn(name = "problem_id", nullable = false)
     private Problem problem;
 
-    @OneToMany(mappedBy = "solution")
+    @OneToMany(mappedBy = "solution", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SolutionLanguage> solutionLanguages = new ArrayList<>();
 
     @Builder
