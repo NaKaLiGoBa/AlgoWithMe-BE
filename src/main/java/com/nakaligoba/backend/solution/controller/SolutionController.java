@@ -34,12 +34,23 @@ public class SolutionController {
             @PathVariable Long problemId,
             @PathVariable Long solutionId,
             @RequestBody SolutionRequest request
-    ){
+    ) {
         String writerEmail = JwtUtils.getEmailFromSpringSession();
         Long updatedSolutionId = solutionService.updateSolution(writerEmail, problemId, solutionId, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-              .header("Location", "https://k08e0a348244ea.user-app.krampoline.com/api/v1/problems/" + problemId + "/solutions/" + updatedSolutionId)
-              .build();
+                .header("Location", "https://k08e0a348244ea.user-app.krampoline.com/api/v1/problems/" + problemId + "/solutions/" + updatedSolutionId)
+                .build();
+    }
+
+    @DeleteMapping("/{problemId}/solutions/{solutionId}")
+    public ResponseEntity<Void> removeSolution(
+            @PathVariable Long problemId,
+            @PathVariable Long solutionId
+    ){
+        String writerEmail = JwtUtils.getEmailFromSpringSession();
+        solutionService.removeSolution(writerEmail, problemId, solutionId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
