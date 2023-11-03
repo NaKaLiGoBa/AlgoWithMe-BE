@@ -1,5 +1,6 @@
 package com.nakaligoba.backend.solution.application;
 
+import com.github.dockerjava.api.exception.UnauthorizedException;
 import com.nakaligoba.backend.member.domain.Member;
 import com.nakaligoba.backend.member.domain.MemberRepository;
 import com.nakaligoba.backend.problem.domain.Problem;
@@ -70,22 +71,36 @@ public class SolutionService {
                 .orElseThrow(IllegalAccessError::new);
         Solution solution = solutionRepository.findById(solutionId)
                 .orElseThrow(IllegalAccessError::new);
-        
-        if (!solution.getMember().getId().equals(member.getId())) {
-            throw new UnauthorizedException("권한이 없습니다.");
-        }
 
         solution.changeTitle(request.getTitle());
         solution.changeContent(request.getContent());
 
         List<ProgrammingLanguage> programmingLanguages = request.getLanguages().stream()
                 .map(language -> programmingLanguageRepository.findByName(language)
-                .orElseThrow(IllegalAccessError::new))
+                        .orElseThrow(IllegalAccessError::new))
                 .collect(Collectors.toList());
 
         solution.updateSolutionLanguages(programmingLanguages);
         solutionRepository.save(solution);
 
         return solution.getId();
+    }
+
+    public void removeSolution(String writerEmail, Long problemId, Long solutionId) {
+        Member member = memberRepository.findByEmail(writerEmail);
+        if (member == null) {
+            throw new IllegalAccessError();
+        }
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(IllegalArgumentException::new);
+        Solution solution = solutionRepository.findById(solutionId)
+                .orElseThrow(IllegalAccessError::new);
+
+
+        if (!solution.getMember().getId().equals(member.getId())) {
+            throw new UnauthorizedException("권한이 없습니다.");
+        }
+
+        solutionRepository.delete(solution);
     }
 }
