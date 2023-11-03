@@ -1,7 +1,7 @@
 package com.nakaligoba.backend.solution.controller;
 
 import com.nakaligoba.backend.solution.application.SolutionService;
-import com.nakaligoba.backend.solution.controller.dto.SolutionCreateRequest;
+import com.nakaligoba.backend.solution.controller.dto.SolutionRequest;
 import com.nakaligoba.backend.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +20,26 @@ public class SolutionController {
     private final SolutionService solutionService;
 
     @PostMapping("/{id}/solutions")
-    public ResponseEntity<Void> createSolution(@PathVariable("id") long id, @RequestBody @Valid SolutionCreateRequest request) {
+    public ResponseEntity<Void> createSolution(@PathVariable("id") long id, @RequestBody @Valid SolutionRequest request) {
         String writerEmail = JwtUtils.getEmailFromSpringSession();
         long createdSolutionId = solutionService.createSolution(writerEmail, id, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Location", "https://k08e0a348244ea.user-app.krampoline.com/api/v1/problems/" + id + "/solutions/" + createdSolutionId)
                 .build();
+    }
+
+    @PutMapping("{problemId}/solutions/{solutionId}")
+    public ResponseEntity<Void> updateSolution(
+            @PathVariable Long problemId,
+            @PathVariable Long solutionId,
+            @RequestBody SolutionRequest request
+    ){
+        String writerEmail = JwtUtils.getEmailFromSpringSession();
+        Long updatedSolutionId = solutionService.updateSolution(writerEmail, problemId, solutionId, request);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+              .header("Location", "https://k08e0a348244ea.user-app.krampoline.com/api/v1/problems/" + problemId + "/solutions/" + updatedSolutionId)
+              .build();
     }
 }
