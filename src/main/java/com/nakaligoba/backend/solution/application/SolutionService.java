@@ -79,6 +79,10 @@ public class SolutionService {
                 .orElseThrow(IllegalAccessError::new))
                 .collect(Collectors.toList());
 
+         if (!solution.getMember().getId().equals(member.getId())) {
+            throw new UnauthorizedException("권한이 없습니다.");
+        }
+
         solution.updateSolutionLanguages(programmingLanguages);
         solutionRepository.save(solution);
 
