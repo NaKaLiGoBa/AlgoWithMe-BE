@@ -1,7 +1,7 @@
 package com.nakaligoba.backend.acceptance;
 
 import com.nakaligoba.backend.acceptance.fixtures.ProblemFixture;
-import com.nakaligoba.backend.problem.controller.dto.CheckTestcaseRequest;
+import com.nakaligoba.backend.problem.controller.dto.CheckCodeRequest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ public class ProblemCodeAcceptanceTest extends AcceptanceTest {
         String language = "Java";
         String code = "class Solution {\npublic String solve(String a, String b) {\n        return String.valueOf(Integer.parseInt(a) + Integer.parseInt(b));\n    }\n}";
 
-        CheckTestcaseRequest requestBody = new CheckTestcaseRequest(language, code);
+        CheckCodeRequest requestBody = new CheckCodeRequest(language, code);
 
         given()
                 .log().all()
