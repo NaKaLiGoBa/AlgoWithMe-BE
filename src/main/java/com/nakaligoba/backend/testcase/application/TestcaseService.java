@@ -41,7 +41,7 @@ public class TestcaseService {
                 .inputNames(inputNames)
                 .inputValues(inputs)
                 .output(output)
-                .isGrading(false)
+                .isGrading(true)
                 .problem(problem)
                 .build();
         return testcaseRepository.save(answerCase);
