@@ -2,7 +2,6 @@ package com.nakaligoba.backend.problem.controller.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
@@ -17,15 +16,21 @@ public class ProblemResponse {
     private final String difficulty;
     private final String description;
     private final Map<String, String> defaultCodes;
-    private final List<Testcase> testcases;
+    private final List<TestcaseResponse> testcases;
     private final List<String> tags;
 
     @Data
     @Builder
-    public static class Testcase {
+    public static class TestcaseResponse {
         private final int number;
-        private final List<InputDto> inputs;
+        private final List<InputResponse> inputs;
         private final String expected;
     }
 
+    @Data
+    @Builder
+    public static class InputResponse {
+        private final String name;
+        private final String value;
+    }
 }
