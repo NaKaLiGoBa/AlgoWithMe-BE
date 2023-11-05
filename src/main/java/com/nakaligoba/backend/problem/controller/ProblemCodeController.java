@@ -2,7 +2,7 @@ package com.nakaligoba.backend.problem.controller;
 
 import com.nakaligoba.backend.problem.application.dto.CheckTestcaseResult;
 import com.nakaligoba.backend.problem.application.usecase.CheckTestcasesUseCase;
-import com.nakaligoba.backend.problem.controller.dto.CheckTestcaseRequest;
+import com.nakaligoba.backend.problem.controller.dto.CheckCodeRequest;
 import com.nakaligoba.backend.problem.controller.dto.CheckTestcaseResponse;
 import com.nakaligoba.backend.problem.controller.dto.InputResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +27,9 @@ public class ProblemCodeController {
     @PostMapping("/test")
     public ResponseEntity<List<CheckTestcaseResponse>> checkTestcase(
             @PathVariable Long id,
-            @RequestBody CheckTestcaseRequest checkTestcaseRequest) {
-        String language = checkTestcaseRequest.getLanguage();
-        String code = checkTestcaseRequest.getCode();
+            @RequestBody CheckCodeRequest checkCodeRequest) {
+        String language = checkCodeRequest.getLanguage();
+        String code = checkCodeRequest.getCode();
 
         List<CheckTestcaseResult> checkTestcaseResults = checkTestcasesUseCase.checkTestcases(id, language, code);
         List<CheckTestcaseResponse> responses = new ArrayList<>();
