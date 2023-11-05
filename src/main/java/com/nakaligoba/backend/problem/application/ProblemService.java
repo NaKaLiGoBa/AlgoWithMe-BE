@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -159,6 +160,10 @@ public class ProblemService {
     private Integer getLastProblemNumber() {
         return problemRepository.findMaxNumber()
                 .orElse(0);
+    }
+
+    public Optional<Problem> getProblem(Long id) {
+        return problemRepository.findById(id);
     }
 
 }
