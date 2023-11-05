@@ -44,4 +44,12 @@ public class Testcase extends BaseEntity {
     public void setProblem(final Problem problem) {
         this.problem = problem;
     }
+
+    public boolean isTesting() {
+        return !isGrading;
+    }
+
+    public boolean isGrading() {
+        return isGrading;
+    }
 }

@@ -104,7 +104,10 @@ public class ProblemFacade implements CheckTestcasesUseCase {
 
         List<Testcase> testcases = problemService.getProblem(problemId)
                 .orElseThrow(NoSuchElementException::new)
-                .getTestcases();
+                .getTestcases()
+                .stream()
+                .filter(Testcase::isTesting)
+                .collect(Collectors.toList());
 
         String[] outputs = runSolution(programmingLanguage, testcases);
 
@@ -146,7 +149,6 @@ public class ProblemFacade implements CheckTestcasesUseCase {
         List<String> split = Arrays.asList(runCommand.split(" "));
         List<String> arguments = testcases
                 .stream()
-                .filter(tc -> !tc.getIsGrading())
                 .map(Testcase::getInputValues)
                 .collect(Collectors.toList());
         List<String> runCommandAndArgs = new ArrayList<>();
