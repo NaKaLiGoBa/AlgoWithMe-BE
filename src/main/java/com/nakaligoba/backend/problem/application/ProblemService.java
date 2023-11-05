@@ -1,22 +1,16 @@
 package com.nakaligoba.backend.problem.application;
 
-import com.nakaligoba.backend.availablelanguage.domain.AvailableLanguage;
 import com.nakaligoba.backend.problem.application.dto.ProblemPagingDto;
-import com.nakaligoba.backend.problem.controller.dto.CreateProblemRequest;
 import com.nakaligoba.backend.problem.controller.dto.CustomPageResponse;
 import com.nakaligoba.backend.problem.controller.dto.InputDto;
 import com.nakaligoba.backend.problem.controller.dto.ProblemResponse;
 import com.nakaligoba.backend.problem.domain.Difficulty;
 import com.nakaligoba.backend.problem.domain.Problem;
 import com.nakaligoba.backend.problem.domain.ProblemRepository;
-import com.nakaligoba.backend.problemtag.application.ProblemTagService;
 import com.nakaligoba.backend.problemtag.domain.ProblemTag;
-import com.nakaligoba.backend.programminglanguage.application.ProgrammingLanguageService;
 import com.nakaligoba.backend.submit.domain.Result;
 import com.nakaligoba.backend.submit.domain.Submit;
-import com.nakaligoba.backend.tag.application.TagService;
 import com.nakaligoba.backend.tag.domain.Tag;
-import com.nakaligoba.backend.testcase.application.TestcaseService;
 import com.nakaligoba.backend.testcase.domain.Testcase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,12 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class ProblemService {
+
+    private static final String INPUT_NAMES_DELIMITER = " ";
 
     private final ProblemRepository problemRepository;
 
@@ -80,7 +77,7 @@ public class ProblemService {
                 .build();
     }
 
-    private static List<String> getTags(Problem problem) {
+    private List<String> getTags(Problem problem) {
         return problem.getProblemTags().stream()
                 .map(ProblemTag::getTag)
                 .map(Tag::getName)
@@ -98,11 +95,17 @@ public class ProblemService {
                 ).collect(Collectors.toList());
     }
 
-    private static Map<String, String> getDefaultCodes(Problem problem) {
+    private Map<String, String> getDefaultCodes(Problem problem) {
+        String[] args = problem.getTestcases()
+                .stream()
+                .findAny()
+                .orElseThrow(NoSuchElementException::new)
+                .getInputNames()
+                .split(INPUT_NAMES_DELIMITER);
         return problem.getAvailableLanguages().stream()
                 .collect(Collectors.toMap(
-                        l -> l.getProgrammingLanguage().getName(),
-                        AvailableLanguage::getTemplateCode
+                        l -> l.getProgrammingLanguage().getName().getName(),
+                        l -> l.getProgrammingLanguage().getName().getDefaultCode(args)
                 ));
     }
 
