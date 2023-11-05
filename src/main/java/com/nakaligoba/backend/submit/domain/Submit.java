@@ -4,6 +4,7 @@ import com.nakaligoba.backend.global.BaseEntity;
 import com.nakaligoba.backend.member.domain.Member;
 import com.nakaligoba.backend.problem.domain.Problem;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,4 +35,12 @@ public class Submit extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    @Builder
+    public Submit(String code, Result result, Problem problem, Member member) {
+        this.code = code;
+        this.result = result;
+        this.problem = problem;
+        this.member = member;
+    }
 }
