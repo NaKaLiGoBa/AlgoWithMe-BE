@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Entity
 @Table(name = "programming_languages")
@@ -22,7 +23,8 @@ public class ProgrammingLanguage extends BaseEntity {
     private Long id;
 
     @Column(name = "name", nullable = false)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private Language name;
 
     @OneToMany(mappedBy = "programmingLanguage")
     private List<AvailableLanguage> availableLanguages = new ArrayList<>();
@@ -31,6 +33,7 @@ public class ProgrammingLanguage extends BaseEntity {
     private List<SolutionLanguage> solutionLanguages = new ArrayList<>();
 
     public ProgrammingLanguage(String name) {
-        this.name = name;
+        this.name = Language.findByName(name)
+                .orElseThrow(NoSuchElementException::new);
     }
 }
