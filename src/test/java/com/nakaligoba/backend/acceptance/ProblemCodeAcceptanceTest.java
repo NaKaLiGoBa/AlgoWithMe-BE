@@ -33,4 +33,26 @@ public class ProblemCodeAcceptanceTest extends AcceptanceTest {
                 .assertThat()
                 .statusCode(HttpStatus.OK.value());
     }
+
+    @Test
+    @DisplayName("문제 식별자, 프로그래밍 언어, 코드로 해당 문제 통과 여부를 알 수 있다.")
+    void answerCaseCheck() {
+        String location = ProblemFixture.createProblem()
+                .response()
+                .getHeader(HttpHeaders.LOCATION);
+        String language = "Java";
+        String code = "class Solution {\npublic String solve(String a, String b) {\n        return String.valueOf(Integer.parseInt(a) + Integer.parseInt(b));\n    }\n}";
+
+        CheckCodeRequest requestBody = new CheckCodeRequest(language, code);
+
+        given()
+                .log().all()
+                .body(requestBody)
+                .contentType(ContentType.JSON)
+                .when()
+                .post(location + "/code/submit")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value());
+    }
 }
