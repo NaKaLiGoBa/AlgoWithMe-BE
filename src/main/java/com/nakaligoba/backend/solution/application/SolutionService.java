@@ -97,7 +97,7 @@ public class SolutionService {
                 .orElseThrow(IllegalAccessError::new);
 
 
-        if (!solution.getMember().getId().equals(member.getId())) {
+        if (!solution.getMember().equals(member)) {
             throw new UnauthorizedException("권한이 없습니다.");
         }
 
