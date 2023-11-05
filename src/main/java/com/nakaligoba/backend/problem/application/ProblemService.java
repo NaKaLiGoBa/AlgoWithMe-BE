@@ -2,7 +2,6 @@ package com.nakaligoba.backend.problem.application;
 
 import com.nakaligoba.backend.problem.application.dto.ProblemPagingDto;
 import com.nakaligoba.backend.problem.controller.dto.CustomPageResponse;
-import com.nakaligoba.backend.problem.controller.dto.InputDto;
 import com.nakaligoba.backend.problem.controller.dto.ProblemResponse;
 import com.nakaligoba.backend.problem.domain.Difficulty;
 import com.nakaligoba.backend.problem.domain.Problem;
@@ -11,6 +10,8 @@ import com.nakaligoba.backend.problemtag.domain.ProblemTag;
 import com.nakaligoba.backend.submit.domain.Result;
 import com.nakaligoba.backend.submit.domain.Submit;
 import com.nakaligoba.backend.tag.domain.Tag;
+import com.nakaligoba.backend.testcase.application.TestcaseService;
+import com.nakaligoba.backend.testcase.application.dto.InputDto;
 import com.nakaligoba.backend.testcase.domain.Testcase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,9 +31,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProblemService {
 
-    private static final String INPUT_NAMES_DELIMITER = " ";
-
     private final ProblemRepository problemRepository;
+    private final TestcaseService testcaseService;
 
     public CustomPageResponse<ProblemPagingDto> getProblemList(Pageable pageable) {
         Page<Problem> page = problemRepository.findAll(pageable);
@@ -85,10 +85,10 @@ public class ProblemService {
                 .collect(Collectors.toList());
     }
 
-    private List<ProblemResponse.Testcase> getTestcases(Problem problem) {
+    private List<ProblemResponse.TestcaseResponse> getTestcases(Problem problem) {
         return problem.getTestcases().stream()
                 .map((t) ->
-                        ProblemResponse.Testcase.builder()
+                        ProblemResponse.TestcaseResponse.builder()
                                 .number(t.getNumber())
                                 .inputs(getInput(t))
                                 .expected(t.getOutput())
@@ -97,12 +97,12 @@ public class ProblemService {
     }
 
     private Map<String, String> getDefaultCodes(Problem problem) {
-        String[] args = problem.getTestcases()
+        Testcase testcase = problem.getTestcases()
                 .stream()
                 .findAny()
-                .orElseThrow(NoSuchElementException::new)
-                .getInputNames()
-                .split(INPUT_NAMES_DELIMITER);
+                .orElseThrow(NoSuchElementException::new);
+        String[] args = testcaseService.getInputNames(testcase)
+                .toArray(String[]::new);
         return problem.getAvailableLanguages().stream()
                 .collect(Collectors.toMap(
                         l -> l.getProgrammingLanguage().getName().getName(),
@@ -126,14 +126,13 @@ public class ProblemService {
         return "실패";
     }
 
-    private List<InputDto> getInput(Testcase testcase) {
-        List<InputDto> inputs = new ArrayList<>();
-        String[] inputNames = testcase.getInputNames().split(",");
-        String[] inputValues = testcase.getInputValues().split(",");
-        for (int i = 0; i < inputNames.length; i++) {
-            String name = inputNames[i];
-            String value = inputValues[i];
-            InputDto input = InputDto.builder()
+    private List<ProblemResponse.InputResponse> getInput(Testcase testcase) {
+        List<InputDto> inputs1 = testcaseService.getInputs(testcase);
+        List<ProblemResponse.InputResponse> inputs = new ArrayList<>();
+        for (InputDto inputDto : inputs1) {
+            String name = inputDto.getName();
+            String value = inputDto.getValue();
+            ProblemResponse.InputResponse input = ProblemResponse.InputResponse.builder()
                     .name(name)
                     .value(value)
                     .build();
