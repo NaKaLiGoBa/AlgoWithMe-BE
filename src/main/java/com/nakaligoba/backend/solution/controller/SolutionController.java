@@ -1,7 +1,12 @@
 package com.nakaligoba.backend.solution.controller;
 
 import com.nakaligoba.backend.solution.application.SolutionService;
+<<<<<<< HEAD
 import com.nakaligoba.backend.solution.controller.dto.SolutionRequest;
+=======
+import com.nakaligoba.backend.solution.controller.dto.SolutionCreateRequest;
+import com.nakaligoba.backend.solution.controller.dto.SolutionsResponse;
+>>>>>>> d7c20a2 (feat: 풀이 글 리스트 보기(#31))
 import com.nakaligoba.backend.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +34,7 @@ public class SolutionController {
                 .build();
     }
 
+<<<<<<< HEAD
     @PutMapping("{problemId}/solutions/{solutionId}")
     public ResponseEntity<Void> updateSolution(
             @PathVariable Long problemId,
@@ -52,5 +58,12 @@ public class SolutionController {
         solutionService.removeSolution(writerEmail, problemId, solutionId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+=======
+    @GetMapping("/{id}/solutions")
+    public ResponseEntity<SolutionsResponse> readSolutions(@PathVariable("id") long id, @RequestParam long cursor, @RequestParam int size) {
+        SolutionsResponse solutionsResponse = solutionService.readSolutions(id, cursor, size);
+
+        return ResponseEntity.status(HttpStatus.OK).body(solutionsResponse);
+>>>>>>> d7c20a2 (feat: 풀이 글 리스트 보기(#31))
     }
 }
