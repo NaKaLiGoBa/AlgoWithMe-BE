@@ -48,12 +48,13 @@ CREATE TABLE `problems`
 CREATE TABLE `submits`
 (
     `id`         BIGINT       NOT NULL AUTO_INCREMENT,
-    `code`       CLOB         NOT NULL,
+    `code`       TEXT         NOT NULL,
     `result`     VARCHAR(255) NOT NULL,
     `member_id`  BIGINT       NOT NULL,
     `problem_id` BIGINT       NOT NULL,
     `created_at` DATETIME     NOT NULL,
     `updated_at` DATETIME     NOT NULL,
+    PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `testcases`
@@ -77,6 +78,7 @@ CREATE TABLE `available_languages`
     `programming_language_id` BIGINT       NOT NULL,
     `created_at`              DATETIME     NOT NULL,
     `updated_at`              DATETIME     NOT NULL,
+    PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `programming_languages`
@@ -141,11 +143,11 @@ ALTER TABLE `testcases`
     ADD FOREIGN KEY (`problem_id`) REFERENCES problems (`id`)
         ON DELETE CASCADE;
 
-ALTER TABLE `available_laguages`
+ALTER TABLE `available_languages`
     ADD FOREIGN KEY (`problem_id`) REFERENCES problems (`id`)
         ON DELETE CASCADE;
 
-ALTER TABLE `available_laguages`
+ALTER TABLE `available_languages`
     ADD FOREIGN KEY (`programming_language_id`) REFERENCES programming_languages(`id`)
         ON DELETE CASCADE;
 
