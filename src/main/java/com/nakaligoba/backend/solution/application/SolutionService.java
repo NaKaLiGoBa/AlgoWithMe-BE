@@ -115,8 +115,8 @@ public class SolutionService {
         solutionRepository.delete(solution);
     }
 
-    @Transactional
-    public SolutionsResponse readSolutions(long problemId, long nextCursorId, int size) {
+    @Transactional(readOnly = true)
+    public SolutionsResponse readSolutions(Long problemId, Long nextCursorId, Integer size) {
         long solutionTotalCount = solutionRepository.countByProblemId(problemId);
         List<Solution> solutions = getSolutions(problemId, nextCursorId, size);
         List<Solutions> responseSolutions = getResponseSolutions(solutions);
