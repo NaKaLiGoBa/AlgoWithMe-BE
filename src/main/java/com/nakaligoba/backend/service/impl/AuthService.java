@@ -1,16 +1,15 @@
 package com.nakaligoba.backend.service.impl;
 
-import com.nakaligoba.backend.exception.DuplicateEmailException;
-import com.nakaligoba.backend.exception.DuplicateNicknameException;
-import com.nakaligoba.backend.service.SignUpUseCase;
-import com.nakaligoba.backend.service.component.jwt.JwtProvider;
 import com.nakaligoba.backend.controller.payload.response.SigninResponse;
-import com.nakaligoba.backend.controller.payload.response.SignupResponse;
 import com.nakaligoba.backend.domain.JwtDetails;
 import com.nakaligoba.backend.domain.Member;
+import com.nakaligoba.backend.exception.DuplicateEmailException;
+import com.nakaligoba.backend.exception.DuplicateNicknameException;
 import com.nakaligoba.backend.repository.MemberRepository;
+import com.nakaligoba.backend.service.SignUpUseCase;
 import com.nakaligoba.backend.service.component.KakaoWebClient;
 import com.nakaligoba.backend.service.component.RedisUtils;
+import com.nakaligoba.backend.service.component.jwt.JwtProvider;
 import com.nakaligoba.backend.service.dto.AuthEmailCheckDto;
 import com.nakaligoba.backend.service.dto.AuthEmailDto;
 import com.nakaligoba.backend.service.dto.KakaoSigninTokenResponse;
@@ -41,7 +40,7 @@ import java.util.UUID;
 @PropertySource("classpath:application.yml")
 @RequiredArgsConstructor
 @Service
-public class MemberService implements SignUpUseCase {
+public class AuthService implements SignUpUseCase {
 
     @Value("${spring.mail.username}")
     private String sender;
