@@ -1,17 +1,17 @@
 package com.nakaligoba.backend.service.impl;
 
+import com.nakaligoba.backend.domain.Language;
 import com.nakaligoba.backend.domain.Member;
-import com.nakaligoba.backend.repository.MemberRepository;
-import com.nakaligoba.backend.service.SubmitUseCase;
-import com.nakaligoba.backend.service.dto.CheckTestcaseResult;
-import com.nakaligoba.backend.service.CheckTestcasesUseCase;
 import com.nakaligoba.backend.domain.Problem;
+import com.nakaligoba.backend.domain.Result;
+import com.nakaligoba.backend.domain.Testcase;
 import com.nakaligoba.backend.exception.UserCodeCompileErrorException;
 import com.nakaligoba.backend.exception.UserCodeRuntimeErrorException;
-import com.nakaligoba.backend.domain.Language;
-import com.nakaligoba.backend.domain.Result;
+import com.nakaligoba.backend.repository.MemberRepository;
+import com.nakaligoba.backend.service.CheckTestcasesUseCase;
+import com.nakaligoba.backend.service.SubmitUseCase;
+import com.nakaligoba.backend.service.dto.CheckTestcaseResult;
 import com.nakaligoba.backend.service.dto.InputDto;
-import com.nakaligoba.backend.domain.Testcase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,7 +33,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
 
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final ProblemService problemService;
     private final TestcaseService testcaseService;
     private final SubmitService submitService;
@@ -50,7 +49,6 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
         File mainFile = createFile("Main", programmingLanguage, programmingLanguage.getMainCode());
         File solutionFile = createFile("Solution", programmingLanguage, code);
         try {
-
             compileIfNeeded(programmingLanguage);
 
             List<Testcase> testcases = problem.getTestcases()
@@ -60,8 +58,7 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
 
             String[] outputs = runSolution(programmingLanguage, testcases);
 
-            List<CheckTestcaseResult> checkTestcaseResults = getCheckTestcaseResults(testcases, outputs);
-            return checkTestcaseResults;
+            return getCheckTestcaseResults(testcases, outputs);
         } finally {
             cleanFiles(mainFile, solutionFile);
         }
@@ -69,7 +66,7 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
 
     @Override
     public boolean isAnswer(String memberEmail, Long problemId, String language, String code) {
-        Member member = memberRepository.findByEmail(memberEmail);
+        Member member = memberService.findByEmail(memberEmail);
         Problem problem = problemService.getProblem(problemId)
                 .orElseThrow(NoSuchElementException::new);
         Language programmingLanguage = Language.findByName(language)
@@ -133,13 +130,9 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
     }
 
     private void compileIfNeeded(Language programmingLanguage) throws UserCodeCompileErrorException {
-        Optional<String[]> compileCommand = programmingLanguage.getCompileCommand()
-                .map(c -> c.split(" "));
-        if (compileCommand.isEmpty()) {
-            return;
-        }
-
-        compile(compileCommand.get());
+        programmingLanguage.getCompileCommand()
+                .map(c -> c.split(" "))
+                .ifPresent(this::compile);
     }
 
     private void compile(String... command) throws UserCodeCompileErrorException {
