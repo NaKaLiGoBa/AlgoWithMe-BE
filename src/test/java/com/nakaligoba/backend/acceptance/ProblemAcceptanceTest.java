@@ -1,6 +1,6 @@
 package com.nakaligoba.backend.acceptance;
 
-import com.nakaligoba.backend.problem.controller.dto.CreateProblemRequest;
+import com.nakaligoba.backend.controller.payload.request.CreateProblemRequest;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
