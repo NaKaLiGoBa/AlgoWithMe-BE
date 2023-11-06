@@ -1,4 +1,4 @@
-package com.nakaligoba.backend.testcase.domain;
+package com.nakaligoba.backend.domain;
 
 import com.nakaligoba.backend.domain.Testcase;
 import org.junit.jupiter.api.DisplayName;
