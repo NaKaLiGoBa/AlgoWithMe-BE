@@ -6,7 +6,7 @@ spring:
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:~/H2DB/test;MODE=MYSQL
-    username: sa정
+    username: sa
 
   jpa:
     properties:
@@ -15,12 +15,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create
-logging:
-  level:
-    web: debug
-    org:
-      springframework:
-        mail: debug
 
   data:
     web:
@@ -28,3 +22,10 @@ logging:
         default-page-size: 5
         max-page-size: 2000
         one-indexed-parameters: true
+
+logging:
+  level:
+    web: debug
+    org:
+      springframework:
+        mail: debug
