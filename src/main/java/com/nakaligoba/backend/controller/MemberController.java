@@ -15,7 +15,7 @@ import com.nakaligoba.backend.controller.payload.response.SigninResponse;
 import com.nakaligoba.backend.controller.payload.response.SignupResponse;
 import com.nakaligoba.backend.exception.SignUpException;
 import com.nakaligoba.backend.service.SignUpUseCase;
-import com.nakaligoba.backend.service.impl.MemberService;
+import com.nakaligoba.backend.service.impl.AuthService;
 import com.nakaligoba.backend.service.dto.AuthEmailCheckDto;
 import com.nakaligoba.backend.service.dto.AuthEmailDto;
 import com.nakaligoba.backend.service.dto.MemberDto;
@@ -38,7 +38,7 @@ import java.io.IOException;
 @RestController
 public class MemberController {
 
-    private final MemberService memberService;
+    private final AuthService authService;
     private final SignUpUseCase signUpUseCase;
 
     @PostMapping("/signup")
@@ -57,7 +57,7 @@ public class MemberController {
 
     @PostMapping("/signin/kakao")
     public ResponseEntity<SigninResponse> kakaoSignin(@Valid @RequestBody KakaoSigninRequest request) {
-        SigninResponse signinResponse = memberService.kakaoSignin(request.getAuthCode());
+        SigninResponse signinResponse = authService.kakaoSignin(request.getAuthCode());
 
         if (StringUtils.hasText(signinResponse.getAccessToken())) {
             return ResponseEntity.status(HttpStatus.OK).body(signinResponse);
@@ -72,7 +72,7 @@ public class MemberController {
                 .email(request.getEmail())
                 .build();
 
-        if (memberService.authEmail(authEmailDto)) {
+        if (authService.authEmail(authEmailDto)) {
             return ResponseEntity.status(HttpStatus.OK).body(new EmailAuthResponse("인증번호를 전송하였습니다."));
         } else {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new EmailAuthResponse("이미 사용 중입니다. 다른 이메일을 입력해주세요."));
@@ -86,7 +86,7 @@ public class MemberController {
                 .authNumber(request.getAuthNumber())
                 .build();
 
-        if (memberService.authEmailCheck(authEmailCheckDto)) {
+        if (authService.authEmailCheck(authEmailCheckDto)) {
             return ResponseEntity.status(HttpStatus.OK).body(new EmailAuthCheckResponse("인증에 성공하였습니다."));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new EmailAuthCheckResponse("인증에 실패하였습니다."));
@@ -98,7 +98,7 @@ public class MemberController {
         PasswordResetDto passwordResetDto = PasswordResetDto.builder()
                 .email(request.getEmail())
                 .build();
-        memberService.passwordReset(passwordResetDto);
+        authService.passwordReset(passwordResetDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(new PasswordResetResponse("비밀번호 재설정을 위한 이메일이 전송되었습니다."));
     }
@@ -110,7 +110,7 @@ public class MemberController {
                 .token(token)
                 .build();
 
-        if (memberService.passwordResetAuth(passwordResetAuthDto)) {
+        if (authService.passwordResetAuth(passwordResetAuthDto)) {
             resetPageUrl = "https://k08e0a348244ea.user-app.krampoline.com/password/reset?token=" + token;
         } else {
             resetPageUrl = "https://k08e0a348244ea.user-app.krampoline.com/password";
@@ -126,7 +126,7 @@ public class MemberController {
                 .token(request.getToken())
                 .build();
 
-        if (memberService.passwordResetCheck(passwordResetCheckDto)) {
+        if (authService.passwordResetCheck(passwordResetCheckDto)) {
             return ResponseEntity.status(HttpStatus.OK).body(new PasswordResetCheckResponse("비밀번호 재설정이 완료되었습니다."));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PasswordResetCheckResponse("비밀번호 재설정에 실패하였습니다."));
