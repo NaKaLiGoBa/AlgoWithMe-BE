@@ -3,6 +3,7 @@ package com.nakaligoba.backend.solution.domain;
 import com.nakaligoba.backend.global.BaseEntity;
 import com.nakaligoba.backend.member.domain.Member;
 import com.nakaligoba.backend.problem.domain.Problem;
+import com.nakaligoba.backend.programminglanguage.domain.ProgrammingLanguage;
 import com.nakaligoba.backend.solutionlanguage.domain.SolutionLanguage;
 import lombok.*;
 
@@ -44,5 +45,19 @@ public class Solution extends BaseEntity {
         this.content = content;
         this.member = member;
         this.problem = problem;
+    }
+
+    public void changeTitle(String title) {
+        this.title = title;
+    }
+    public void changeContent(String content) {
+        this.content = content;
+    }
+
+    public void updateSolutionLanguages(List<ProgrammingLanguage> programmingLanguages) {
+        this.solutionLanguages.clear();
+        for (ProgrammingLanguage programmingLanguage : programmingLanguages) {
+            this.solutionLanguages.add(new SolutionLanguage(this, programmingLanguage));
+        }
     }
 }
