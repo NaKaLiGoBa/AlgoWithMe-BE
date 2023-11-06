@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Table(name = "testcases")
@@ -16,6 +18,8 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Testcase extends BaseEntity {
+
+    private static final String INPUT_DELIMITER = " ";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,5 +54,9 @@ public class Testcase extends BaseEntity {
 
     public boolean isGrading() {
         return isGrading;
+    }
+
+    public List<String> getInputNamesAsList() {
+        return Arrays.asList(this.getInputNames().split(INPUT_DELIMITER));
     }
 }

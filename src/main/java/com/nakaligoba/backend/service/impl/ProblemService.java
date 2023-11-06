@@ -10,7 +10,6 @@ import com.nakaligoba.backend.domain.ProblemTag;
 import com.nakaligoba.backend.domain.Result;
 import com.nakaligoba.backend.domain.Submit;
 import com.nakaligoba.backend.domain.Tag;
-import com.nakaligoba.backend.service.impl.TestcaseService;
 import com.nakaligoba.backend.service.dto.InputDto;
 import com.nakaligoba.backend.domain.Testcase;
 import lombok.RequiredArgsConstructor;
@@ -101,7 +100,7 @@ public class ProblemService {
                 .stream()
                 .findAny()
                 .orElseThrow(NoSuchElementException::new);
-        String[] args = testcaseService.getInputNames(testcase)
+        String[] args = testcase.getInputNamesAsList()
                 .toArray(String[]::new);
         return problem.getAvailableLanguages().stream()
                 .collect(Collectors.toMap(
