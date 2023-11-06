@@ -8,7 +8,7 @@ spring:
 
   mail:
     host: ${SMTP_HOST}
-    port: ${SMTP_PORT}
+    port: 465
     username: ${SMTP_ID}
     password: ${SMTP_PW}
     properties:
@@ -19,7 +19,7 @@ spring:
 
   redis:
     host: ${REDIS_HOST}
-    port: ${REDIS_PORT}
+    port: 6379
     auth-num-valid-time: ${REDIS_AUTH_NUM_VALID_TIME}
 
 jwt:
