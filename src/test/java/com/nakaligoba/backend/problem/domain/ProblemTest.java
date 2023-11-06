@@ -1,5 +1,7 @@
 package com.nakaligoba.backend.problem.domain;
 
+import com.nakaligoba.backend.domain.Difficulty;
+import com.nakaligoba.backend.domain.Problem;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

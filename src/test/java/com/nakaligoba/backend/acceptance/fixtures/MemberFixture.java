@@ -1,8 +1,8 @@
 package com.nakaligoba.backend.acceptance.fixtures;
 
-import com.nakaligoba.backend.member.controller.dto.SigninRequest;
-import com.nakaligoba.backend.member.controller.dto.SigninResponse;
-import com.nakaligoba.backend.member.controller.dto.SignupRequest;
+import com.nakaligoba.backend.controller.payload.request.SigninRequest;
+import com.nakaligoba.backend.controller.payload.response.SigninResponse;
+import com.nakaligoba.backend.controller.payload.request.SignupRequest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
