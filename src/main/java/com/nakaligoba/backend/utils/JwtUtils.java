@@ -1,6 +1,6 @@
 package com.nakaligoba.backend.utils;
 
-import com.nakaligoba.backend.member.domain.JwtDetails;
+import com.nakaligoba.backend.domain.JwtDetails;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class JwtUtils {

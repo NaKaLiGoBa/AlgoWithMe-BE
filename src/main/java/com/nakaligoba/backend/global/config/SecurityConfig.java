@@ -1,11 +1,11 @@
 package com.nakaligoba.backend.global.config;
 
-import com.nakaligoba.backend.member.application.filter.JwtAuthenticationEntryPoint;
-import com.nakaligoba.backend.member.application.filter.JwtAuthenticationFilter;
-import com.nakaligoba.backend.member.application.filter.JwtAuthorizationFilter;
-import com.nakaligoba.backend.member.application.jwt.JwtProperties;
-import com.nakaligoba.backend.member.application.jwt.JwtProvider;
-import com.nakaligoba.backend.member.domain.MemberRepository;
+import com.nakaligoba.backend.filter.JwtAuthenticationEntryPoint;
+import com.nakaligoba.backend.filter.JwtAuthenticationFilter;
+import com.nakaligoba.backend.filter.JwtAuthorizationFilter;
+import com.nakaligoba.backend.service.component.jwt.JwtProperties;
+import com.nakaligoba.backend.service.component.jwt.JwtProvider;
+import com.nakaligoba.backend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

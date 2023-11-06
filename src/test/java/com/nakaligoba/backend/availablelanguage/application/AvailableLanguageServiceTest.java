@@ -1,12 +1,13 @@
 package com.nakaligoba.backend.availablelanguage.application;
 
-import com.nakaligoba.backend.availablelanguage.domain.AvailableLanguage;
-import com.nakaligoba.backend.availablelanguage.domain.AvailableLanguageRepository;
-import com.nakaligoba.backend.problem.domain.Difficulty;
-import com.nakaligoba.backend.problem.domain.Problem;
-import com.nakaligoba.backend.problem.domain.ProblemRepository;
-import com.nakaligoba.backend.programminglanguage.domain.ProgrammingLanguage;
-import com.nakaligoba.backend.programminglanguage.domain.ProgrammingLanguageRepository;
+import com.nakaligoba.backend.domain.AvailableLanguage;
+import com.nakaligoba.backend.repository.AvailableLanguageRepository;
+import com.nakaligoba.backend.domain.Difficulty;
+import com.nakaligoba.backend.domain.Problem;
+import com.nakaligoba.backend.repository.ProblemRepository;
+import com.nakaligoba.backend.domain.ProgrammingLanguage;
+import com.nakaligoba.backend.repository.ProgrammingLanguageRepository;
+import com.nakaligoba.backend.service.impl.AvailableLanguageService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
