@@ -49,10 +49,6 @@ public class TestcaseService {
         return testcaseRepository.save(answerCase);
     }
 
-    public List<String> getInputNames(Testcase testcase) {
-        return Arrays.asList(testcase.getInputNames().split(INPUT_DELIMITER));
-    }
-
     public List<InputDto> getInputs(Testcase testcase) {
         List<InputDto> inputs = new ArrayList<>();
         String[] inputNames = testcase.getInputNames().split(INPUT_DELIMITER);
