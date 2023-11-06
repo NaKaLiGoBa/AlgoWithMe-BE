@@ -14,6 +14,7 @@ import com.nakaligoba.backend.controller.payload.response.PasswordResetResponse;
 import com.nakaligoba.backend.controller.payload.response.SigninResponse;
 import com.nakaligoba.backend.controller.payload.response.SignupResponse;
 import com.nakaligoba.backend.exception.SignUpException;
+import com.nakaligoba.backend.service.SignUpUseCase;
 import com.nakaligoba.backend.service.impl.MemberService;
 import com.nakaligoba.backend.service.dto.AuthEmailCheckDto;
 import com.nakaligoba.backend.service.dto.AuthEmailDto;
@@ -38,6 +39,7 @@ import java.io.IOException;
 public class MemberController {
 
     private final MemberService memberService;
+    private final SignUpUseCase signUpUseCase;
 
     @PostMapping("/signup")
     public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest request) {
@@ -47,7 +49,7 @@ public class MemberController {
                 .nickname(request.getNickname())
                 .build();
 
-        memberService.signup(memberDto);
+        signUpUseCase.signup(memberDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
