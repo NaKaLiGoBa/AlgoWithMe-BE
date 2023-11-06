@@ -1,6 +1,5 @@
-package com.nakaligoba.backend.programminglanguage.domain;
+package com.nakaligoba.backend.domain;
 
-import com.nakaligoba.backend.domain.Language;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -1,4 +1,4 @@
-package com.nakaligoba.backend.availablelanguage.application;
+package com.nakaligoba.backend.service;
 
 import com.nakaligoba.backend.domain.AvailableLanguage;
 import com.nakaligoba.backend.repository.AvailableLanguageRepository;
