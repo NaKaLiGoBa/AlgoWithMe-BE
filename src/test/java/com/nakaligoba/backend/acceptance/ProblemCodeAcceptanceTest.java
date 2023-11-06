@@ -2,7 +2,7 @@ package com.nakaligoba.backend.acceptance;
 
 import com.nakaligoba.backend.acceptance.fixtures.MemberFixture;
 import com.nakaligoba.backend.acceptance.fixtures.ProblemFixture;
-import com.nakaligoba.backend.problem.controller.dto.CheckCodeRequest;
+import com.nakaligoba.backend.controller.payload.request.CheckCodeRequest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;

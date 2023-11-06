@@ -1,6 +1,6 @@
 package com.nakaligoba.backend.acceptance.fixtures;
 
-import com.nakaligoba.backend.problem.controller.dto.CreateProblemRequest;
+import com.nakaligoba.backend.controller.payload.request.CreateProblemRequest;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
