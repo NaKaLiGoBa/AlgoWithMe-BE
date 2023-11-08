@@ -1,22 +1,15 @@
 package com.nakaligoba.backend.service.impl;
 
 import com.github.dockerjava.api.exception.UnauthorizedException;
-import com.nakaligoba.backend.domain.Member;
-import com.nakaligoba.backend.repository.MemberRepository;
-import com.nakaligoba.backend.domain.Problem;
-import com.nakaligoba.backend.repository.ProblemRepository;
-import com.nakaligoba.backend.domain.ProgrammingLanguage;
-import com.nakaligoba.backend.repository.ProgrammingLanguageRepository;
 import com.nakaligoba.backend.controller.payload.request.SolutionRequest;
-import com.nakaligoba.backend.service.dto.AuthorDto;
+import com.nakaligoba.backend.controller.payload.response.SolutionResponse;
 import com.nakaligoba.backend.controller.payload.response.SolutionsResponse;
 import com.nakaligoba.backend.controller.payload.response.SolutionsResponse.Link;
 import com.nakaligoba.backend.controller.payload.response.SolutionsResponse.Solutions;
 import com.nakaligoba.backend.controller.payload.response.SolutionsResponse.SolutionsData;
-import com.nakaligoba.backend.domain.Solution;
-import com.nakaligoba.backend.repository.SolutionRepository;
-import com.nakaligoba.backend.domain.SolutionLanguage;
-import com.nakaligoba.backend.repository.SolutionLanguageRepository;
+import com.nakaligoba.backend.domain.*;
+import com.nakaligoba.backend.repository.*;
+import com.nakaligoba.backend.service.dto.AuthorDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,8 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,7 +51,7 @@ public class SolutionService {
         ArrayList<SolutionLanguage> solutionLanguages = new ArrayList<>();
 
         for (String language : request.getLanguages()) {
-            ProgrammingLanguage programmingLanguage = programmingLanguageRepository.findByName(language)
+            ProgrammingLanguage programmingLanguage = programmingLanguageRepository.findByName(Language.findByName(language).orElseThrow())
                     .orElseThrow(IllegalArgumentException::new);
 
             SolutionLanguage solutionLanguage = SolutionLanguage.builder()
@@ -87,7 +81,7 @@ public class SolutionService {
         solution.changeContent(request.getContent());
 
         List<ProgrammingLanguage> programmingLanguages = request.getLanguages().stream()
-                .map(language -> programmingLanguageRepository.findByName(language)
+                .map(language -> programmingLanguageRepository.findByName(Language.findByName(language).orElseThrow())
                         .orElseThrow(IllegalAccessError::new))
                 .collect(Collectors.toList());
 
@@ -159,5 +153,34 @@ public class SolutionService {
                                         .build())
                                 .build())
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public SolutionResponse readSolution(long problemId, long solutionId) {
+        return solutionRepository.findById(solutionId).map(
+                        solution -> SolutionResponse.builder()
+                                .author(AuthorDto.builder()
+                                        .avatar("")
+                                        .nickname(solution.getMember().getNickname())
+                                        .build())
+                                .solution(SolutionResponse.SolutionData.builder()
+                                        .title(solution.getTitle())
+                                        .createdAt(convertLocalDateTimeToString(solution.getCreatedAt()))
+                                        .content(solution.getContent())
+                                        .languages(getLanguages(solution.getSolutionLanguages(), solutionId))
+                                        .build())
+                                .build()
+                )
+                .orElseThrow(() -> new EntityNotFoundException("해당 풀이 글을 찿을 수 없습니다"));
+    }
+
+    private List<String> getLanguages(List<SolutionLanguage> solutionLanguages, long solutionId) {
+        return solutionLanguages.stream()
+                .map(solutionLanguage -> solutionLanguage.getProgrammingLanguage().getName().getName())
+                .collect(Collectors.toList());
+    }
+
+    private String convertLocalDateTimeToString(LocalDateTime localDateTime) {
+        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 }

@@ -3,9 +3,9 @@ package com.nakaligoba.backend.global.config;
 import com.nakaligoba.backend.filter.JwtAuthenticationEntryPoint;
 import com.nakaligoba.backend.filter.JwtAuthenticationFilter;
 import com.nakaligoba.backend.filter.JwtAuthorizationFilter;
+import com.nakaligoba.backend.repository.MemberRepository;
 import com.nakaligoba.backend.service.component.jwt.JwtProperties;
 import com.nakaligoba.backend.service.component.jwt.JwtProvider;
-import com.nakaligoba.backend.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -36,7 +36,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(jwtAuthenticationFilter)
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), memberRepository, jwtProperties))
                 .authorizeRequests()
-                .antMatchers("/api/v1/auth/**", "/api/test", "/api/v1/problems").permitAll()
                 .antMatchers("/api/v1/auth/**", "/api/test").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/problems/**").permitAll()
                 .antMatchers("/api/v1/problems/**").permitAll()
