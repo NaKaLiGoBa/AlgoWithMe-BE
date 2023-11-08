@@ -1,10 +1,12 @@
 package com.nakaligoba.backend.acceptance;
 
+import com.nakaligoba.backend.acceptance.fixtures.ProblemFixture;
 import com.nakaligoba.backend.controller.payload.request.CreateProblemRequest;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 
@@ -18,12 +20,13 @@ public class ProblemAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("문제 식별자로 문제 설명을 볼 수 있다.")
     void givenProblemId_whenRequest_thenProblemData() {
-        long problemId = 1L;
+        String problemLocation = ProblemFixture.createProblem()
+                .header(HttpHeaders.LOCATION);
 
         given()
                 .log().all()
         .when()
-                .get("/api/v1/problems/" + problemId)
+                .get(problemLocation)
         .then()
                 .log().all()
                 .assertThat()
@@ -34,19 +37,9 @@ public class ProblemAcceptanceTest extends AcceptanceTest {
     @DisplayName("문제 생성")
     @WithMockUser
     void createProblem() {
-        CreateProblemRequest requestBody = new CreateProblemRequest(
-                "겁나 어려운 문제",
-                "어려움",
-                "# 설명\n매우 어려운 설명\n## 소제목",
-                Arrays.asList("a", "b"),
-                "1 2\n3",
-                "3 4\n7",
-                Arrays.asList("DFS", "BFS")
-        );
-
         given()
                 .log().all()
-                .body(requestBody)
+                .body(ProblemFixture.CREATE_PROBLEM_REQUEST)
                 .contentType(ContentType.JSON)
         .when()
                 .post("/api/v1/problems")
