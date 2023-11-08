@@ -35,6 +35,15 @@ public class Solution extends BaseEntity {
     @OneToMany(mappedBy = "solution", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SolutionLanguage> solutionLanguages = new ArrayList<>();
 
+    @OneToMany(mappedBy = "solution")
+    private List<SolutionLike> solutionLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "solution")
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "solution")
+    private List<ReplyLike> replyLikes = new ArrayList<>();
+
     @Builder
     public Solution(String title, String content, Member member, Problem problem) {
         this.title = title;
