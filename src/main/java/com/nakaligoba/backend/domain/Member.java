@@ -28,11 +28,27 @@ public class Member extends BaseEntity {
     @Column(name = "nickname", nullable = false)
     private String nickname;
 
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @OneToMany(mappedBy = "member")
     private List<Submit> submits = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<Solution> solutions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<SolutionLike> solutionLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<CommentLike> commentLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Reply> replies = new ArrayList<>();
 
     @Builder
     public Member(String email, String password, String nickname) {
