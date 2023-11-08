@@ -23,5 +23,9 @@ public class SolutionResponse {
         private String createdAt;
         private String content;
         private List<String> languages;
+        private int likeCount;
+        private int viewCount;
+        private int commentCount;
+        private boolean isLike;
     }
 }

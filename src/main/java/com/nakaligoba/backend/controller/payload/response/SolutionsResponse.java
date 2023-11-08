@@ -34,6 +34,9 @@ public class SolutionsResponse {
     public static class SolutionsData {
         private Long id;
         private String title;
+        private int likeCount;
+        private int viewCount;
+        private int commentCount;
     }
 
     @Data
