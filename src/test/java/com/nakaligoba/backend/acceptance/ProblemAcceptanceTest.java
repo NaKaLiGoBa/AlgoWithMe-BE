@@ -47,7 +47,7 @@ public class ProblemAcceptanceTest extends AcceptanceTest {
                 .log().all()
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value())
-                .header("Location", Matchers.notNullValue());
+                .header(HttpHeaders.LOCATION, Matchers.notNullValue());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class ProblemAcceptanceTest extends AcceptanceTest {
                 .log().all()
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value())
-                .header("Location", Matchers.notNullValue());
+                .header(HttpHeaders.LOCATION, Matchers.notNullValue());
     }
 
     @Test
