@@ -1,5 +1,6 @@
 package com.nakaligoba.backend.controller;
 
+import com.nakaligoba.backend.controller.payload.response.SolutionResponse;
 import com.nakaligoba.backend.service.impl.SolutionService;
 import com.nakaligoba.backend.controller.payload.request.SolutionRequest;
 import com.nakaligoba.backend.controller.payload.response.SolutionsResponse;
@@ -26,7 +27,7 @@ public class SolutionController {
         long createdSolutionId = solutionService.createSolution(writerEmail, id, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header("Location", "https://k08e0a348244ea.user-app.krampoline.com/api/v1/problems/" + id + "/solutions/" + createdSolutionId)
+                .header("Location", "https://k881facf0dd88a.user-app.krampoline.com/api/v1/problems/" + id + "/solutions/" + createdSolutionId)
                 .build();
     }
 
@@ -40,7 +41,7 @@ public class SolutionController {
         Long updatedSolutionId = solutionService.updateSolution(writerEmail, problemId, solutionId, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header("Location", "https://k08e0a348244ea.user-app.krampoline.com/api/v1/problems/" + problemId + "/solutions/" + updatedSolutionId)
+                .header("Location", "https://k881facf0dd88a.user-app.krampoline.com/api/v1/problems/" + problemId + "/solutions/" + updatedSolutionId)
                 .build();
     }
 
@@ -64,5 +65,12 @@ public class SolutionController {
         SolutionsResponse solutionsResponse = solutionService.readSolutions(id, cursor, size);
 
         return ResponseEntity.status(HttpStatus.OK).body(solutionsResponse);
+    }
+
+    @GetMapping("/{problemId}/solutions/{solutionId}")
+    public ResponseEntity<SolutionResponse> readSolution(@PathVariable("problemId") long problemId, @PathVariable("solutionId") long solutionId) {
+        SolutionResponse solutionResponse = solutionService.readSolution(problemId, solutionId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(solutionResponse);
     }
 }

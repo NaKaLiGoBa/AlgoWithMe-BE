@@ -3,23 +3,16 @@ package com.nakaligoba.backend.service.impl;
 import com.nakaligoba.backend.controller.payload.response.SigninResponse;
 import com.nakaligoba.backend.domain.JwtDetails;
 import com.nakaligoba.backend.domain.Member;
-import com.nakaligoba.backend.exception.DuplicateEmailException;
-import com.nakaligoba.backend.exception.DuplicateNicknameException;
+import com.nakaligoba.backend.exception.*;
 import com.nakaligoba.backend.repository.MemberRepository;
 import com.nakaligoba.backend.service.SignUpUseCase;
 import com.nakaligoba.backend.service.component.KakaoWebClient;
 import com.nakaligoba.backend.service.component.RedisUtils;
 import com.nakaligoba.backend.service.component.jwt.JwtProvider;
-import com.nakaligoba.backend.service.dto.AuthEmailCheckDto;
-import com.nakaligoba.backend.service.dto.AuthEmailDto;
-import com.nakaligoba.backend.service.dto.KakaoSigninTokenResponse;
-import com.nakaligoba.backend.service.dto.KakaoSigninUserInfoResponse;
-import com.nakaligoba.backend.service.dto.MemberDto;
-import com.nakaligoba.backend.service.dto.PasswordResetAuthDto;
-import com.nakaligoba.backend.service.dto.PasswordResetCheckDto;
-import com.nakaligoba.backend.service.dto.PasswordResetDto;
+import com.nakaligoba.backend.service.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -81,6 +74,7 @@ public class AuthService implements SignUpUseCase {
         if (memberRepository.existsByEmail(kakaoSigninUserInfo.getKakao_account().getEmail())) {
             String jwt = getMemberJwt(kakaoSigninUserInfo.getKakao_account().getEmail());
             log.info("jwt : " + jwt);
+
             return new SigninResponse(jwt, "로그인이 완료되었습니다.", kakaoSigninUserInfo.getKakao_account().getEmail(), kakaoSigninUserInfo.getKakao_account().getProfile().getNickname());
         } else {
             return new SigninResponse("", "회원가입이 필요합니다", "", "");
@@ -104,16 +98,15 @@ public class AuthService implements SignUpUseCase {
     }
 
     @Transactional
-    public boolean authEmail(AuthEmailDto authEmailDto) {
-        if (!memberRepository.existsByEmail(authEmailDto.getEmail())) {
-            String authNumber = getAuthNumber();
-            redisUtils.setData(authEmailDto.getEmail(), authNumber, authNumberValidSeconds);
-            sendAuthEmail(authEmailDto, authNumber);
-
-            return true;
-        } else {
-            return false;
+    public void authEmail(AuthEmailDto authEmailDto) {
+        if (memberRepository.existsByEmail(authEmailDto.getEmail())) {
+            throw new AuthEmailFailException("인증에 실패하였습니다. 이미 등록된 이메일입니다.");
         }
+
+        String authNumber = getAuthNumber();
+
+        redisUtils.setData(authEmailDto.getEmail(), authNumber, authNumberValidSeconds);
+        sendAuthEmail(authEmailDto, authNumber);
     }
 
     private String getAuthNumber() {
@@ -149,22 +142,24 @@ public class AuthService implements SignUpUseCase {
     }
 
     @Transactional
-    public boolean authEmailCheck(AuthEmailCheckDto authEmailCheckDto) {
-        return Optional.ofNullable(redisUtils.getData(authEmailCheckDto.getEmail()))
-                .map(value -> {
-                    if (value.equals(authEmailCheckDto.getAuthNumber())) {
-                        redisUtils.deleteData(authEmailCheckDto.getEmail());
-                        return true;
-                    } else {
-                        return false;
-                    }
-                })
-                .orElse(false);
+    public void authEmailCheck(AuthEmailCheckDto authEmailCheckDto) {
+        String savedAuthNumber = redisUtils.getData(authEmailCheckDto.getEmail());
+
+        if (StringUtils.isEmpty(savedAuthNumber)) {
+            throw new AuthEmailFailException("인증번호를 찾을 수 없습니다.");
+        }
+
+        if (!savedAuthNumber.equals(authEmailCheckDto.getAuthNumber())) {
+            throw new DifferentAuthNumberException();
+        }
+
+        redisUtils.deleteData(authEmailCheckDto.getEmail());
     }
 
     @Transactional
     public void passwordReset(PasswordResetDto passwordResetDto) {
         String resetPasswordToken = getUUID();
+
         redisUtils.setData(resetPasswordToken, passwordResetDto.getEmail(), authNumberValidSeconds);
         passwordResetEmail(passwordResetDto, resetPasswordToken);
     }
@@ -176,7 +171,7 @@ public class AuthService implements SignUpUseCase {
 
     private void passwordResetEmail(PasswordResetDto passwordResetDto, String resetPasswordToken) {
         String title = "[NakaLiGoBa] 비밀번호 재설정 메일입니다.";
-        String passwordResetAuthLink = "https://k08e0a348244ea.user-app.krampoline.com/api/v1/auth/password/reset/email/" + resetPasswordToken;
+        String passwordResetAuthLink = "https://k881facf0dd88a.user-app.krampoline.com/api/v1/auth/password/reset/email/" + resetPasswordToken;
         String contents = "";
         contents += "NakaLiGoBa 비밀번호 재설정 안내 메일입니다.<br/>";
         contents += "비밀번호 재발급을 원하시면 아래의 버튼을 누르세요.<br/><br/>";
@@ -186,24 +181,19 @@ public class AuthService implements SignUpUseCase {
     }
 
     @Transactional
-    public boolean passwordResetAuth(PasswordResetAuthDto passwordResetAuthDto) {
+    public void passwordResetAuth(PasswordResetAuthDto passwordResetAuthDto) {
         String email = redisUtils.getData(passwordResetAuthDto.getToken());
-        return Optional.ofNullable(memberRepository.findByEmail(email)).isPresent();
+        Member member = Optional.ofNullable(memberRepository.findByEmail(email))
+                .orElseThrow(PasswordResetAuthFailException::new);
     }
 
     @Transactional
-    public boolean passwordResetCheck(PasswordResetCheckDto passwordResetCheckDto) {
+    public void passwordResetCheck(PasswordResetCheckDto passwordResetCheckDto) {
         String email = redisUtils.getData(passwordResetCheckDto.getToken());
-        log.info("email : " + email);
+        Member member = Optional.ofNullable(memberRepository.findByEmail(email))
+                .orElseThrow(PasswordResetCheckFailException::new);
 
-        return Optional.ofNullable(memberRepository.findByEmail(email))
-                .map(updatedMemberEntity -> {
-                    updatedMemberEntity.setPassword(passwordEncoder.encode(passwordResetCheckDto.getNewPassword()));
-                    memberRepository.save(updatedMemberEntity);
-                    redisUtils.deleteData(passwordResetCheckDto.getToken());
-
-                    return true;
-                })
-                .orElse(false);
+        member.setPassword(passwordEncoder.encode(passwordResetCheckDto.getNewPassword()));
+        redisUtils.deleteData(passwordResetCheckDto.getToken());
     }
 }
