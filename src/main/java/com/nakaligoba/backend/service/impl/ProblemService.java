@@ -1,5 +1,6 @@
 package com.nakaligoba.backend.service.impl;
 
+import com.nakaligoba.backend.domain.Language;
 import com.nakaligoba.backend.service.dto.ProblemPagingDto;
 import com.nakaligoba.backend.controller.payload.response.CustomPageResponse;
 import com.nakaligoba.backend.controller.payload.response.ProblemResponse;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -102,10 +104,10 @@ public class ProblemService {
                 .orElseThrow(NoSuchElementException::new);
         String[] args = testcase.getInputNamesAsList()
                 .toArray(String[]::new);
-        return problem.getAvailableLanguages().stream()
+        return Arrays.stream(Language.values())
                 .collect(Collectors.toMap(
-                        l -> l.getProgrammingLanguage().getName().getName(),
-                        l -> l.getProgrammingLanguage().getName().getDefaultCode(args)
+                        Language::getName,
+                        l -> l.getDefaultCode(args)
                 ));
     }
 
