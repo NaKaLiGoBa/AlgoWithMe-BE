@@ -29,7 +29,8 @@ public class CommentController {
 
     @PutMapping("/{solutionId}/comments/{commentId}")
     public ResponseEntity<Void> updateComment(@PathVariable Long solutionId, @PathVariable Long commentId,  @Valid @RequestBody CommentRequest request) {
-        commentService.updateComment(commentId, request);
+        String loggedInEmail = JwtUtils.getEmailFromSpringSession();
+        commentService.updateComment(loggedInEmail, commentId, request);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
