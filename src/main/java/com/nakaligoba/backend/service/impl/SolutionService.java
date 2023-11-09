@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -34,11 +35,17 @@ public class SolutionService {
     private final ProgrammingLanguageRepository programmingLanguageRepository;
     private final SolutionLanguageRepository solutionLanguageRepository;
 
+    @Transactional(readOnly = true)
+    public Optional<Solution> findById(Long id) {
+        return solutionRepository.findById(id);
+    }
+
     @Transactional
     public long createSolution(String writerEmail, long problemId, SolutionRequest request) {
-        Member member = memberRepository.findByEmail(writerEmail);
+        Member member = memberRepository.findByEmail(writerEmail)
+                .orElseThrow(EntityNotFoundException::new);
         Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(EntityNotFoundException::new);
         Solution solution = Solution.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
@@ -52,7 +59,7 @@ public class SolutionService {
 
         for (String language : request.getLanguages()) {
             ProgrammingLanguage programmingLanguage = programmingLanguageRepository.findByName(Language.findByName(language).orElseThrow())
-                    .orElseThrow(IllegalArgumentException::new);
+                    .orElseThrow(EntityNotFoundException::new);
 
             SolutionLanguage solutionLanguage = SolutionLanguage.builder()
                     .solution(solution)
@@ -68,10 +75,8 @@ public class SolutionService {
     }
 
     public Long updateSolution(String writerEmail, Long problemId, Long solutionId, SolutionRequest request) {
-        Member member = memberRepository.findByEmail(writerEmail);
-        if (member == null) {
-            throw new EntityNotFoundException("회원을 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findByEmail(writerEmail)
+                .orElseThrow(EntityNotFoundException::new);
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(IllegalAccessError::new);
         Solution solution = solutionRepository.findById(solutionId)
@@ -92,15 +97,12 @@ public class SolutionService {
     }
 
     public void removeSolution(String writerEmail, Long problemId, Long solutionId) {
-        Member member = memberRepository.findByEmail(writerEmail);
-        if (member == null) {
-            throw new IllegalAccessError();
-        }
+        Member member = memberRepository.findByEmail(writerEmail)
+                .orElseThrow(IllegalAccessError::new);
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(IllegalArgumentException::new);
         Solution solution = solutionRepository.findById(solutionId)
                 .orElseThrow(IllegalAccessError::new);
-
 
         if (!solution.getMember().equals(member)) {
             throw new UnauthorizedException("권한이 없습니다.");
