@@ -1,6 +1,6 @@
 package com.nakaligoba.backend.service.impl;
 
-import com.nakaligoba.backend.controller.payload.request.CommentCreateRequest;
+import com.nakaligoba.backend.controller.payload.request.CommentRequest;
 import com.nakaligoba.backend.domain.Comment;
 import com.nakaligoba.backend.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public long createComment(String writerEmail, Long solutionId, CommentCreateRequest request) {
+    public long createComment(String writerEmail, Long solutionId, CommentRequest request) {
         Comment comment = Comment.builder()
                 .content(request.getContent())
                 .member(memberService.findByEmail(writerEmail)
@@ -30,5 +30,13 @@ public class CommentService {
         commentRepository.save(comment);
 
         return comment.getId();
+    }
+
+    @Transactional
+    public void updateComment(Long commentId, CommentRequest request) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        comment.update(request.getContent());
     }
 }
