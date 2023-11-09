@@ -24,7 +24,7 @@ public class SolutionController {
     @PostMapping("/{id}/solutions")
     public ResponseEntity<Void> createSolution(@PathVariable("id") Long id, @RequestBody @Valid SolutionRequest request) {
         String writerEmail = JwtUtils.getEmailFromSpringSession();
-        long createdSolutionId = solutionService.createSolution(writerEmail, id, request);
+        Long createdSolutionId = solutionService.createSolution(writerEmail, id, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Location", "https://k881facf0dd88a.user-app.krampoline.com/api/v1/problems/" + id + "/solutions/" + createdSolutionId)

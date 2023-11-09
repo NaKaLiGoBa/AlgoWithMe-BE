@@ -20,7 +20,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public long createComment(String writerEmail, Long solutionId, CommentRequest request) {
+    public Long createComment(String writerEmail, Long solutionId, CommentRequest request) {
         Comment comment = Comment.builder()
                 .content(request.getContent())
                 .member(memberService.findByEmail(writerEmail)
