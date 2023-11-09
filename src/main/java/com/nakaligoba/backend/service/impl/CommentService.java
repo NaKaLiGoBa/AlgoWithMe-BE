@@ -5,6 +5,7 @@ import com.nakaligoba.backend.domain.Comment;
 import com.nakaligoba.backend.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -16,6 +17,7 @@ public class CommentService {
     private final SolutionService solutionService;
     private final CommentRepository commentRepository;
 
+    @Transactional
     public long createComment(String writerEmail, Long solutionId, CommentCreateRequest request) {
         Comment comment = Comment.builder()
                 .content(request.getContent())
