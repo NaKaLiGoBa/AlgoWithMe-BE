@@ -1,13 +1,8 @@
 package com.nakaligoba.backend.service.impl;
 
-import com.nakaligoba.backend.domain.Language;
-import com.nakaligoba.backend.domain.Member;
-import com.nakaligoba.backend.domain.Problem;
-import com.nakaligoba.backend.domain.Result;
-import com.nakaligoba.backend.domain.Testcase;
+import com.nakaligoba.backend.domain.*;
 import com.nakaligoba.backend.exception.UserCodeCompileErrorException;
 import com.nakaligoba.backend.exception.UserCodeRuntimeErrorException;
-import com.nakaligoba.backend.repository.MemberRepository;
 import com.nakaligoba.backend.service.CheckTestcasesUseCase;
 import com.nakaligoba.backend.service.SubmitUseCase;
 import com.nakaligoba.backend.service.dto.CheckTestcaseResult;
@@ -16,12 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import javax.persistence.EntityNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,7 +57,8 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
 
     @Override
     public boolean isAnswer(String memberEmail, Long problemId, String language, String code) {
-        Member member = memberService.findByEmail(memberEmail);
+        Member member = memberService.findByEmail(memberEmail)
+                .orElseThrow(EntityNotFoundException::new);
         Problem problem = problemService.getProblem(problemId)
                 .orElseThrow(NoSuchElementException::new);
         Language programmingLanguage = Language.findByName(language)

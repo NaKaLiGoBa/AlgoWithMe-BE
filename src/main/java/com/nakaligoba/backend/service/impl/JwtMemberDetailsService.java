@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -19,7 +21,8 @@ public class JwtMemberDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Member memberEntity = memberRepository.findByEmail(email);
+        Member memberEntity = memberRepository.findByEmail(email)
+                .orElseThrow(EntityNotFoundException::new);
         log.info("email : " + memberEntity.getEmail());
 
         return new JwtDetails(memberEntity);
