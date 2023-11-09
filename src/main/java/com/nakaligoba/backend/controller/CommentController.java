@@ -20,7 +20,7 @@ public class CommentController {
     @PostMapping("/{solutionId}/comments")
     public ResponseEntity<Void> createComment(@PathVariable Long solutionId, @Valid @RequestBody CommentRequest request) {
         String writerEmail = JwtUtils.getEmailFromSpringSession();
-        long createdCommentId = commentService.createComment(writerEmail, solutionId, request);
+        Long createdCommentId = commentService.createComment(writerEmail, solutionId, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Location", String.valueOf(createdCommentId))
