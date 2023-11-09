@@ -17,7 +17,7 @@ public class ProblemCodeAcceptanceTest extends AcceptanceTest {
 
     @BeforeAll
     static void init() {
-        MemberFixture.signup("test@test.com", "password123", "nick");
+        MemberFixture.signup("test@test.com", "password123", "nick", "");
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.nakaligoba.backend.service.impl;
 import com.nakaligoba.backend.controller.payload.response.SigninResponse;
 import com.nakaligoba.backend.domain.JwtDetails;
 import com.nakaligoba.backend.domain.Member;
+import com.nakaligoba.backend.domain.Role;
 import com.nakaligoba.backend.exception.*;
 import com.nakaligoba.backend.repository.MemberRepository;
 import com.nakaligoba.backend.service.SignUpUseCase;
@@ -58,11 +59,20 @@ public class AuthService implements SignUpUseCase {
             throw new DuplicateNicknameException();
         }
 
+        Role role = Role.ROLE_USER;
+
+        if(!StringUtils.isEmpty(memberDto.getRole())
+                && "admin".equals(memberDto.getRole())) {
+            role = Role.ROLE_ADMIN;
+        }
+
         Member memberEntity = Member.builder()
                 .email(memberDto.getEmail())
                 .password(passwordEncoder.encode(memberDto.getPassword()))
                 .nickname(memberDto.getNickname())
+                .role(role)
                 .build();
+
         memberRepository.save(memberEntity);
     }
 
