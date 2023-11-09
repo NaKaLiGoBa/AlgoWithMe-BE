@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +44,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String email = JWT.require(Algorithm.HMAC512(jwtProperties.getSECRET_KEY())).build().verify(jwt).getClaim(jwtProperties.getCLAIM()).asString();
 
         if (email != null) {
-            Member memberEntity = memberRepository.findByEmail(email);
+            Member memberEntity = memberRepository.findByEmail(email)
+                    .orElseThrow(EntityNotFoundException::new);
 
             JwtDetails jwtDetails = new JwtDetails(memberEntity);
             Authentication authentication = new UsernamePasswordAuthenticationToken(jwtDetails, null, jwtDetails.getAuthorities());

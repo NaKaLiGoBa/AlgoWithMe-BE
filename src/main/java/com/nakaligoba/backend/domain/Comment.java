@@ -1,10 +1,7 @@
 package com.nakaligoba.backend.domain;
 
 import com.nakaligoba.backend.global.BaseEntity;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -37,4 +34,12 @@ public class Comment extends BaseEntity {
 
     @OneToMany(mappedBy = "comment")
     private List<Reply> replies = new ArrayList<>();
+
+    @Builder
+    public Comment(Long id, String content, Member member, Solution solution) {
+        this.id = id;
+        this.content = content;
+        this.member = member;
+        this.solution = solution;
+    }
 }

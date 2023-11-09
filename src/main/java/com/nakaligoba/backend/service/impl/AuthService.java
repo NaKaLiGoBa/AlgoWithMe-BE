@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -100,7 +101,8 @@ public class AuthService implements SignUpUseCase {
     }
 
     private String getMemberJwt(String email) {
-        Member memberEntity = memberRepository.findByEmail(email);
+        Member memberEntity = memberRepository.findByEmail(email)
+                .orElseThrow(EntityNotFoundException::new);
         JwtDetails jwtDetails = new JwtDetails(memberEntity);
         Authentication authentication = new UsernamePasswordAuthenticationToken(jwtDetails, null, jwtDetails.getAuthorities());
 
@@ -193,14 +195,14 @@ public class AuthService implements SignUpUseCase {
     @Transactional
     public void passwordResetAuth(PasswordResetAuthDto passwordResetAuthDto) {
         String email = redisUtils.getData(passwordResetAuthDto.getToken());
-        Member member = Optional.ofNullable(memberRepository.findByEmail(email))
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(PasswordResetAuthFailException::new);
     }
 
     @Transactional
     public void passwordResetCheck(PasswordResetCheckDto passwordResetCheckDto) {
         String email = redisUtils.getData(passwordResetCheckDto.getToken());
-        Member member = Optional.ofNullable(memberRepository.findByEmail(email))
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(PasswordResetCheckFailException::new);
 
         member.setPassword(passwordEncoder.encode(passwordResetCheckDto.getNewPassword()));
