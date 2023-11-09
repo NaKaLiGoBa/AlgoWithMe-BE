@@ -1,5 +1,6 @@
 package com.nakaligoba.backend.global;
 
+import com.nakaligoba.backend.exception.PermissionDeniedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.context.MessageSource;
@@ -29,5 +30,10 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(errors);
+    }
+
+    @ExceptionHandler(PermissionDeniedException.class)
+    public ResponseEntity<Void> handlePermissionDeniedException(PermissionDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
