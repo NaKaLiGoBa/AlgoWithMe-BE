@@ -10,8 +10,8 @@ import io.restassured.response.Response;
 
 public class MemberFixture {
 
-    public static ExtractableResponse<Response> signup(String email, String password, String nickname) {
-        SignupRequest request = new SignupRequest(email, password, nickname);
+    public static ExtractableResponse<Response> signup(String email, String password, String nickname, String role) {
+        SignupRequest request = new SignupRequest(email, password, nickname, role);
         return RestAssured.given()
                 .log().all()
                 .body(request)

@@ -14,4 +14,6 @@ public class SignupRequest {
 
     @NotBlank
     private final String nickname;
+
+    private final String role;
 }

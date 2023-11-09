@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,10 +52,11 @@ public class Member extends BaseEntity {
     private List<Reply> replies = new ArrayList<>();
 
     @Builder
-    public Member(String email, String password, String nickname) {
+    public Member(String email, String password, String nickname, Role role) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.role = role;
     }
 
     @Override
@@ -68,5 +70,12 @@ public class Member extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public List<String> getRoleList() {
+        if(this.role.name().length() > 0)
+            return Arrays.asList(this.role.name().split(","));
+
+        return new ArrayList<>();
     }
 }

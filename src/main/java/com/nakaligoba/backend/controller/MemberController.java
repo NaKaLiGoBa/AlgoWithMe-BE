@@ -31,6 +31,7 @@ public class MemberController {
                 .email(request.getEmail())
                 .password(request.getPassword())
                 .nickname(request.getNickname())
+                .role(request.getRole())
                 .build();
 
         signUpUseCase.signup(memberDto);
