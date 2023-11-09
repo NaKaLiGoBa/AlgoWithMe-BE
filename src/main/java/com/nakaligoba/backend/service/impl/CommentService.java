@@ -2,8 +2,10 @@ package com.nakaligoba.backend.service.impl;
 
 import com.nakaligoba.backend.controller.payload.request.CommentRequest;
 import com.nakaligoba.backend.domain.Comment;
+import com.nakaligoba.backend.exception.PermissionDeniedException;
 import com.nakaligoba.backend.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,9 +35,13 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateComment(Long commentId, CommentRequest request) {
+    public void updateComment(String loggedInEmail, Long commentId, CommentRequest request) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(EntityNotFoundException::new);
+
+        if (!StringUtils.equals(loggedInEmail, comment.getMember().getEmail())){
+            throw new PermissionDeniedException();
+        }
 
         comment.update(request.getContent());
     }
