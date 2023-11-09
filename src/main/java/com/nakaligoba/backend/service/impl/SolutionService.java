@@ -41,7 +41,7 @@ public class SolutionService {
     }
 
     @Transactional
-    public long createSolution(String writerEmail, long problemId, SolutionRequest request) {
+    public Long createSolution(String writerEmail, long problemId, SolutionRequest request) {
         Member member = memberRepository.findByEmail(writerEmail)
                 .orElseThrow(EntityNotFoundException::new);
         Problem problem = problemRepository.findById(problemId)
