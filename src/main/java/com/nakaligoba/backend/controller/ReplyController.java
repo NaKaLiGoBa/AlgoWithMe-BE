@@ -29,4 +29,16 @@ public class ReplyController {
                 .header("Location", String.valueOf(createdReplyId))
                 .build();
     }
+
+    @PutMapping("/{commentId}/replies/{replyId}")
+    public ResponseEntity<Void> updateReply(
+            @PathVariable Long commentId,
+            @PathVariable Long replyId,
+            @Valid @RequestBody ReplyRequest request
+    ) {
+        String writerEmail = JwtUtils.getEmailFromSpringSession();
+        replyService.updateReply(writerEmail, commentId, replyId, request);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

@@ -38,4 +38,8 @@ public class Reply extends BaseEntity {
         this.member = member;
         this.comment = comment;
     }
+
+    public void changeReplyContent(String content) {
+        this.content = content;
+    }
 }
