@@ -1,15 +1,25 @@
 package com.nakaligoba.backend.service.impl;
 
 import com.nakaligoba.backend.controller.payload.request.CommentRequest;
+import com.nakaligoba.backend.controller.payload.response.CommentsResponse;
+import com.nakaligoba.backend.controller.payload.response.CommentsResponse.Comments;
+import com.nakaligoba.backend.controller.payload.response.CommentsResponse.CommentsData;
 import com.nakaligoba.backend.domain.Comment;
+import com.nakaligoba.backend.domain.CommentSort;
+import com.nakaligoba.backend.domain.Member;
 import com.nakaligoba.backend.exception.PermissionDeniedException;
 import com.nakaligoba.backend.repository.CommentRepository;
+import com.nakaligoba.backend.service.dto.AuthorDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -17,6 +27,7 @@ public class CommentService {
 
     private final MemberService memberService;
     private final SolutionService solutionService;
+    private final CommentLikeService commentLikeService;
     private final CommentRepository commentRepository;
 
     @Transactional
@@ -39,10 +50,55 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (!StringUtils.equals(loggedInEmail, comment.getMember().getEmail())){
+        if (!StringUtils.equals(loggedInEmail, comment.getMember().getEmail())) {
             throw new PermissionDeniedException();
         }
 
         comment.update(request.getContent());
+    }
+
+    @Transactional(readOnly = true)
+    public CommentsResponse readComments(String loggedInEmail, Long solutionId, Pageable pageable, String sort) {
+        Member member = memberService.findByEmail(loggedInEmail)
+                .orElseThrow(EntityNotFoundException::new);
+        String defaultCommentSort = CommentSort.RECENT.getName();
+        Page<Comment> commentPage;
+
+        if (StringUtils.equals(defaultCommentSort, sort)) {
+            commentPage = commentRepository.findBySolutionIdOrderByCreatedAtDesc(solutionId, pageable);
+        } else {
+            commentPage = commentRepository.findBySolutionIdOrderByLikesDesc(solutionId, pageable);
+        }
+
+        Long totalCount = commentRepository.countBySolutionId(solutionId);
+        List<Comments> comments = getComments(member.getId(), commentPage);
+
+        return CommentsResponse.builder()
+                .totalCount(totalCount)
+                .comments(comments)
+                .pageNumber(commentPage.getNumber())
+                .totalPages(commentPage.getTotalPages())
+                .size(commentPage.getSize())
+                .numberOfElements(commentPage.getNumberOfElements())
+                .first(commentPage.isFirst())
+                .last(commentPage.isLast())
+                .build();
+    }
+
+    private List<Comments> getComments(Long memberId, Page<Comment> commentPage) {
+        return commentPage.getContent().stream()
+                .map(comment -> Comments.builder()
+                        .author(AuthorDto.builder()
+                                .avatar("")
+                                .nickname(comment.getMember().getNickname())
+                                .build())
+                        .comment(CommentsData.builder()
+                                .id(comment.getId())
+                                .content(comment.getContent())
+                                .likeCount(commentLikeService.getCommentLikeCount(comment.getId()))
+                                .isLike(commentLikeService.getIsCommentLike(memberId, comment.getId()))
+                                .build())
+                        .build())
+                .collect(Collectors.toList());
     }
 }
