@@ -1,10 +1,7 @@
 package com.nakaligoba.backend.domain;
 
 import com.nakaligoba.backend.global.BaseEntity;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -29,9 +26,16 @@ public class Reply extends BaseEntity {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "content_id", nullable = false)
+    @JoinColumn(name = "comment_id", nullable = false)
     private Comment comment;
 
     @OneToMany(mappedBy = "reply")
     private List<ReplyLike> replyLikes = new ArrayList<>();
+
+    @Builder
+    public Reply(String content, Member member, Comment comment) {
+        this.content = content;
+        this.member = member;
+        this.comment = comment;
+    }
 }
