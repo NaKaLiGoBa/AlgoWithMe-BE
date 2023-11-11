@@ -133,4 +133,9 @@ public class CommentService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public Long getCommentCountBySolutionId(Long solutionId) {
+        return commentRepository.countBySolutionId(solutionId);
+    }
 }
