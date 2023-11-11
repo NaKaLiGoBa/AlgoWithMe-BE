@@ -38,7 +38,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), memberRepository, jwtProperties))
                 .authorizeRequests()
                 .antMatchers("/api/v1/auth/**", "/api/test").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/problems/**").permitAll()
 //                .antMatchers("/api/v1/problems/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/v1/problems")
                 .access("hasRole('ADMIN')")

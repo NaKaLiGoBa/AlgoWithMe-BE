@@ -23,8 +23,8 @@ public class SolutionController {
 
     @PostMapping("/{id}/solutions")
     public ResponseEntity<Void> createSolution(@PathVariable("id") Long id, @RequestBody @Valid SolutionRequest request) {
-        String writerEmail = JwtUtils.getEmailFromSpringSession();
-        Long createdSolutionId = solutionService.createSolution(writerEmail, id, request);
+        String loggedInEmail = JwtUtils.getEmailFromSpringSession();
+        Long createdSolutionId = solutionService.createSolution(loggedInEmail, id, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Location", "https://k881facf0dd88a.user-app.krampoline.com/api/v1/problems/" + id + "/solutions/" + createdSolutionId)
@@ -69,7 +69,8 @@ public class SolutionController {
 
     @GetMapping("/{problemId}/solutions/{solutionId}")
     public ResponseEntity<SolutionResponse> readSolution(@PathVariable("problemId") long problemId, @PathVariable("solutionId") long solutionId) {
-        SolutionResponse solutionResponse = solutionService.readSolution(problemId, solutionId);
+        String loggedInEmail = JwtUtils.getEmailFromSpringSession();
+        SolutionResponse solutionResponse = solutionService.readSolution(loggedInEmail, problemId, solutionId);
 
         return ResponseEntity.status(HttpStatus.OK).body(solutionResponse);
     }
