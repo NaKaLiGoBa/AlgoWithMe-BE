@@ -4,7 +4,7 @@ import com.nakaligoba.backend.controller.payload.request.ReplyRequest;
 import com.nakaligoba.backend.domain.Comment;
 import com.nakaligoba.backend.domain.Member;
 import com.nakaligoba.backend.domain.Reply;
-import com.nakaligoba.backend.exception.UnauthorizedAccessException;
+import com.nakaligoba.backend.exception.PermissionDeniedException;
 import com.nakaligoba.backend.repository.CommentRepository;
 import com.nakaligoba.backend.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,7 @@ public class ReplyService {
                 .orElseThrow(EntityNotFoundException::new);
 
         if (!reply.getMember().equals(member)) {
-            throw new UnauthorizedAccessException("권한이 없습니다.");
+            throw new PermissionDeniedException();
         }
 
         reply.changeReplyContent(request.getContent());
