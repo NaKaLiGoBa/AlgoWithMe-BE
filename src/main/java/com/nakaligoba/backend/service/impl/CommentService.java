@@ -7,6 +7,7 @@ import com.nakaligoba.backend.controller.payload.response.CommentsResponse.Comme
 import com.nakaligoba.backend.domain.Comment;
 import com.nakaligoba.backend.domain.CommentSort;
 import com.nakaligoba.backend.domain.Member;
+import com.nakaligoba.backend.domain.Reply;
 import com.nakaligoba.backend.exception.PermissionDeniedException;
 import com.nakaligoba.backend.repository.CommentRepository;
 import com.nakaligoba.backend.service.dto.AuthorDto;
@@ -27,6 +28,8 @@ public class CommentService {
 
     private final MemberService memberService;
     private final SolutionService solutionService;
+    private final ReplyService replyService;
+    private final ReplyLikeService replyLikeService;
     private final CommentLikeService commentLikeService;
     private final CommentRepository commentRepository;
 
@@ -50,11 +53,40 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (!StringUtils.equals(loggedInEmail, comment.getMember().getEmail())) {
+        if (!isPermission(loggedInEmail, comment.getMember().getEmail())) {
             throw new PermissionDeniedException();
         }
 
         comment.update(request.getContent());
+    }
+
+    @Transactional
+    public void deleteComment(String loggedInEmail, Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        if (!isPermission(loggedInEmail, comment.getMember().getEmail())) {
+            throw new PermissionDeniedException();
+        }
+
+        /**
+         * ※ 삭제 순서
+         * 1. 답글 좋아요
+         * 2. 답글
+         * 3. 댓글 좋아요
+         * 4. 댓글
+         */
+
+        for (Reply reply : comment.getReplies()) {
+            replyLikeService.deleteByReplyId(reply.getId());
+        }
+        replyService.deleteByCommentId(commentId);
+        commentLikeService.deleteByCommentId(commentId);
+        commentRepository.deleteById(commentId);
+    }
+
+    private boolean isPermission(String loggedInEmail, String writer) {
+        return StringUtils.equals(loggedInEmail, writer);
     }
 
     @Transactional(readOnly = true)

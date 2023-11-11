@@ -1,6 +1,5 @@
 package com.nakaligoba.backend.service.impl;
 
-import com.github.dockerjava.api.exception.UnauthorizedException;
 import com.nakaligoba.backend.controller.payload.request.ReplyRequest;
 import com.nakaligoba.backend.domain.Comment;
 import com.nakaligoba.backend.domain.Member;
@@ -53,5 +52,10 @@ public class ReplyService {
         }
 
         reply.changeReplyContent(request.getContent());
+    }
+
+    @Transactional
+    public void deleteByCommentId(Long commentId) {
+        replyRepository.deleteByCommentId(commentId);
     }
 }
