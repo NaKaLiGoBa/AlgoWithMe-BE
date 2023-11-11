@@ -20,4 +20,9 @@ public class CommentLikeService {
     public boolean getIsCommentLike(Long memberId, Long commentId) {
         return commentLikeRepository.existsByMemberIdAndCommentId(memberId, commentId);
     }
+
+    @Transactional
+    public void deleteByCommentId(Long commentId) {
+        commentLikeRepository.deleteByCommentId(commentId);
+    }
 }

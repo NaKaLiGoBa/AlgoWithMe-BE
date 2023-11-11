@@ -46,4 +46,12 @@ public class CommentController {
 
         return ResponseEntity.status(HttpStatus.OK).body(commentsResponse);
     }
+
+    @DeleteMapping("/{solutionId}/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long solutionId, @PathVariable Long commentId) {
+        String loggedInEmail = JwtUtils.getEmailFromSpringSession();
+        commentService.deleteComment(loggedInEmail, commentId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
