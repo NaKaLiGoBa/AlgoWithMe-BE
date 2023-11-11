@@ -34,6 +34,9 @@ public class SolutionService {
     private final ProblemRepository problemRepository;
     private final ProgrammingLanguageRepository programmingLanguageRepository;
     private final SolutionLanguageRepository solutionLanguageRepository;
+    private final SolutionLikeRepository solutionLikeRepository;
+    private final MemberService memberService;
+    private final CommentRepository commentRepository;
 
     @Transactional(readOnly = true)
     public Optional<Solution> findById(Long id) {
@@ -41,14 +44,15 @@ public class SolutionService {
     }
 
     @Transactional
-    public Long createSolution(String writerEmail, long problemId, SolutionRequest request) {
-        Member member = memberRepository.findByEmail(writerEmail)
+    public Long createSolution(String loggedInEmail, Long problemId, SolutionRequest request) {
+        Member member = memberRepository.findByEmail(loggedInEmail)
                 .orElseThrow(EntityNotFoundException::new);
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(EntityNotFoundException::new);
         Solution solution = Solution.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
+                .viewCount(0L)
                 .member(member)
                 .problem(problem)
                 .build();
@@ -128,7 +132,7 @@ public class SolutionService {
                 .build();
     }
 
-    private List<Solution> getSolutions(long problemId, long nextCursorId, int size) {
+    private List<Solution> getSolutions(Long problemId, Long nextCursorId, Integer size) {
         Pageable pageable = PageRequest.of(0, size);
 
         if (nextCursorId == SolutionsResponse.READ_SOLUTIONS_INIT) {
@@ -158,7 +162,10 @@ public class SolutionService {
     }
 
     @Transactional
-    public SolutionResponse readSolution(long problemId, long solutionId) {
+    public SolutionResponse readSolution(String loggedInEmail, Long problemId, Long solutionId) {
+        Member member = memberService.findByEmail(loggedInEmail)
+                .orElseThrow(EntityNotFoundException::new);
+
         return solutionRepository.findById(solutionId).map(
                         solution -> SolutionResponse.builder()
                                 .author(AuthorDto.builder()
@@ -170,13 +177,17 @@ public class SolutionService {
                                         .createdAt(convertLocalDateTimeToString(solution.getCreatedAt()))
                                         .content(solution.getContent())
                                         .languages(getLanguages(solution.getSolutionLanguages(), solutionId))
+                                        .likeCount(solutionLikeRepository.countBySolutionId(solutionId))
+                                        .viewCount(solution.getViewCount())
+                                        .commentCount(commentRepository.countBySolutionId(solutionId)) // todo : 리팩토링 필요(SolutionService ↔ CommentService 간 순환참조)
+                                        .isLike(solutionLikeRepository.existsByMemberIdAndSolutionId(member.getId(), solutionId))
                                         .build())
                                 .build()
                 )
                 .orElseThrow(() -> new EntityNotFoundException("해당 풀이 글을 찿을 수 없습니다"));
     }
 
-    private List<String> getLanguages(List<SolutionLanguage> solutionLanguages, long solutionId) {
+    private List<String> getLanguages(List<SolutionLanguage> solutionLanguages, Long solutionId) {
         return solutionLanguages.stream()
                 .map(solutionLanguage -> solutionLanguage.getProgrammingLanguage().getName().getName())
                 .collect(Collectors.toList());
