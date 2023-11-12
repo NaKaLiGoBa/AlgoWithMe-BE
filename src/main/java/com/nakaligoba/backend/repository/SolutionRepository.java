@@ -7,9 +7,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.ArrayList;
 
 public interface SolutionRepository extends JpaRepository<Solution, Long> {
-    long countByProblemId(long problemId);
+    Long countByProblemId(Long problemId);
 
-    ArrayList<Solution> findByProblemIdAndIdLessThanOrderByCreatedAtDesc(long problemId, long id, Pageable pageable);
+    // 최신순
+    ArrayList<Solution> findByProblemIdOrderByCreatedAtDesc(Long problemId, Pageable pageable); // 처음
 
-    ArrayList<Solution> findByProblemIdOrderByCreatedAtDesc(long problemId, Pageable pageable);
+    ArrayList<Solution> findByProblemIdAndIdLessThanOrderByCreatedAtDesc(Long problemId, Long id, Pageable pageable); // 이후
+
+    // todo : 조회수 순
+    ArrayList<Solution> findByProblemIdOrderByViewCountDesc(Long problemId, Pageable pageable); // 처음
+
+    ArrayList<Solution> findByProblemIdAndViewCountLessThanEqualAndIdLessThanOrderByViewCountDescIdDesc(Long problemId, Long viewCount, Long solutionId, Pageable pageable); // 이후
 }
