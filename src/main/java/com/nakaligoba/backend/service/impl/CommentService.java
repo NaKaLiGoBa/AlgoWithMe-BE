@@ -39,6 +39,8 @@ public class CommentService {
     private final ReplyLikeService replyLikeService;
     private final CommentLikeService commentLikeService;
     private final CommentRepository commentRepository;
+    private final SolutionRepository solutionRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Transactional
     public Long createComment(String writerEmail, Long solutionId, CommentRequest request) {
@@ -144,5 +146,26 @@ public class CommentService {
     @Transactional(readOnly = true)
     public Long getCommentCountBySolutionId(Long solutionId) {
         return commentRepository.countBySolutionId(solutionId);
+    }
+
+    public boolean toggleLike(String email, Long solutionId, Long commentId) {
+        Member member = memberService.findByEmail(email)
+                .orElseThrow(NoSuchElementException::new);
+        Solution solution = solutionRepository.findById(solutionId)
+                .orElseThrow(NoSuchElementException::new);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(NoSuchElementException::new);
+
+        Optional<CommentLike> optionalCommentLike = commentLikeRepository.findByMemberAndComment(member, comment);
+
+        if (optionalCommentLike.isEmpty()) {
+            CommentLike commentLike = new CommentLike(member, comment);
+            commentLikeRepository.save(commentLike);
+            return true;
+        }
+
+        CommentLike commentLike = optionalCommentLike.get();
+        commentLikeRepository.delete(commentLike);
+        return false;
     }
 }
