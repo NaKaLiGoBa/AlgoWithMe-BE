@@ -14,7 +14,7 @@ public class SolutionsResponse {
     public static final int READ_SOLUTIONS_INIT = -100;
     public static final int READ_SOLUTIONS_EMPTY = -1;
 
-    private final long totalCount;
+    private final Long totalCount;
     private final List<Solutions> solutions;
     private final Link _link;
 
@@ -34,9 +34,9 @@ public class SolutionsResponse {
     public static class SolutionsData {
         private Long id;
         private String title;
-        private int likeCount;
-        private int viewCount;
-        private int commentCount;
+        private Long likeCount;
+        private Long viewCount;
+        private Long commentCount;
     }
 
     @Data
@@ -44,6 +44,6 @@ public class SolutionsResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Link {
-        private long nextCursor;
+        private Long nextCursor;
     }
 }
