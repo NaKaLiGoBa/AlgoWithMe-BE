@@ -1,7 +1,9 @@
 package com.nakaligoba.backend.controller;
 
 import com.nakaligoba.backend.controller.payload.request.CommentRequest;
+import com.nakaligoba.backend.controller.payload.request.LikeRequest;
 import com.nakaligoba.backend.controller.payload.response.CommentsResponse;
+import com.nakaligoba.backend.controller.payload.response.LikeResponse;
 import com.nakaligoba.backend.service.impl.CommentService;
 import com.nakaligoba.backend.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
@@ -53,5 +55,17 @@ public class CommentController {
         commentService.deleteComment(loggedInEmail, commentId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PutMapping("/{solutionId}/comments/{commentId}/like")
+    public ResponseEntity<LikeResponse> like(
+            @PathVariable Long solutionId,
+            @PathVariable Long commentId,
+            @RequestBody LikeRequest request
+            ) {
+        String loggedInEmail = JwtUtils.getEmailFromSpringSession();
+        boolean isLike = commentService.toggleLike(loggedInEmail, solutionId, commentId);
+
+        return ResponseEntity.ok(new LikeResponse(isLike));
     }
 }
