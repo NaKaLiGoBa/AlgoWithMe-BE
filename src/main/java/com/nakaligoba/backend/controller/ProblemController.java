@@ -1,5 +1,6 @@
 package com.nakaligoba.backend.controller;
 
+import com.nakaligoba.backend.controller.payload.response.LikeResponse;
 import com.nakaligoba.backend.service.impl.ProblemFacade;
 import com.nakaligoba.backend.controller.payload.request.CreateProblemRequest;
 import com.nakaligoba.backend.controller.payload.response.CustomPageResponse;
