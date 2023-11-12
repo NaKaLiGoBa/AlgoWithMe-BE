@@ -24,11 +24,11 @@ public class MiniQuizTag {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mini_quiz_id", nullable = false)
+//    @JoinColumn(name = "mini_quiz_id", nullable = false)
     private MiniQuiz miniQuiz;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tag_id", nullable = false)
+//    @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
 
     public MiniQuizTag(MiniQuiz miniQuiz, Tag tag) {
