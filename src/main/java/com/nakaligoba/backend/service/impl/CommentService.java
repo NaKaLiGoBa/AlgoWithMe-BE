@@ -5,11 +5,16 @@ import com.nakaligoba.backend.controller.payload.response.CommentsResponse;
 import com.nakaligoba.backend.controller.payload.response.CommentsResponse.Comments;
 import com.nakaligoba.backend.controller.payload.response.CommentsResponse.CommentsData;
 import com.nakaligoba.backend.domain.Comment;
+import com.nakaligoba.backend.domain.CommentLike;
 import com.nakaligoba.backend.domain.CommentSort;
 import com.nakaligoba.backend.domain.Member;
+import com.nakaligoba.backend.domain.Problem;
 import com.nakaligoba.backend.domain.Reply;
+import com.nakaligoba.backend.domain.Solution;
 import com.nakaligoba.backend.exception.PermissionDeniedException;
+import com.nakaligoba.backend.repository.CommentLikeRepository;
 import com.nakaligoba.backend.repository.CommentRepository;
+import com.nakaligoba.backend.repository.SolutionRepository;
 import com.nakaligoba.backend.service.dto.AuthorDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -32,6 +39,8 @@ public class CommentService {
     private final ReplyLikeService replyLikeService;
     private final CommentLikeService commentLikeService;
     private final CommentRepository commentRepository;
+    private final SolutionRepository solutionRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Transactional
     public Long createComment(String writerEmail, Long solutionId, CommentRequest request) {
@@ -137,5 +146,26 @@ public class CommentService {
     @Transactional(readOnly = true)
     public Long getCommentCountBySolutionId(Long solutionId) {
         return commentRepository.countBySolutionId(solutionId);
+    }
+
+    public boolean toggleLike(String email, Long solutionId, Long commentId) {
+        Member member = memberService.findByEmail(email)
+                .orElseThrow(NoSuchElementException::new);
+        Solution solution = solutionRepository.findById(solutionId)
+                .orElseThrow(NoSuchElementException::new);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(NoSuchElementException::new);
+
+        Optional<CommentLike> optionalCommentLike = commentLikeRepository.findByMemberAndComment(member, comment);
+
+        if (optionalCommentLike.isEmpty()) {
+            CommentLike commentLike = new CommentLike(member, comment);
+            commentLikeRepository.save(commentLike);
+            return true;
+        }
+
+        CommentLike commentLike = optionalCommentLike.get();
+        commentLikeRepository.delete(commentLike);
+        return false;
     }
 }
