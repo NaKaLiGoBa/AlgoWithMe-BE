@@ -1,6 +1,8 @@
 package com.nakaligoba.backend.controller;
 
+import com.nakaligoba.backend.controller.payload.response.LikeResponse;
 import com.nakaligoba.backend.controller.payload.response.SolutionResponse;
+import com.nakaligoba.backend.service.impl.SolutionLikeService;
 import com.nakaligoba.backend.service.impl.SolutionService;
 import com.nakaligoba.backend.controller.payload.request.SolutionRequest;
 import com.nakaligoba.backend.controller.payload.response.SolutionsResponse;
@@ -20,6 +22,7 @@ import javax.validation.Valid;
 public class SolutionController {
 
     private final SolutionService solutionService;
+    private final SolutionLikeService solutionLikeService;
 
     @PostMapping("/{id}/solutions")
     public ResponseEntity<Void> createSolution(@PathVariable("id") Long id, @RequestBody @Valid SolutionRequest request) {
@@ -74,5 +77,16 @@ public class SolutionController {
         SolutionResponse solutionResponse = solutionService.readSolution(loggedInEmail, problemId, solutionId);
 
         return ResponseEntity.status(HttpStatus.OK).body(solutionResponse);
+    }
+
+
+    @PostMapping("/{problemId}/solutions/{solutionId}/like")
+    public ResponseEntity<LikeResponse> like(
+            @PathVariable Long problemId,
+            @PathVariable Long solutionId
+    ) {
+        String email = JwtUtils.getEmailFromSpringSession();
+        boolean isLike = solutionLikeService.toggleLike(email, problemId, solutionId);
+        return ResponseEntity.ok(new LikeResponse(isLike));
     }
 }

@@ -26,4 +26,9 @@ public class SolutionLike extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "solution_id", nullable = false)
     private Solution solution;
+
+    public SolutionLike(Member member, Solution solution) {
+        this.member = member;
+        this.solution = solution;
+    }
 }
