@@ -116,12 +116,11 @@ public class SolutionService {
     }
 
     @Transactional(readOnly = true)
-    public SolutionsResponse readSolutions(Long problemId, Long nextCursorId, Integer size) {
-        long solutionTotalCount = solutionRepository.countByProblemId(problemId);
-        List<Solution> solutions = getSolutions(problemId, nextCursorId, size);
+    public SolutionsResponse readSolutions(Long problemId, Long nextCursorId, Integer size, String sort) {
+        Long solutionTotalCount = solutionRepository.countByProblemId(problemId);
+        List<Solution> solutions = getSolutions(problemId, nextCursorId, size, sort);
         List<Solutions> responseSolutions = getResponseSolutions(solutions);
-        long nextCursor = responseSolutions.size() != 0 ?
-                responseSolutions.get(responseSolutions.size() - 1).getSolution().getId() : -1;
+        Long nextCursor = getNextCursorId(responseSolutions, sort);
 
         return SolutionsResponse.builder()
                 .totalCount(solutionTotalCount)
@@ -132,9 +131,11 @@ public class SolutionService {
                 .build();
     }
 
-    private List<Solution> getSolutions(Long problemId, Long nextCursorId, Integer size) {
+    private List<Solution> getSolutions(Long problemId, Long nextCursorId, Integer size, String sort) {
         Pageable pageable = PageRequest.of(0, size);
+        String defaultSort = SolutionSort.RECENT.getName();
 
+        // todo : 정렬 기준 추가 시 이에 따른 다른 쿼리문 참조 필요
         if (nextCursorId == SolutionsResponse.READ_SOLUTIONS_INIT) {
             return solutionRepository.findByProblemIdOrderByCreatedAtDesc(problemId, pageable);
         }
@@ -156,9 +157,26 @@ public class SolutionService {
                                 .solution(SolutionsData.builder()
                                         .id(solution.getId())
                                         .title(solution.getTitle())
+                                        .likeCount(getLikeCount(solution.getId()))
+                                        .viewCount(solution.getViewCount())
+                                        .commentCount(getCommentCount(solution.getId()))
                                         .build())
                                 .build())
                 .collect(Collectors.toList());
+    }
+
+    private Long getNextCursorId(List<Solutions> responseSolutions, String sort) {
+        Long nextCursor = responseSolutions.size() != 0 ?
+                responseSolutions.get(responseSolutions.size() - 1).getSolution().getId() : -1;
+
+        /* todo : 기존의 최신 순 외에 정렬 기준 추가 시 nextCursorId도 다르게 적용 필요
+        if(SolutionSort.HOT.getName().equals(sort)) {
+            nextCursor = responseSolutions.size() != 0 ?
+                    responseSolutions.get(responseSolutions.size() - 1).getSolution().getViewCount() : -1;
+        }
+         */
+
+        return nextCursor;
     }
 
     @Transactional
@@ -177,7 +195,7 @@ public class SolutionService {
                                         .createdAt(convertLocalDateTimeToString(solution.getCreatedAt()))
                                         .content(solution.getContent())
                                         .languages(getLanguages(solution.getSolutionLanguages(), solutionId))
-                                        .likeCount(getSolutionLikeCount(solutionId))
+                                        .likeCount(getLikeCount(solutionId))
                                         .viewCount(solution.getViewCount())
                                         .commentCount(getCommentCount(solutionId)) // todo : 리팩토링 필요(SolutionService ↔ CommentService 간 순환참조)
                                         .isLike(solutionLikeRepository.existsByMemberIdAndSolutionId(member.getId(), solutionId))
@@ -197,7 +215,7 @@ public class SolutionService {
                 .collect(Collectors.toList());
     }
 
-    private Long getSolutionLikeCount(Long solutionId) {
+    private Long getLikeCount(Long solutionId) {
         return solutionLikeRepository.countBySolutionId(solutionId);
     }
 

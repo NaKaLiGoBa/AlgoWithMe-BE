@@ -60,15 +60,16 @@ public class SolutionController {
     public ResponseEntity<SolutionsResponse> readSolutions(
             @PathVariable("id") Long id,
             @RequestParam Long cursor,
-            @RequestParam Integer size
+            @RequestParam Integer size,
+            @RequestParam String sort
     ) {
-        SolutionsResponse solutionsResponse = solutionService.readSolutions(id, cursor, size);
+        SolutionsResponse solutionsResponse = solutionService.readSolutions(id, cursor, size, sort);
 
         return ResponseEntity.status(HttpStatus.OK).body(solutionsResponse);
     }
 
     @GetMapping("/{problemId}/solutions/{solutionId}")
-    public ResponseEntity<SolutionResponse> readSolution(@PathVariable("problemId") long problemId, @PathVariable("solutionId") long solutionId) {
+    public ResponseEntity<SolutionResponse> readSolution(@PathVariable("problemId") Long problemId, @PathVariable("solutionId") Long solutionId) {
         String loggedInEmail = JwtUtils.getEmailFromSpringSession();
         SolutionResponse solutionResponse = solutionService.readSolution(loggedInEmail, problemId, solutionId);
 
