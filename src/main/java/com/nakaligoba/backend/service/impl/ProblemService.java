@@ -88,6 +88,7 @@ public class ProblemService {
 
     private List<ProblemResponse.TestcaseResponse> getTestcases(Problem problem) {
         return problem.getTestcases().stream()
+                .filter(Testcase::isTesting)
                 .map((t) ->
                         ProblemResponse.TestcaseResponse.builder()
                                 .number(t.getNumber())
