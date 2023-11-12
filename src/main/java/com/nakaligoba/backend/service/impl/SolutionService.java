@@ -177,14 +177,18 @@ public class SolutionService {
                                         .createdAt(convertLocalDateTimeToString(solution.getCreatedAt()))
                                         .content(solution.getContent())
                                         .languages(getLanguages(solution.getSolutionLanguages(), solutionId))
-                                        .likeCount(solutionLikeRepository.countBySolutionId(solutionId))
+                                        .likeCount(getSolutionLikeCount(solutionId))
                                         .viewCount(solution.getViewCount())
-                                        .commentCount(commentRepository.countBySolutionId(solutionId)) // todo : 리팩토링 필요(SolutionService ↔ CommentService 간 순환참조)
+                                        .commentCount(getCommentCount(solutionId)) // todo : 리팩토링 필요(SolutionService ↔ CommentService 간 순환참조)
                                         .isLike(solutionLikeRepository.existsByMemberIdAndSolutionId(member.getId(), solutionId))
                                         .build())
                                 .build()
                 )
                 .orElseThrow(() -> new EntityNotFoundException("해당 풀이 글을 찿을 수 없습니다"));
+    }
+
+    private String convertLocalDateTimeToString(LocalDateTime localDateTime) {
+        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
     private List<String> getLanguages(List<SolutionLanguage> solutionLanguages, Long solutionId) {
@@ -193,7 +197,11 @@ public class SolutionService {
                 .collect(Collectors.toList());
     }
 
-    private String convertLocalDateTimeToString(LocalDateTime localDateTime) {
-        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    private Long getSolutionLikeCount(Long solutionId) {
+        return solutionLikeRepository.countBySolutionId(solutionId);
+    }
+
+    private Long getCommentCount(Long solutionId) {
+        return commentRepository.countBySolutionId(solutionId);
     }
 }
