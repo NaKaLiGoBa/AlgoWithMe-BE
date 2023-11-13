@@ -11,12 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,8 +29,7 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
 
     @Override
     public List<CheckTestcaseResult> checkTestcases(Long problemId, String language, String code) {
-        Problem problem = problemService.getProblem(problemId)
-                .orElseThrow(NoSuchElementException::new);
+        Problem problem = problemService.getProblem(problemId);
         Language programmingLanguage = Language.findByName(language)
                 .orElse(Language.JAVA);
         //.orElseThrow(NoSuchElementException::new);
@@ -57,9 +54,8 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
 
     @Override
     public boolean isAnswer(String memberEmail, Long problemId, String language, String code) {
-        Member member = memberService.findByEmail(memberEmail);
-        Problem problem = problemService.getProblem(problemId)
-                .orElseThrow(NoSuchElementException::new);
+        Member member = memberService.getMemberByEmail(memberEmail);
+        Problem problem = problemService.getProblem(problemId);
         Language programmingLanguage = Language.findByName(language)
                 .orElse(Language.JAVA);
         //.orElseThrow(NoSuchElementException::new);

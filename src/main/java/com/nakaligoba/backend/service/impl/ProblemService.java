@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -163,8 +164,10 @@ public class ProblemService {
                 .orElse(0);
     }
 
-    public Optional<Problem> getProblem(Long id) {
-        return problemRepository.findById(id);
+    @Transactional(readOnly = true)
+    public Problem getProblem(Long id) {
+        return problemRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
     }
 
 }
