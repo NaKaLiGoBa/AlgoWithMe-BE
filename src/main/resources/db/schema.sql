@@ -187,8 +187,8 @@ CREATE TABLE `replies`
 CREATE TABLE `reply_likes`
 (
     `id`          BIGINT   NOT NULL AUTO_INCREMENT,
-    `solution_id` BIGINT   NOT NULL,
     `reply_id`    BIGINT   NOT NULL,
+    `member_id`   BIGINT   NOT NULL,
     `created_at`  DATETIME NOT NULL,
     `updated_at`  DATETIME NOT NULL,
     PRIMARY KEY (`id`)
@@ -271,9 +271,9 @@ ALTER TABLE `replies`
         ON DELETE CASCADE;
 
 ALTER TABLE `reply_likes`
-    ADD FOREIGN KEY (`solution_id`) REFERENCES solutions (`id`)
+    ADD FOREIGN KEY (`reply_id`) REFERENCES replies (`id`)
         ON DELETE CASCADE;
 
 ALTER TABLE `reply_likes`
-    ADD FOREIGN KEY (`reply_id`) REFERENCES replies (`id`)
+    ADD FOREIGN KEY (`member_id`) REFERENCES members (`id`)
         ON DELETE CASCADE;
