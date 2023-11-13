@@ -1,6 +1,5 @@
 package com.nakaligoba.backend.global.config;
 
-import com.nakaligoba.backend.domain.Role;
 import com.nakaligoba.backend.filter.JwtAuthenticationEntryPoint;
 import com.nakaligoba.backend.filter.JwtAuthenticationFilter;
 import com.nakaligoba.backend.filter.JwtAuthorizationFilter;
@@ -38,7 +37,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), memberRepository, jwtProperties))
                 .authorizeRequests()
                 .antMatchers("/api/v1/auth/**", "/api/test").permitAll()
-//                .antMatchers("/api/v1/problems/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/v1/problems")
                 .access("hasRole('ADMIN')")
                 .anyRequest().authenticated()

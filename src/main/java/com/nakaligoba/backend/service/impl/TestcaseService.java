@@ -1,15 +1,14 @@
 package com.nakaligoba.backend.service.impl;
 
 import com.nakaligoba.backend.domain.Problem;
-import com.nakaligoba.backend.service.dto.InputDto;
 import com.nakaligoba.backend.domain.Testcase;
 import com.nakaligoba.backend.repository.TestcaseRepository;
+import com.nakaligoba.backend.service.dto.InputDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service

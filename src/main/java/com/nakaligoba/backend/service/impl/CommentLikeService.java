@@ -6,13 +6,11 @@ import com.nakaligoba.backend.domain.Member;
 import com.nakaligoba.backend.domain.Solution;
 import com.nakaligoba.backend.repository.CommentLikeRepository;
 import com.nakaligoba.backend.repository.CommentRepository;
-import com.nakaligoba.backend.repository.SolutionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
