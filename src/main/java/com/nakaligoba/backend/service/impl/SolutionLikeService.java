@@ -11,6 +11,7 @@ import com.nakaligoba.backend.repository.SolutionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -25,6 +26,7 @@ public class SolutionLikeService {
     private final SolutionRepository solutionRepository;
     private final SolutionLikeRepository solutionLikeRepository;
 
+    @Transactional
     public boolean toggleLike(String email, Long problemId, Long solutionId) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(NoSuchElementException::new);
