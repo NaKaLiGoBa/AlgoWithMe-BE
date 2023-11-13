@@ -4,6 +4,7 @@ import com.nakaligoba.backend.controller.payload.request.CommentRequest;
 import com.nakaligoba.backend.controller.payload.request.LikeRequest;
 import com.nakaligoba.backend.controller.payload.response.CommentsResponse;
 import com.nakaligoba.backend.controller.payload.response.LikeResponse;
+import com.nakaligoba.backend.service.impl.CommentLikeService;
 import com.nakaligoba.backend.service.impl.CommentService;
 import com.nakaligoba.backend.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import javax.validation.Valid;
 public class CommentController {
 
     private final CommentService commentService;
+    private final CommentLikeService commentLikeService;
 
     @PostMapping("/{solutionId}/comments")
     public ResponseEntity<Void> createComment(@PathVariable Long solutionId, @Valid @RequestBody CommentRequest request) {
@@ -64,7 +66,7 @@ public class CommentController {
             @RequestBody LikeRequest request
             ) {
         String loggedInEmail = JwtUtils.getEmailFromSpringSession();
-        boolean isLike = commentService.toggleLike(loggedInEmail, solutionId, commentId);
+        boolean isLike = commentLikeService.toggleLike(loggedInEmail, solutionId, commentId);
 
         return ResponseEntity.ok(new LikeResponse(isLike));
     }
