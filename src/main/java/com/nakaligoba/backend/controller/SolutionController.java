@@ -1,5 +1,6 @@
 package com.nakaligoba.backend.controller;
 
+import com.nakaligoba.backend.controller.payload.request.LikeRequest;
 import com.nakaligoba.backend.controller.payload.response.LikeResponse;
 import com.nakaligoba.backend.controller.payload.response.SolutionResponse;
 import com.nakaligoba.backend.service.impl.SolutionLikeService;
@@ -82,7 +83,8 @@ public class SolutionController {
     @PostMapping("/{problemId}/solutions/{solutionId}/like")
     public ResponseEntity<LikeResponse> like(
             @PathVariable Long problemId,
-            @PathVariable Long solutionId
+            @PathVariable Long solutionId,
+            @RequestBody LikeRequest request
     ) {
         String email = JwtUtils.getEmailFromSpringSession();
         boolean isLike = solutionLikeService.toggleLike(email, problemId, solutionId);
