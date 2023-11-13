@@ -22,33 +22,31 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class SolutionService {
 
+    private final MemberService memberService;
+    private final ProblemService problemService;
+
     private final SolutionRepository solutionRepository;
-    private final MemberRepository memberRepository;
-    private final ProblemRepository problemRepository;
+    private final CommentRepository commentRepository;
     private final ProgrammingLanguageRepository programmingLanguageRepository;
     private final SolutionLanguageRepository solutionLanguageRepository;
     private final SolutionLikeRepository solutionLikeRepository;
-    private final MemberService memberService;
-    private final CommentRepository commentRepository;
 
     @Transactional(readOnly = true)
-    public Optional<Solution> findById(Long id) {
-        return solutionRepository.findById(id);
+    public Solution getSolution(Long id) {
+        return solutionRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     @Transactional
     public Long createSolution(String loggedInEmail, Long problemId, SolutionRequest request) {
-        Member member = memberRepository.findByEmail(loggedInEmail)
-                .orElseThrow(EntityNotFoundException::new);
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(EntityNotFoundException::new);
+        Member member = memberService.getMemberByEmail(loggedInEmail);
+        Problem problem = problemService.getProblem(problemId);
         Solution solution = Solution.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
@@ -78,13 +76,11 @@ public class SolutionService {
         return solution.getId();
     }
 
+    @Transactional
     public Long updateSolution(String writerEmail, Long problemId, Long solutionId, SolutionRequest request) {
-        Member member = memberRepository.findByEmail(writerEmail)
-                .orElseThrow(EntityNotFoundException::new);
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(IllegalAccessError::new);
-        Solution solution = solutionRepository.findById(solutionId)
-                .orElseThrow(IllegalAccessError::new);
+        Member member = memberService.getMemberByEmail(writerEmail);
+        Problem problem = problemService.getProblem(problemId);
+        Solution solution = getSolution(solutionId);
 
         solution.changeTitle(request.getTitle());
         solution.changeContent(request.getContent());
@@ -100,13 +96,11 @@ public class SolutionService {
         return solution.getId();
     }
 
+    @Transactional
     public void removeSolution(String writerEmail, Long problemId, Long solutionId) {
-        Member member = memberRepository.findByEmail(writerEmail)
-                .orElseThrow(IllegalAccessError::new);
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(IllegalArgumentException::new);
-        Solution solution = solutionRepository.findById(solutionId)
-                .orElseThrow(IllegalAccessError::new);
+        Member member = memberService.getMemberByEmail(writerEmail);
+        Problem problem = problemService.getProblem(problemId);
+        Solution solution = getSolution(solutionId);
 
         if (!solution.getMember().equals(member)) {
             throw new UnauthorizedException("권한이 없습니다.");
@@ -179,9 +173,9 @@ public class SolutionService {
         return nextCursor;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public SolutionResponse readSolution(String loggedInEmail, Long problemId, Long solutionId) {
-        Member member = memberService.findByEmail(loggedInEmail);
+        Member member = memberService.getMemberByEmail(loggedInEmail);
 
         return solutionRepository.findById(solutionId).map(
                         solution -> SolutionResponse.builder()

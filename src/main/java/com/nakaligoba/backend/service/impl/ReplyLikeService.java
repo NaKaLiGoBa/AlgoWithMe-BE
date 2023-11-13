@@ -32,7 +32,7 @@ public class ReplyLikeService {
 
     @Transactional
     public boolean likeReply(String loggedInEmail, Long commentId, Long replyId, LocalDateTime time) {
-        Member member = memberService.findByEmail(loggedInEmail);
+        Member member = memberService.getMemberByEmail(loggedInEmail);
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(EntityNotFoundException::new);
         Reply reply = replyRepository.findById(replyId)

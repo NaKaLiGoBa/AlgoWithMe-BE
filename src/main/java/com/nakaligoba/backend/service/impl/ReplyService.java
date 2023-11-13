@@ -37,7 +37,7 @@ public class ReplyService {
 
     @Transactional
     public Long createReply(String writerEmail, Long commentId, ReplyRequest request) {
-        Member member = memberService.findByEmail(writerEmail);
+        Member member = memberService.getMemberByEmail(writerEmail);
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(EntityNotFoundException::new);
 
@@ -53,7 +53,7 @@ public class ReplyService {
 
     @Transactional
     public void updateReply(String writerEmail, Long commentId, Long replyId, ReplyRequest request) {
-        Member member = memberService.findByEmail(writerEmail);
+        Member member = memberService.getMemberByEmail(writerEmail);
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(EntityNotFoundException::new);
         Reply reply = replyRepository.findById(replyId)
@@ -67,7 +67,7 @@ public class ReplyService {
     }
 
     public RepliesResponse readReplies(String loggedInEmail, Long commentId) {
-        Member member = memberService.findByEmail(loggedInEmail);
+        Member member = memberService.getMemberByEmail(loggedInEmail);
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(EntityNotFoundException::new);
 
@@ -96,7 +96,7 @@ public class ReplyService {
 
     @Transactional
     public void deleteReply(String loggedInEmail, Long commentId, Long replyId) {
-        Member member = memberService.findByEmail(loggedInEmail);
+        Member member = memberService.getMemberByEmail(loggedInEmail);
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(EntityNotFoundException::new);
         Reply reply = replyRepository.findById(replyId)

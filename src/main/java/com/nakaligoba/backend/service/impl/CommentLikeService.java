@@ -40,7 +40,7 @@ public class CommentLikeService {
 
     @Transactional
     public boolean toggleLike(String email, Long solutionId, Long commentId) {
-        Member member = memberService.findByEmail(email);
+        Member member = memberService.getMemberByEmail(email);
         Solution solution = solutionRepository.findById(solutionId)
                 .orElseThrow(NoSuchElementException::new);
         Comment comment = commentRepository.findById(commentId)
