@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -35,5 +36,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PermissionDeniedException.class)
     public ResponseEntity<Void> handlePermissionDeniedException(PermissionDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorResult> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResult(ex.getMessage()));
     }
 }
