@@ -44,9 +44,6 @@ public class Solution extends BaseEntity {
     @OneToMany(mappedBy = "solution")
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "solution")
-    private List<ReplyLike> replyLikes = new ArrayList<>();
-
     @Builder
     public Solution(String title, String content, Member member, Problem problem, Long viewCount) {
         this.title = title;
