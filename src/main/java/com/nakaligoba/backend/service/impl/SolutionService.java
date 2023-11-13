@@ -181,8 +181,7 @@ public class SolutionService {
 
     @Transactional
     public SolutionResponse readSolution(String loggedInEmail, Long problemId, Long solutionId) {
-        Member member = memberService.findByEmail(loggedInEmail)
-                .orElseThrow(EntityNotFoundException::new);
+        Member member = memberService.findByEmail(loggedInEmail);
 
         return solutionRepository.findById(solutionId).map(
                         solution -> SolutionResponse.builder()

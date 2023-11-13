@@ -44,8 +44,7 @@ public class CommentService {
     public Long createComment(String writerEmail, Long solutionId, CommentRequest request) {
         Comment comment = Comment.builder()
                 .content(request.getContent())
-                .member(memberService.findByEmail(writerEmail)
-                        .orElseThrow(EntityNotFoundException::new))
+                .member(memberService.findByEmail(writerEmail))
                 .solution(solutionService.findById(solutionId)
                         .orElseThrow(EntityNotFoundException::new))
                 .build();
@@ -98,8 +97,7 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public CommentsResponse readComments(String loggedInEmail, Long solutionId, Pageable pageable, String sort) {
-        Member member = memberService.findByEmail(loggedInEmail)
-                .orElseThrow(EntityNotFoundException::new);
+        Member member = memberService.findByEmail(loggedInEmail);
         String defaultCommentSort = CommentSort.RECENT.getName();
         Page<Comment> commentPage;
 

@@ -57,8 +57,7 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
 
     @Override
     public boolean isAnswer(String memberEmail, Long problemId, String language, String code) {
-        Member member = memberService.findByEmail(memberEmail)
-                .orElseThrow(EntityNotFoundException::new);
+        Member member = memberService.findByEmail(memberEmail);
         Problem problem = problemService.getProblem(problemId)
                 .orElseThrow(NoSuchElementException::new);
         Language programmingLanguage = Language.findByName(language)
