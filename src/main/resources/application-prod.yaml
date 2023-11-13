@@ -16,3 +16,8 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
+
+jwt:
+  claim: ${CLAIM}
+  secret: ${JWT_SECRET_KEY}
+  token-validity-in-seconds: ${JWT_VALID_TIME}
