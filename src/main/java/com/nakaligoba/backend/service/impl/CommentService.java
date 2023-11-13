@@ -5,16 +5,11 @@ import com.nakaligoba.backend.controller.payload.response.CommentsResponse;
 import com.nakaligoba.backend.controller.payload.response.CommentsResponse.Comments;
 import com.nakaligoba.backend.controller.payload.response.CommentsResponse.CommentsData;
 import com.nakaligoba.backend.domain.Comment;
-import com.nakaligoba.backend.domain.CommentLike;
 import com.nakaligoba.backend.domain.CommentSort;
 import com.nakaligoba.backend.domain.Member;
-import com.nakaligoba.backend.domain.Problem;
 import com.nakaligoba.backend.domain.Reply;
-import com.nakaligoba.backend.domain.Solution;
 import com.nakaligoba.backend.exception.PermissionDeniedException;
-import com.nakaligoba.backend.repository.CommentLikeRepository;
 import com.nakaligoba.backend.repository.CommentRepository;
-import com.nakaligoba.backend.repository.SolutionRepository;
 import com.nakaligoba.backend.service.dto.AuthorDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -25,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -59,8 +52,9 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (!isPermission(loggedInEmail, comment.getMember().getEmail())) {
-            throw new PermissionDeniedException();
+        Member member = comment.getMember();
+        if (!isPermission(loggedInEmail, member.getEmail())) {
+            throw new PermissionDeniedException(member);
         }
 
         comment.update(request.getContent());
@@ -71,8 +65,9 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (!isPermission(loggedInEmail, comment.getMember().getEmail())) {
-            throw new PermissionDeniedException();
+        Member member = comment.getMember();
+        if (!isPermission(loggedInEmail, member.getEmail())) {
+            throw new PermissionDeniedException(member);
         }
 
         /**

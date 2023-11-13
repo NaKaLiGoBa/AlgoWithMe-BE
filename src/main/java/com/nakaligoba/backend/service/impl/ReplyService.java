@@ -60,7 +60,7 @@ public class ReplyService {
                 .orElseThrow(EntityNotFoundException::new);
 
         if (!reply.getMember().equals(member)) {
-            throw new PermissionDeniedException();
+            throw new PermissionDeniedException(member);
         }
 
         reply.changeReplyContent(request.getContent());
@@ -103,7 +103,7 @@ public class ReplyService {
                 .orElseThrow(EntityNotFoundException::new);
 
         if (!reply.getMember().equals(member)) {
-            throw new PermissionDeniedException();
+            throw new PermissionDeniedException(member);
         }
 
         replyLikeRepository.deleteByReplyId(replyId);
