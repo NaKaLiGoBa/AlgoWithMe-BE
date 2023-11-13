@@ -23,9 +23,19 @@ spring:
         max-page-size: 2000
         one-indexed-parameters: true
 
+  redis:
+    host: '127.0.0.1'
+    port: 6379
+    auth-num-valid-time: 99999
+
 logging:
   level:
     web: debug
     org:
       springframework:
         mail: debug
+
+jwt:
+  claim: email
+  secret: kl6uYNMpFUV45SqxTUuvjAB5zlcwhS5Ktpe1kqJiNKoiDfx+NDd8fgVaqXyPp/Kq
+  token-validity-in-seconds: 999999

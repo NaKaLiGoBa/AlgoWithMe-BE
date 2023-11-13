@@ -17,16 +17,6 @@ spring:
       mail.smtp.ssl.enable: true
       mail.smtp.starttls.enable: true
 
-  redis:
-    host: ${REDIS_HOST}
-    port: 6379
-    auth-num-valid-time: ${REDIS_AUTH_NUM_VALID_TIME}
-
-jwt:
-  claim: ${CLAIM}
-  secret: ${JWT_SECRET_KEY}
-  token-validity-in-seconds: ${JWT_VALID_TIME}
-
 kakao:
   client-id: ${KAKAO_CLIENT_ID}
   login:
