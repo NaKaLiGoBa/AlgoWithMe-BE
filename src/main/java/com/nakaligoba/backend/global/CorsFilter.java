@@ -43,6 +43,7 @@ public class CorsFilter implements Filter {
             httpResponse.setHeader(ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
             httpResponse.setHeader(ACCESS_CONTROL_ALLOW_METHODS, "GET, POST, PUT, DELETE, OPTIONS");
             httpResponse.setHeader(ACCESS_CONTROL_ALLOW_HEADERS, "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization");
+            httpResponse.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, LOCATION);
         }
 
         // Handle preflight OPTIONS requests
