@@ -2,6 +2,7 @@ package com.nakaligoba.backend.global;
 
 import com.nakaligoba.backend.exception.PermissionDeniedException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
@@ -34,8 +36,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PermissionDeniedException.class)
-    public ResponseEntity<Void> handlePermissionDeniedException(PermissionDeniedException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    public ResponseEntity<ErrorResult> handlePermissionDeniedException(PermissionDeniedException ex) {
+        log.warn("{} email: {}, nickname: {}", ex.getMessage(), ex.getDeniedMember().getEmail(), ex.getDeniedMember().getNickname());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResult(ex.getMessage()));
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
