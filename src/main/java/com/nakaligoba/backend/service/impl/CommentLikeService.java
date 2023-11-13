@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ public class CommentLikeService {
 
     private final MemberService memberService;
     private final CommentRepository commentRepository;
-    private final SolutionRepository solutionRepository;
+    private final SolutionService solutionService;
     private final CommentLikeRepository commentLikeRepository;
 
     @Transactional(readOnly = true)
@@ -41,10 +42,9 @@ public class CommentLikeService {
     @Transactional
     public boolean toggleLike(String email, Long solutionId, Long commentId) {
         Member member = memberService.getMemberByEmail(email);
-        Solution solution = solutionRepository.findById(solutionId)
-                .orElseThrow(NoSuchElementException::new);
+        Solution solution = solutionService.getSolution(solutionId);
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(EntityNotFoundException::new);
 
         Optional<CommentLike> optionalCommentLike = commentLikeRepository.findByMemberAndComment(member, comment);
 

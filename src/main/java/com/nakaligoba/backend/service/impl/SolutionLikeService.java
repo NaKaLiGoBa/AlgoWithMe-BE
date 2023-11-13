@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -29,11 +30,11 @@ public class SolutionLikeService {
     @Transactional
     public boolean toggleLike(String email, Long problemId, Long solutionId) {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(EntityNotFoundException::new);
         Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(EntityNotFoundException::new);
         Solution solution = solutionRepository.findById(solutionId)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(EntityNotFoundException::new);
 
         Optional<SolutionLike> optionalSolutionLike = solutionLikeRepository.findByMemberAndSolution(member, solution);
 

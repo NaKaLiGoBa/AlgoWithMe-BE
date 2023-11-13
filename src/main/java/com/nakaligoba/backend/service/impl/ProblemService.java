@@ -65,7 +65,7 @@ public class ProblemService {
 
     public ProblemResponse readProblem(Long id) {
         Problem problem = problemRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(EntityNotFoundException::new);
 
         return ProblemResponse.builder()
                 .number(problem.getNumber())
