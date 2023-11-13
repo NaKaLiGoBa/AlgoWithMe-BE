@@ -24,6 +24,11 @@ public class ReplyLike extends BaseEntity {
     private Reply reply;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "solution_id")
-    private Solution solution;
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    public ReplyLike(Reply reply, Member member) {
+        this.reply = reply;
+        this.member = member;
+    }
 }
