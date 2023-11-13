@@ -87,7 +87,7 @@ public class SolutionService {
 
         List<ProgrammingLanguage> programmingLanguages = request.getLanguages().stream()
                 .map(language -> programmingLanguageRepository.findByName(Language.findByName(language).orElseThrow())
-                        .orElseThrow(IllegalAccessError::new))
+                        .orElseThrow(EntityNotFoundException::new))
                 .collect(Collectors.toList());
 
         solution.updateSolutionLanguages(programmingLanguages);
