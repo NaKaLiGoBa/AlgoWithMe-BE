@@ -325,7 +325,7 @@ ALTER TABLE `mini_quiz_tags`
         ON DELETE CASCADE;
 
 ALTER TABLE `mini_quiz_tags`
-    ADD FOREIGN KEY (`mini_quiz_id`) REFERENCES mini_quiz_tags (`id`)
+    ADD FOREIGN KEY (`mini_quiz_id`) REFERENCES mini_quizzes (`id`)
         ON DELETE CASCADE;
 
 ALTER TABLE `answers`
