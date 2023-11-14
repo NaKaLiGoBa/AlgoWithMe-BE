@@ -31,6 +31,12 @@ drop table if exists replies CASCADE;
 
 drop table if exists reply_likes CASCADE;
 
+drop table if exists mini_quizzes CASCADE;
+
+drop table if exists mini_quiz_tags CASCADE;
+
+drop table if exists answers CASCADE;
+
 CREATE TABLE `members`
 (
     `id`         BIGINT       NOT NULL AUTO_INCREMENT,
@@ -194,6 +200,42 @@ CREATE TABLE `reply_likes`
     PRIMARY KEY (`id`)
 );
 
+CREATE TABLE `mini_quizzes`
+(
+    `id`               BIGINT       NOT NULL AUTO_INCREMENT,
+    `description`      VARCHAR(255) NOT NULL,
+    `explain`          VARCHAR(255) NOT NULL,
+    `answer`           VARCHAR(255) NOT NULL,
+    `type`             VARCHAR(255) NOT NULL,
+    `difficulty`       VARCHAR(255) NOT NULL,
+    `choiceOrInitials` VARCHAR(255) NOT NULL,
+    `created_at`       DATETIME     NOT NULL,
+    `updated_at`       DATETIME     NOT NULL,
+    PRIMARY KEY (`id`)
+)
+
+CREATE TABLE `mini_quiz_tags`
+(
+    `id`           BIGINT   NOT NULL AUTO_INCREMENT,
+    `tag_id`       BIGINT   NOT NULL,
+    `mini_quiz_id` BIGINT   NOT NULL,
+    `created_at`   DATETIME NOT NULL,
+    `updated_at`   DATETIME NOT NULL,
+    PRIMARY KEY (`id`)
+)
+
+CREATE TABLE `answers`
+(
+    `id`         BIGINT       NOT NULL AUTO_INCREMENT,
+    `member_id`  BIGINT       NOT NULL,
+    `problem_id` BIGINT       NOT NULL,
+    `question`   VARCHAR(255) NOT NULL,
+    `answer`     VARCHAR(255) NOT NULL,
+    `created_at` DATETIME     NOT NULL,
+    `updated_at` DATETIME     NOT NULL,
+    PRIMARY KEY (`id`)
+)
+
 ALTER TABLE `submits`
     ADD FOREIGN KEY (`member_id`) REFERENCES members (`id`)
         ON DELETE CASCADE;
@@ -276,4 +318,20 @@ ALTER TABLE `reply_likes`
 
 ALTER TABLE `reply_likes`
     ADD FOREIGN KEY (`member_id`) REFERENCES members (`id`)
+        ON DELETE CASCADE;
+
+ALTER TABLE `mini_quiz_tags`
+    ADD FOREIGN KEY (`tag_id`) REFERENCES tags (`id`)
+        ON DELETE CASCADE;
+
+ALTER TABLE `mini_quiz_tags`
+    ADD FOREIGN KEY (`mini_quiz_id`) REFERENCES mini_quiz_tags (`id`)
+        ON DELETE CASCADE;
+
+ALTER TABLE `answers`
+    ADD FOREIGN KEY (`member_id`) REFERENCES members (`id`)
+        ON DELETE CASCADE;
+
+ALTER TABLE `answers`
+    ADD FOREIGN KEY (`problem_id`) REFERENCES problems (`id`)
         ON DELETE CASCADE;
