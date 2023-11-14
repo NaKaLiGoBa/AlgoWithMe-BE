@@ -8,7 +8,7 @@ COPY . .
 RUN echo "systemProp.http.proxyHost=krmp-proxy.9rum.cc\nsystemProp.http.proxyPort=3128\nsystemProp.https.proxyHost=krmp-proxy.9rum.cc\nsystemProp.https.proxyPort=3128" > /root/.gradle/gradle.properties && \
     ./gradlew clean bootJar
 
-FROM openjdk:11-jre-slim
+FROM openjdk:11-jdk-slim
 
 COPY --from=build /usr/src/app/build/libs/*.jar ./app.jar
 
