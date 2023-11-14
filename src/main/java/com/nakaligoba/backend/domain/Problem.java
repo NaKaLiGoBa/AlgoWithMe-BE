@@ -61,6 +61,9 @@ public class Problem extends BaseEntity {
     @OneToMany(mappedBy = "problem")
     private final List<Solution> solutions = new ArrayList<>();
 
+    @OneToMany(mappedBy = "problem")
+    private final List<Answer> answers = new ArrayList<>();
+
     @Builder(builderMethodName = "defaultBuilder")
     public static Problem of(final Integer number,
                              final String title,
