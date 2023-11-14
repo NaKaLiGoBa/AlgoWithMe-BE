@@ -30,7 +30,7 @@ public class MiniQuiz {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "explain")
+    @Column(name = "`explain`")
     private String explain;
 
     @Column(name = "answer")

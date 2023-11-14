@@ -14,7 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "mini_quizzes")
+@Table(name = "mini_quiz_tags")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MiniQuizTag {
