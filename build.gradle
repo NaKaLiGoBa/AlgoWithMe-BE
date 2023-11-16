@@ -46,7 +46,7 @@ dependencies {
     implementation 'com.github.docker-java:docker-java:3.3.3'
     implementation 'com.github.docker-java:docker-java-transport-zerodep:3.3.3'
 
-
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 }
 
