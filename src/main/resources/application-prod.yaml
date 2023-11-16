@@ -4,10 +4,10 @@ spring:
       on-profile: prod
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USER_ID}
-    password: ${DB_USER_PW}
-    driver-class-name: ${DB_DRIVER_CLASS_NAME}
+    url: jdbc:mysql://mysql:3306/algo_with_me
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     properties:
@@ -16,6 +16,11 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
+
+  redis:
+    host: localhost
+    port: 6379
+    auth-num-valid-time: 600
 
 jwt:
   claim: ${CLAIM}
