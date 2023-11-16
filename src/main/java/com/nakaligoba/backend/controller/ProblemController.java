@@ -43,7 +43,7 @@ public class ProblemController {
     @PostMapping
     public ResponseEntity<Void> createProblem(@Valid @RequestBody CreateProblemRequest request) {
         Long id = problemAggregateService.createProblem(request);
-        return ResponseEntity.created(URI.create("/api/v1/problems/" + id))
+        return ResponseEntity.created(URI.create(String.valueOf(id)))
                 .build();
     }
 }
