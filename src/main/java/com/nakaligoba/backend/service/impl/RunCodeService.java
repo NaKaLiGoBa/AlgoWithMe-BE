@@ -29,22 +29,31 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
 
     @Override
     public List<CheckTestcaseResult> checkTestcases(Long problemId, String language, String code) {
+        log.info("checkTestcases method call");
         Problem problem = problemService.getProblem(problemId);
         Language programmingLanguage = Language.findByName(language)
                 .orElse(Language.JAVA);
         //.orElseThrow(NoSuchElementException::new);
 
         File mainFile = createFile("Main", programmingLanguage, programmingLanguage.getMainCode());
+        log.info("Create Main.java");
+
         File solutionFile = createFile("Solution", programmingLanguage, code);
+        log.info("Create Solution.java");
+
         try {
+            log.info("Compile start");
             compileIfNeeded(programmingLanguage);
+            log.info("Compile end");
 
             List<Testcase> testcases = problem.getTestcases()
                     .stream()
                     .filter(Testcase::isTesting)
                     .collect(Collectors.toList());
 
+            log.info("Run code start");
             String[] outputs = runSolution(programmingLanguage, testcases);
+            log.info("Run code end");
 
             return getCheckTestcaseResults(testcases, outputs);
         } finally {
@@ -61,13 +70,18 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
         //.orElseThrow(NoSuchElementException::new);
 
         File mainFile = createFile("Main", programmingLanguage, programmingLanguage.getMainCode());
+        log.info("Create Main.java");
+
         File solutionFile = createFile("Solution", programmingLanguage, code);
+        log.info("Create Solution.java");
 
         try {
             boolean isAnswer = true;
 
             try {
+                log.info("Compile start");
                 compileIfNeeded(programmingLanguage);
+                log.info("Compile end");
             } catch (UserCodeCompileErrorException e) {
                 submitService.save(code, Result.COMPILE_ERROR, problem, member);
                 return false;
@@ -81,7 +95,9 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
             String[] outputs;
 
             try {
+                log.info("Run code start");
                 outputs = runSolution(programmingLanguage, answerCase);
+                log.info("Run code end");
             } catch (UserCodeRuntimeErrorException e) {
                 submitService.save(code, Result.RUNTIME_ERROR, problem, member);
                 return false;
