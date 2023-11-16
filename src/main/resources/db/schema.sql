@@ -1,5 +1,5 @@
 USE
-`algo_with_me`;
+    `algo_with_me`;
 
 drop table if exists members CASCADE;
 
@@ -53,7 +53,7 @@ CREATE TABLE `problems`
 (
     `id`          BIGINT       NOT NULL AUTO_INCREMENT,
     `number`      BIGINT       NOT NULL,
-    `description` VARCHAR(255) NOT NULL,
+    `description` TEXT         NOT NULL,
     `title`       VARCHAR(255) NOT NULL,
     `difficulty`  VARCHAR(255) NOT NULL,
     `acceptance`  DECIMAL      NOT NULL,
@@ -192,11 +192,11 @@ CREATE TABLE `replies`
 
 CREATE TABLE `reply_likes`
 (
-    `id`          BIGINT   NOT NULL AUTO_INCREMENT,
-    `reply_id`    BIGINT   NOT NULL,
-    `member_id`   BIGINT   NOT NULL,
-    `created_at`  DATETIME NOT NULL,
-    `updated_at`  DATETIME NOT NULL,
+    `id`         BIGINT   NOT NULL AUTO_INCREMENT,
+    `reply_id`   BIGINT   NOT NULL,
+    `member_id`  BIGINT   NOT NULL,
+    `created_at` DATETIME NOT NULL,
+    `updated_at` DATETIME NOT NULL,
     PRIMARY KEY (`id`)
 );
 
@@ -205,7 +205,7 @@ CREATE TABLE `mini_quizzes`
     `id`               BIGINT       NOT NULL AUTO_INCREMENT,
     `description`      VARCHAR(255) NOT NULL,
     `explain`          VARCHAR(255) NOT NULL,
-    `answer`           VARCHAR(255) NOT NULL,
+    `answer`           TEXT         NOT NULL,
     `type`             VARCHAR(255) NOT NULL,
     `difficulty`       VARCHAR(255) NOT NULL,
     `choiceOrInitials` VARCHAR(255) NOT NULL,
@@ -253,7 +253,7 @@ ALTER TABLE `available_languages`
         ON DELETE CASCADE;
 
 ALTER TABLE `available_languages`
-    ADD FOREIGN KEY (`programming_language_id`) REFERENCES programming_languages(`id`)
+    ADD FOREIGN KEY (`programming_language_id`) REFERENCES programming_languages (`id`)
         ON DELETE CASCADE;
 
 ALTER TABLE `problem_tags`
@@ -277,7 +277,7 @@ ALTER TABLE `solution_languages`
         ON DELETE CASCADE;
 
 ALTER TABLE `solution_languages`
-    ADD FOREIGN KEY (`programming_language_id`) REFERENCES programming_languages(`id`)
+    ADD FOREIGN KEY (`programming_language_id`) REFERENCES programming_languages (`id`)
         ON DELETE CASCADE;
 
 ALTER TABLE `solution_likes`
