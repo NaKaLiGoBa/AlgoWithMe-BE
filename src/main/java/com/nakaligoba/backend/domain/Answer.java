@@ -2,6 +2,7 @@ package com.nakaligoba.backend.domain;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,9 +20,10 @@ public class Answer {
     private Long id;
 
     @Column(name = "question")
-    private String question;
+    @Enumerated(EnumType.STRING)
+    private Question question;
 
-    @Column(name = "answer")
+    @Column(name = "answer", columnDefinition = "TEXT")
     private String answer;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,4 +33,12 @@ public class Answer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)
     private Problem problem;
+
+    @Builder
+    public Answer(Question question, String answer, Member member, Problem problem) {
+        this.question = question;
+        this.answer = answer;
+        this.member = member;
+        this.problem = problem;
+    }
 }

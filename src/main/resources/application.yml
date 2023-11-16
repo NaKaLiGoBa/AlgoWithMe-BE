@@ -22,3 +22,6 @@ kakao:
   login:
     grant-type: ${KAKAO_LOGIN_GRANT_TYPE}
     redirect-url: ${KAKAO_LOGIN_REDIRECT_URL}
+
+openai:
+  api-key: ${OPENAI_API_KEY}
