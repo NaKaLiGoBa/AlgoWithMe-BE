@@ -4,7 +4,7 @@ spring:
       on-profile: prod
 
   datasource:
-    url: jdbc:mysql://mysql:3306/algo_with_me?useSSL=true&verifyServerCertificate=true
+    url: jdbc:mysql://10.240.8.25:3306/algo_with_me?useSSL=true&verifyServerCertificate=true
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
