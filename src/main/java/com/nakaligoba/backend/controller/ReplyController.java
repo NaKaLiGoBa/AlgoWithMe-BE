@@ -8,6 +8,7 @@ import com.nakaligoba.backend.service.impl.ReplyLikeService;
 import com.nakaligoba.backend.service.impl.ReplyService;
 import com.nakaligoba.backend.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,7 +39,7 @@ public class ReplyController {
         Long createdReplyId = replyService.createReply(writerEmail, commentId, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header("Location", String.valueOf(createdReplyId))
+                .header(HttpHeaders.LOCATION, "/api/v1/comments/" + commentId + "/replies/" + createdReplyId)
                 .build();
     }
 
