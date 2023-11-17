@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface SolutionViewRepository extends JpaRepository<SolutionView, Long> {
     Optional<Long> countBySolutionId(Long solutionId);
 
-    void deleteBySolutionId(Long solutionId);
+    void deleteBySolution(Solution solution);
 }
