@@ -62,17 +62,6 @@ public class AuthService implements SignUpUseCase {
     private final JwtProvider jwtProvider;
     private final RedisUtils redisUtils;
 
-    @PostConstruct
-    public void init() {
-        Member admin = Member.builder()
-                .email("admin@admin.com")
-                .password(passwordEncoder.encode("admin123"))
-                .nickname("admin")
-                .role(Role.ROLE_ADMIN)
-                .build();
-        memberRepository.save(admin);
-    }
-
     @Transactional
     public void signup(MemberDto memberDto) {
         if (memberRepository.existsByEmail(memberDto.getEmail())) {
