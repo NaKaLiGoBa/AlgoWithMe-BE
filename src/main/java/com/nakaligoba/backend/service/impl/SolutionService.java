@@ -30,6 +30,7 @@ public class SolutionService {
 
     private final MemberService memberService;
     private final ProblemService problemService;
+    private final SolutionViewService solutionViewService;
 
     private final SolutionRepository solutionRepository;
     private final CommentRepository commentRepository;
@@ -50,7 +51,6 @@ public class SolutionService {
         Solution solution = Solution.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
-                .viewCount(0L)
                 .member(member)
                 .problem(problem)
                 .build();
@@ -152,7 +152,7 @@ public class SolutionService {
                                         .id(solution.getId())
                                         .title(solution.getTitle())
                                         .likeCount(getLikeCount(solution.getId()))
-                                        .viewCount(solution.getViewCount())
+                                        .viewCount(getViewCount(solution.getId()))
                                         .commentCount(getCommentCount(solution.getId()))
                                         .build())
                                 .build())
@@ -173,24 +173,32 @@ public class SolutionService {
         return nextCursor;
     }
 
-    @Transactional(readOnly = true)
     public SolutionResponse readSolution(String loggedInEmail, Long problemId, Long solutionId) {
         Member member = memberService.getMemberByEmail(loggedInEmail);
+        Solution solution = solutionRepository.findById(solutionId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        SolutionView solutionView = SolutionView.builder()
+                .member(member)
+                .solution(solution)
+                .build();
+
+        solutionViewService.createSolutionView(solutionView);
 
         return solutionRepository.findById(solutionId).map(
-                        solution -> SolutionResponse.builder()
+                        value -> SolutionResponse.builder()
                                 .author(AuthorDto.builder()
                                         .avatar("")
-                                        .nickname(solution.getMember().getNickname())
+                                        .nickname(value.getMember().getNickname())
                                         .build())
                                 .solution(SolutionResponse.SolutionData.builder()
-                                        .title(solution.getTitle())
-                                        .createdAt(convertLocalDateTimeToString(solution.getCreatedAt()))
-                                        .content(solution.getContent())
-                                        .languages(getLanguages(solution.getSolutionLanguages(), solutionId))
+                                        .title(value.getTitle())
+                                        .createdAt(convertLocalDateTimeToString(value.getCreatedAt()))
+                                        .content(value.getContent())
+                                        .languages(getLanguages(value.getSolutionLanguages(), solutionId))
                                         .likeCount(getLikeCount(solutionId))
-                                        .viewCount(solution.getViewCount())
-                                        .commentCount(getCommentCount(solutionId)) // todo : 리팩토링 필요(SolutionService ↔ CommentService 간 순환참조)
+                                        .viewCount(getViewCount(solutionId))
+                                        .commentCount(getCommentCount(solutionId))
                                         .isLike(solutionLikeRepository.existsByMemberIdAndSolutionId(member.getId(), solutionId))
                                         .build())
                                 .build()
@@ -214,5 +222,9 @@ public class SolutionService {
 
     private Long getCommentCount(Long solutionId) {
         return commentRepository.countBySolutionId(solutionId);
+    }
+
+    private Long getViewCount(Long solutionId) {
+        return solutionViewService.countBySolutionId(solutionId);
     }
 }

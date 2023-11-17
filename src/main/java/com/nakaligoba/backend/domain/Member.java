@@ -43,6 +43,9 @@ public class Member extends BaseEntity {
     private List<SolutionLike> solutionLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
+    private List<SolutionView> solutionViews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
     private List<CommentLike> commentLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
@@ -79,7 +82,7 @@ public class Member extends BaseEntity {
     }
 
     public List<String> getRoleList() {
-        if(this.role.name().length() > 0)
+        if (this.role.name().length() > 0)
             return Arrays.asList(this.role.name().split(","));
 
         return new ArrayList<>();
