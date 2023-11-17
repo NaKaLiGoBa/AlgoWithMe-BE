@@ -22,7 +22,7 @@ public class SolutionViewService {
         solutionViewRepository.save(solutionView);
     }
 
-    public void deleteBySolutionId(Long solutionId) {
-        solutionViewRepository.deleteBySolutionId(solutionId);
+    public void deleteBySolution(Solution solution) {
+        solutionViewRepository.deleteBySolution(solution);
     }
 }
