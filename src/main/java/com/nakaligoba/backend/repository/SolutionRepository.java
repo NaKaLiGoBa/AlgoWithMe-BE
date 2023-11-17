@@ -15,7 +15,7 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
     ArrayList<Solution> findByProblemIdAndIdLessThanOrderByCreatedAtDesc(Long problemId, Long id, Pageable pageable); // 이후
 
     // todo : 조회수 순
-    ArrayList<Solution> findByProblemIdOrderByViewCountDesc(Long problemId, Pageable pageable); // 처음
+    // ArrayList<Solution> findByProblemIdOrderByViewCountDesc(Long problemId, Pageable pageable); // 처음
 
-    ArrayList<Solution> findByProblemIdAndViewCountLessThanEqualAndIdLessThanOrderByViewCountDescIdDesc(Long problemId, Long viewCount, Long solutionId, Pageable pageable); // 이후
+    // ArrayList<Solution> findByProblemIdAndViewCountLessThanEqualAndIdLessThanOrderByViewCountDescIdDesc(Long problemId, Long viewCount, Long solutionId, Pageable pageable); // 이후
 }

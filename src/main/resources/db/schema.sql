@@ -23,6 +23,8 @@ drop table if exists solution_languages CASCADE;
 
 drop table if exists solution_likes CASCADE;
 
+drop table if exists solution_views CASCADE;
+
 drop table if exists comment_likes CASCADE;
 
 drop table if exists comments CASCADE;
@@ -149,6 +151,16 @@ CREATE TABLE `solution_languages`
 );
 
 CREATE TABLE `solution_likes`
+(
+    `id`          BIGINT   NOT NULL AUTO_INCREMENT,
+    `member_id`   BIGINT   NOT NULL,
+    `solution_id` BIGINT   NOT NULL,
+    `created_at`  DATETIME NOT NULL,
+    `updated_at`  DATETIME NOT NULL,
+    PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `solution_views
 (
     `id`          BIGINT   NOT NULL AUTO_INCREMENT,
     `member_id`   BIGINT   NOT NULL,
@@ -285,6 +297,14 @@ ALTER TABLE `solution_likes`
         ON DELETE CASCADE;
 
 ALTER TABLE `solution_likes`
+    ADD FOREIGN KEY (`member_id`) REFERENCES members (`id`)
+        ON DELETE CASCADE;
+
+ALTER TABLE `solution_views`
+    ADD FOREIGN KEY (`solution_id`) REFERENCES solutions (`id`)
+        ON DELETE CASCADE;
+
+ALTER TABLE `solution_views`
     ADD FOREIGN KEY (`member_id`) REFERENCES members (`id`)
         ON DELETE CASCADE;
 
