@@ -4,12 +4,9 @@ import com.nakaligoba.backend.acceptance.fixtures.ProblemFixture;
 import com.nakaligoba.backend.controller.payload.request.CommentRequest;
 import com.nakaligoba.backend.controller.payload.request.SolutionRequest;
 import com.nakaligoba.backend.controller.payload.response.CommentsResponse;
-import com.nakaligoba.backend.controller.payload.response.SolutionResponse;
 import com.nakaligoba.backend.domain.ProgrammingLanguage;
-import com.nakaligoba.backend.exception.DuplicateNicknameException;
 import com.nakaligoba.backend.exception.PermissionDeniedException;
 import com.nakaligoba.backend.repository.ProgrammingLanguageRepository;
-import com.nakaligoba.backend.repository.SolutionRepository;
 import com.nakaligoba.backend.service.dto.MemberDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -94,7 +93,7 @@ class CommentServiceTest {
     }
 
     @Test
-    @DisplayName("풀이 생성 후 작성자가 아닌 다른 사람은 작성된 풀이를 수정할 수 없다.")
+    @DisplayName("특정 풀이에 대한 댓글 생성 후 작성자가 아닌 다른 사람은 작성된 댓글을 수정할 수 없다.")
     void updateCommentByOther() {
         // given
         Long commentId = commentService.createComment("tnh3113@gmail.com", createdSolutionId, getTestCommentRequest(testContent1));
@@ -123,7 +122,7 @@ class CommentServiceTest {
     }
 
     @Test
-    @DisplayName("풀이 생성 후 작성자가 아닌 다른 사람은 작성된 풀이를 삭제할 수 없다.")
+    @DisplayName("특정 풀이에 대한 댓글 생성 후 작성자가 아닌 다른 사람은 작성된 댓글을 삭제할 수 없다.")
     void deleteCommentByOther() {
         // given
         Long commentId = commentService.createComment("tnh3113@gmail.com", createdSolutionId, getTestCommentRequest(testContent1));

@@ -106,6 +106,7 @@ public class SolutionService {
             throw new UnauthorizedException("권한이 없습니다.");
         }
 
+        solutionViewService.deleteBySolutionId(solutionId);
         solutionRepository.delete(solution);
     }
 

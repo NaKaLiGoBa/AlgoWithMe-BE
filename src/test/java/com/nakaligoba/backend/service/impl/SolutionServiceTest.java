@@ -30,12 +30,19 @@ class SolutionServiceTest {
 
     @Autowired
     private ProblemFacade problemFacade;
+
     @Autowired
     private SolutionService solutionService;
+
     @Autowired
-    private ProgrammingLanguageRepository programmingLanguageRepository;
+    private SolutionViewService solutionViewService;
+
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private ProgrammingLanguageRepository programmingLanguageRepository;
+
     @Autowired
     private SolutionRepository solutionRepository;
 
@@ -141,9 +148,9 @@ class SolutionServiceTest {
         Long secondSolutionId = solutionService.createSolution("test2@test.com", createdProblemId, request);
         Long thirdSolutionId = solutionService.createSolution("test3@test.com", createdProblemId, request);
 
-        Long nextCursorId = 4L;
+        Long nextCursorId = -100L;
         Integer size = 10;
-        String sort = "RECENT";
+        String sort = "recent";
 
         // when
         SolutionsResponse solutionsResponse = solutionService.readSolutions(createdProblemId, nextCursorId, size, sort);
@@ -178,6 +185,27 @@ class SolutionServiceTest {
         // then
         assertThat(viewCount).isEqualTo(2);
     }
+
+//    @Test
+//    @DisplayName("작성된 풀이 글을 삭제 시 해당 풀이 글에 대한 조회 수 정보도 함께 삭제된다.")
+//    void deleteSolutionViewCount() {
+//        //given
+//        SolutionRequest request = new SolutionRequest();
+//        ArrayList<String> languages = new ArrayList<>();
+//        languages.add("Java");
+//        request.setLanguages(languages);
+//        request.setTitle("테스트 풀이글");
+//        request.setContent("테스트 풀이글 내용");
+//        Long createdSolutionId = solutionService.createSolution("test1@test.com", createdProblemId, request);
+//
+//        // when
+//        SolutionResponse solutionResponse = solutionService.readSolution("test2@test.com", createdProblemId, createdSolutionId);
+//        solutionService.removeSolution("test1@test.com", createdProblemId, createdSolutionId);
+//
+//        // then
+//        Long viewCount = solutionViewService.countBySolutionId(createdSolutionId);
+//        assertThat(viewCount).isEqualTo(0);
+//    }
 
     private void testSignUp(String email, String password, String nickname, String role) {
         authService.signup(MemberDto.builder()
