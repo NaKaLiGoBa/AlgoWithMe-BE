@@ -4,8 +4,12 @@ import com.nakaligoba.backend.acceptance.fixtures.ProblemFixture;
 import com.nakaligoba.backend.controller.payload.request.CommentRequest;
 import com.nakaligoba.backend.controller.payload.request.SolutionRequest;
 import com.nakaligoba.backend.controller.payload.response.CommentsResponse;
+import com.nakaligoba.backend.controller.payload.response.SolutionResponse;
 import com.nakaligoba.backend.domain.ProgrammingLanguage;
+import com.nakaligoba.backend.exception.DuplicateNicknameException;
+import com.nakaligoba.backend.exception.PermissionDeniedException;
 import com.nakaligoba.backend.repository.ProgrammingLanguageRepository;
+import com.nakaligoba.backend.repository.SolutionRepository;
 import com.nakaligoba.backend.service.dto.MemberDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @Transactional
@@ -51,7 +56,6 @@ class CommentServiceTest {
     @BeforeEach
     void beforeEach() {
         // 회원가입
-        testSignUp("admin@admin.com", "123456", "admin", "admin");
         testSignUp("nakaligoba@gmail.com", "1234567", "nakaligoba", "");
         testSignUp("tnh3113@gmail.com", "123456", "tnh3113", "");
 
@@ -90,6 +94,18 @@ class CommentServiceTest {
     }
 
     @Test
+    @DisplayName("풀이 생성 후 작성자가 아닌 다른 사람은 작성된 풀이를 수정할 수 없다.")
+    void updateCommentByOther() {
+        // given
+        Long commentId = commentService.createComment("tnh3113@gmail.com", createdSolutionId, getTestCommentRequest(testContent1));
+
+        // when
+        assertThrows(PermissionDeniedException.class, () -> {
+            commentService.updateComment("nakaligoba@gmail.com", commentId, getTestCommentRequest("내용 수정"));
+        });
+    }
+
+    @Test
     @DisplayName("특정 풀이에 특정 댓글을 삭제 시 조회되지 않는다.")
     void deleteComment() {
         // given
@@ -104,6 +120,18 @@ class CommentServiceTest {
         // then
         CommentsResponse deletedCommentsResponse = commentService.readComments("tnh3113@gmail.com", createdSolutionId, pageable, "recent");
         assertThat(deletedCommentsResponse.getComments().size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("풀이 생성 후 작성자가 아닌 다른 사람은 작성된 풀이를 삭제할 수 없다.")
+    void deleteCommentByOther() {
+        // given
+        Long commentId = commentService.createComment("tnh3113@gmail.com", createdSolutionId, getTestCommentRequest(testContent1));
+
+        // when
+        assertThrows(PermissionDeniedException.class, () -> {
+            commentService.deleteComment("nakaligoba@gmail.com", commentId);
+        });
     }
 
     @Test

@@ -24,9 +24,6 @@ public class Solution extends BaseEntity {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "view_count", nullable = false)
-    private Long viewCount;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
@@ -42,20 +39,23 @@ public class Solution extends BaseEntity {
     private List<SolutionLike> solutionLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "solution")
+    private List<SolutionView> solutionViews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "solution")
     private List<Comment> comments = new ArrayList<>();
 
     @Builder
-    public Solution(String title, String content, Member member, Problem problem, Long viewCount) {
+    public Solution(String title, String content, Member member, Problem problem) {
         this.title = title;
         this.content = content;
         this.member = member;
         this.problem = problem;
-        this.viewCount = viewCount;
     }
 
     public void changeTitle(String title) {
         this.title = title;
     }
+
     public void changeContent(String content) {
         this.content = content;
     }

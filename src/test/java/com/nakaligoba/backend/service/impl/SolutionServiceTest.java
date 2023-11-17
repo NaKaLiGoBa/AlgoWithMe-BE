@@ -3,6 +3,7 @@ package com.nakaligoba.backend.service.impl;
 import com.github.dockerjava.api.exception.UnauthorizedException;
 import com.nakaligoba.backend.acceptance.fixtures.ProblemFixture;
 import com.nakaligoba.backend.controller.payload.request.SolutionRequest;
+import com.nakaligoba.backend.controller.payload.response.SolutionResponse;
 import com.nakaligoba.backend.controller.payload.response.SolutionsResponse;
 import com.nakaligoba.backend.domain.ProgrammingLanguage;
 import com.nakaligoba.backend.domain.Solution;
@@ -157,6 +158,26 @@ class SolutionServiceTest {
         assertEquals(firstSolutionId, getSolutions.get(2).getSolution().getId());
     }
 
+    @Test
+    @DisplayName("작성된 풀이 글을 두 명의 유저가 조회 시 2만큼 증가된 조회 수를 확인할 수 있다.")
+    void validateSolutionViewCount() {
+        //given
+        SolutionRequest request = new SolutionRequest();
+        ArrayList<String> languages = new ArrayList<>();
+        languages.add("Java");
+        request.setLanguages(languages);
+        request.setTitle("테스트 풀이글");
+        request.setContent("테스트 풀이글 내용");
+        Long createdSolutionId = solutionService.createSolution("test1@test.com", createdProblemId, request);
+
+        // when
+        SolutionResponse solutionResponse = solutionService.readSolution("test2@test.com", createdProblemId, createdSolutionId);
+        SolutionResponse solutionResponse2 = solutionService.readSolution("test3@test.com", createdProblemId, createdSolutionId);
+        Long viewCount = solutionResponse2.getSolution().getViewCount();
+
+        // then
+        assertThat(viewCount).isEqualTo(2);
+    }
 
     private void testSignUp(String email, String password, String nickname, String role) {
         authService.signup(MemberDto.builder()
