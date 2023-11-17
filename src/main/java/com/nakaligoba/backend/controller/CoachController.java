@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@RequestMapping("/api/v1/problems/{problemId}/coaches")
+@RequestMapping("/api/v1/problems/{problemId}/answers")
 @RestController
 @RequiredArgsConstructor
 public class CoachController {
