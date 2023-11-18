@@ -44,7 +44,6 @@ public class MiniQuiz {
     private Difficulty difficulty;
 
     @Builder
-
     public MiniQuiz(String choiceOrInitials, String description, String explain, String answer, MiniQuizType miniQuizType, Difficulty difficulty) {
         this.choiceOrInitials = choiceOrInitials;
         this.description = description;
