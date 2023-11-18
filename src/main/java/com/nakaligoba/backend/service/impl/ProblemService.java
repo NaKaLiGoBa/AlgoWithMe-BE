@@ -153,7 +153,7 @@ public class ProblemService {
 
     @Transactional
     public Problem createProblem(String title, String description, String difficulty) {
-        int lastProblemNumber = getLastProblemNumber() + 1;
+        int lastProblemNumber = getLastProblemNumber();
 
         Problem problem = Problem.defaultBuilder()
                 .number(lastProblemNumber + 1)
