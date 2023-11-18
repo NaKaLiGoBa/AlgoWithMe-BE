@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 
 public enum Difficulty {
     EASY("쉬움"),
-    MEDIUM("중간"),
+    MEDIUM("보통"),
     HARD("어려움");
 
     private final String korean;
