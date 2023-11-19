@@ -25,3 +25,8 @@ kakao:
 
 openai:
   api-key: ${OPENAI_API_KEY}
+
+management:
+  endpoints:
+    web:
+      base-path: /api/management
