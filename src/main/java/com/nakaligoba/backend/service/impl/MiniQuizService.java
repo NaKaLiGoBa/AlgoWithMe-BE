@@ -56,7 +56,7 @@ public class MiniQuizService {
     @Transactional
     public Long createMiniQuiz(MiniQuizDto dto, String difficulty, List<String> tags) {
         MiniQuizType type;
-        switch (dto.getType()) {
+        switch (dto.getType().toLowerCase()) {
             case "ox":
                 type = MiniQuizType.OX;
                 break;
