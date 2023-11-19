@@ -30,3 +30,6 @@ management:
   endpoints:
     web:
       base-path: /api/management
+      exposure:
+        include:
+          - mappings
