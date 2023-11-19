@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,14 +33,26 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
         log.info("checkTestcases method call");
         Problem problem = problemService.getProblem(problemId);
         Language programmingLanguage = Language.findByName(language)
-                .orElse(Language.JAVA);
-        //.orElseThrow(NoSuchElementException::new);
+                .orElseThrow(EntityNotFoundException::new);
 
-        File mainFile = createFile("Main", programmingLanguage, programmingLanguage.getMainCode());
-        log.info("Create Main.java");
+        File mainFile = null;
+        File solutionFile = null;
+        switch (programmingLanguage) {
+            case JAVA:
+                mainFile = createFile("Main", programmingLanguage, programmingLanguage.getMainCode());
+                log.info("Create Main.java");
 
-        File solutionFile = createFile("Solution", programmingLanguage, code);
-        log.info("Create Solution.java");
+                solutionFile = createFile("Solution", programmingLanguage, code);
+                log.info("Create Solution.java");
+                break;
+            case JAVASCRIPT:
+                solutionFile = createFile("solution", programmingLanguage, code);
+                log.info("Create solution.js");
+                break;
+            default:
+                log.warn("There is no suitable process to run code: {}", programmingLanguage.getName());
+                break;
+        }
 
         try {
             log.info("Compile start");
@@ -66,14 +79,26 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
         Member member = memberService.getMemberByEmail(memberEmail);
         Problem problem = problemService.getProblem(problemId);
         Language programmingLanguage = Language.findByName(language)
-                .orElse(Language.JAVA);
-        //.orElseThrow(NoSuchElementException::new);
+                .orElseThrow(EntityNotFoundException::new);
 
-        File mainFile = createFile("Main", programmingLanguage, programmingLanguage.getMainCode());
-        log.info("Create Main.java");
+        File mainFile = null;
+        File solutionFile = null;
+        switch (programmingLanguage) {
+            case JAVA:
+                mainFile = createFile("Main", programmingLanguage, programmingLanguage.getMainCode());
+                log.info("Create Main.java");
 
-        File solutionFile = createFile("Solution", programmingLanguage, code);
-        log.info("Create Solution.java");
+                solutionFile = createFile("Solution", programmingLanguage, code);
+                log.info("Create Solution.java");
+                break;
+            case JAVASCRIPT:
+                solutionFile = createFile("solution", programmingLanguage, code);
+                log.info("Create solution.js");
+                break;
+            default:
+                log.warn("There is no suitable process to run code: {}", programmingLanguage.getName());
+                break;
+        }
 
         try {
             boolean isAnswer = true;
@@ -237,9 +262,13 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
     }
 
     private static void cleanFiles(File mainFile, File solutionFile) {
-        mainFile.delete();
-        solutionFile.delete();
-        new File("Main.class").delete();
-        new File("Solution.class").delete();
+        if (mainFile != null) {
+            mainFile.delete();
+        }
+        if (solutionFile != null) {
+            solutionFile.delete();
+        }
+        //new File("Main.class").delete();
+        //new File("Solution.class").delete();
     }
 }

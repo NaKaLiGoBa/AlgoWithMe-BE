@@ -39,7 +39,17 @@ public enum Language {
                     "    }\n" +
                     "\n" +
                     "}"
-            );
+            ),
+    JAVASCRIPT(
+            "javascript",
+            "js",
+            "",
+            "node solution.js",
+            "function solution(%s) {\n    var answer = 0;\n    return answer;\n}",
+            "%s",
+            ""
+    )
+    ;
 
     private final String name;
     private final String ext;
