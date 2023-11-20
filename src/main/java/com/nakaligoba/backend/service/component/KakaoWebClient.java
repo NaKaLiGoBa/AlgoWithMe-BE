@@ -48,7 +48,7 @@ public class KakaoWebClient {
             .clientConnector(new ReactorClientHttpConnector(build()))
             .build();
 
-    private final RestTemplate restTemplate;
+    private final RestTemplate restTemplate = getRestTemplate();
 
     private HttpClient build() {
         return HttpClient.create()
