@@ -105,7 +105,7 @@ public class AuthService implements SignUpUseCase {
     }
 
     private KakaoSigninTokenResponse getKakaoSigninToken(String kakaoAuthCode) {
-        return kakaoWebClient.getKakaoSigninToken(kakaoAuthCode);
+        return kakaoWebClient.getKakaoSigninTokenV2(kakaoAuthCode);
     }
 
     private KakaoSigninUserInfoResponse getKakaoSigninUserInfo(String accessToken) {
