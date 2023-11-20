@@ -9,6 +9,7 @@ import com.nakaligoba.backend.service.dto.CheckTestcaseResult;
 import com.nakaligoba.backend.service.dto.InputDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -138,6 +139,10 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
                 isAnswer &= output.equals(expected);
             }
 
+            if (ArrayUtils.isEmpty(outputs)) {
+                isAnswer = false;
+            }
+
             submitService.save(code, Result.isResolved(isAnswer), problem, member);
 
             return isAnswer;
@@ -244,6 +249,22 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
         List<List<InputDto>> testcaseInputs = testcases.stream()
                 .map(testcaseService::getInputs)
                 .collect(Collectors.toList());
+
+        if (ArrayUtils.isEmpty(outputs)) {
+            for (int i = 0; i < expecteds.size(); i++) {
+                List<InputDto> testcaseInput = testcaseInputs.get(i);
+                String expected = expecteds.get(i);
+                CheckTestcaseResult checkTestcaseResult = CheckTestcaseResult.builder()
+                        .number(i + 1)
+                        .isAnswer(false)
+                        .inputs(testcaseInput)
+                        .output("")
+                        .expected(expected)
+                        .build();
+                checkTestcaseResults.add(checkTestcaseResult);
+            }
+        }
+
         for (int i = 0; i < outputs.length; i++) {
             List<InputDto> testcaseInput = testcaseInputs.get(i);
             String output = outputs[i];
