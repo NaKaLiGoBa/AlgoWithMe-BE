@@ -46,10 +46,10 @@ class AICoachServiceTest {
     @Test
     @DisplayName("AI Coach와 나눴던 질문과 답변을 리스트로 조회를 할 수 있다.")
     void readAiCoachList() {
-        aiCoachService.createAnswer("test1@test.com", createdProblemId, "알고리즘 선택과 설계", "어떻게 해?");
-        aiCoachService.createAnswer("test1@test.com", createdProblemId, "엣지 케이스", "어떻게 해?");
-        aiCoachService.createAnswer("test1@test.com", createdProblemId, "코드 구조와 가독성", "어떻게 해?");
-        aiCoachService.createAnswer("test1@test.com", createdProblemId, "코드 최적화", "어떻게 해?");
+        aiCoachService.createAnswer("test1@test.com", createdProblemId, "알고리즘 선택과 설계", "class Solution {\n    public String solve(int a, int b, int[] arr) {\n        int answer = \"\";\n        return answer;\n    }\n}");
+        aiCoachService.createAnswer("test1@test.com", createdProblemId, "엣지 케이스", "class Solution {\n    public String solve(int a, int b, int[] arr) {\n        int answer = \"\";\n        return answer;\n    }\n}");
+        aiCoachService.createAnswer("test1@test.com", createdProblemId, "코드 구조와 가독성", "class Solution {\n    public String solve(int a, int b, int[] arr) {\n        int answer = \"\";\n        return answer;\n    }\n}");
+        aiCoachService.createAnswer("test1@test.com", createdProblemId, "코드 최적화", "class Solution {\n    public String solve(int a, int b, int[] arr) {\n        int answer = \"\";\n        return answer;\n    }\n}");
 
         Long count = aiCoachService.getAnswerList("test1@test.com", createdProblemId).getAnswerCount();
         assertThat(count).isEqualTo(4);

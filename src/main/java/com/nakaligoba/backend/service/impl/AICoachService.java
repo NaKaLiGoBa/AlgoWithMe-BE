@@ -67,7 +67,6 @@ public class AICoachService {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        Long totalCount = answerRepository.countByMemberAndProblem(member, problem);
         List<Answer> answers = answerRepository.findByMemberAndProblem(member, problem);
 
         List<CoachAnswersResponse.AnswerInfo> answerInfos = answers.stream()
@@ -78,7 +77,7 @@ public class AICoachService {
                 .collect(Collectors.toList());
 
         return CoachAnswersResponse.builder()
-                .answerCount(totalCount)
+                .answerCount((long)answers.size())
                 .answers(answerInfos)
                 .build();
     }
