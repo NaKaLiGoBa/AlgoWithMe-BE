@@ -3,6 +3,7 @@ package com.nakaligoba.backend.service.component;
 
 import com.nakaligoba.backend.service.dto.KakaoSigninTokenResponse;
 import com.nakaligoba.backend.service.dto.KakaoSigninUserInfoResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -24,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class KakaoWebClient {
 
     @Value("${kakao.login.grant-type}")
@@ -38,6 +40,8 @@ public class KakaoWebClient {
     private final WebClient webClient = WebClient.builder()
             .clientConnector(new ReactorClientHttpConnector(build()))
             .build();
+
+    private final RestTemplate restTemplate;
 
     private HttpClient build() {
         return HttpClient.create()
@@ -66,12 +70,6 @@ public class KakaoWebClient {
 
     public KakaoSigninTokenResponse getKakaoSigninTokenV2(String kakaoAuthCode) {
         log.info("kakao signin v2");
-        RestTemplate restTemplate = new RestTemplate();
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("krmp-proxy.9rum.cc", 3128));
-        requestFactory.setProxy(proxy);
-        restTemplate.setRequestFactory(requestFactory);
-
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("grant_type", GRANT_TYPE);
         formData.add("client_id", CLIENT_ID);
