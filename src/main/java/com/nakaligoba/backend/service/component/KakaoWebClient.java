@@ -3,6 +3,7 @@ package com.nakaligoba.backend.service.component;
 
 import com.nakaligoba.backend.service.dto.KakaoSigninTokenResponse;
 import com.nakaligoba.backend.service.dto.KakaoSigninUserInfoResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.transport.ProxyProvider;
 
+@Slf4j
 @Component
 public class KakaoWebClient {
 
@@ -42,6 +44,7 @@ public class KakaoWebClient {
         formData.add("redirect_url", REDIRECT_URL);
         formData.add("code", kakaoAuthCode);
 
+        log.info("Check Auth Code: {}", kakaoAuthCode);
         return webClient
                 .post()
                 .uri("https://kauth.kakao.com/oauth/token")
