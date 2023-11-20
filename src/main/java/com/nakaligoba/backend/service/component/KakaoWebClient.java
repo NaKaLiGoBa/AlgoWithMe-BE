@@ -16,7 +16,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -27,8 +26,6 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.transport.ProxyProvider;
 
 import javax.net.ssl.SSLContext;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -52,7 +49,7 @@ public class KakaoWebClient {
             .clientConnector(new ReactorClientHttpConnector(build()))
             .build();
 
-    private final RestTemplate restTemplate = setRestTemplate();
+    private final RestTemplate restTemplate = getRestTemplate();
 
     private HttpClient build() {
         return HttpClient.create()
@@ -61,7 +58,7 @@ public class KakaoWebClient {
                 ));
     }
 
-    private RestTemplate setRestTemplate() {
+    private RestTemplate getRestTemplate() {
         // SSL 컨텍스트 설정
         SSLContext sslContext;
         try {
@@ -120,14 +117,6 @@ public class KakaoWebClient {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
         return restTemplate.postForObject("https://kauth.kakao.com/oauth/token", request, KakaoSigninTokenResponse.class);
-    }
-
-    private SimpleClientHttpRequestFactory setProxy() {
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("krmp-proxy.9rum.cc", 3128));
-        factory.setProxy(proxy);
-
-        return factory;
     }
 
     public KakaoSigninUserInfoResponse getKakaoSigninUserInfo(String accessToken) {
