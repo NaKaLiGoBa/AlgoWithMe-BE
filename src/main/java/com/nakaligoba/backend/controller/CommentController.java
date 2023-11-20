@@ -10,6 +10,7 @@ import com.nakaligoba.backend.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class CommentController {
         Long createdCommentId = commentService.createComment(writerEmail, solutionId, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header("Location", String.valueOf(createdCommentId))
+                .header(HttpHeaders.LOCATION, "/api/v1/solutions/" + solutionId + "/comments/" + createdCommentId)
                 .build();
     }
 

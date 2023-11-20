@@ -29,6 +29,7 @@ public class AvailableLanguage extends BaseEntity {
     private ProgrammingLanguage programmingLanguage;
 
     public AvailableLanguage(Problem problem, ProgrammingLanguage programmingLanguage) {
+        this.templateCode = "";
         this.problem = problem;
         this.programmingLanguage = programmingLanguage;
     }

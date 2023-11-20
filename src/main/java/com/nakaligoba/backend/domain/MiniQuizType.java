@@ -7,9 +7,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public enum MiniQuizType {
-    CHOICE((ci) -> Arrays.stream(ci.split(", ")).collect(Collectors.toList())),
+    CHOICE((ci) -> Arrays.stream(ci.split(",")).collect(Collectors.toList())),
     OX((ci) -> Collections.emptyList()),
-    INITIAL((ci) -> Arrays.stream(ci.split(", ")).collect(Collectors.toList()));
+    INITIAL((ci) -> Arrays.stream(ci.split(",")).collect(Collectors.toList()));
 
     private final Function<String, List<String>> mapToList;
 

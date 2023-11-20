@@ -4,20 +4,35 @@ spring:
       on-profile: prod
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USER_ID}
-    password: ${DB_USER_PW}
-    driver-class-name: ${DB_DRIVER_CLASS_NAME}
+    url: jdbc:mysql://mysql:3306/algo_with_me?useSSL=false
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     properties:
       hibernate:
         format_sql: true
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: none
+
+  redis:
+    host: localhost
+    port: 6379
+    auth-num-valid-time: 600
 
 jwt:
   claim: ${CLAIM}
   secret: ${JWT_SECRET_KEY}
   token-validity-in-seconds: ${JWT_VALID_TIME}
+
+logging:
+  level:
+    org:
+      apache:
+        http: DEBUG
+      springframework:
+        web:
+          client:
+            RestTemplate: DEBUG

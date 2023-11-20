@@ -10,6 +10,7 @@ import com.nakaligoba.backend.controller.payload.response.SolutionsResponse;
 import com.nakaligoba.backend.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class SolutionController {
         Long createdSolutionId = solutionService.createSolution(loggedInEmail, id, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header("Location", "https://k881facf0dd88a.user-app.krampoline.com/api/v1/problems/" + id + "/solutions/" + createdSolutionId)
+                .header(HttpHeaders.LOCATION, "/api/v1/problems/" + id + "/solutions/" + createdSolutionId)
                 .build();
     }
 
@@ -45,7 +46,7 @@ public class SolutionController {
         Long updatedSolutionId = solutionService.updateSolution(writerEmail, problemId, solutionId, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header("Location", "https://k881facf0dd88a.user-app.krampoline.com/api/v1/problems/" + problemId + "/solutions/" + updatedSolutionId)
+                .header(HttpHeaders.LOCATION, "/api/v1/problems/" + problemId + "/solutions/" + updatedSolutionId)
                 .build();
     }
 

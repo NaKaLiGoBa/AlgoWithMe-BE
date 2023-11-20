@@ -24,7 +24,7 @@ public class MiniQuiz {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "choiceOrInitials")
+    @Column(name = "choice_or_initials")
     private String choiceOrInitials;
 
     @Column(name = "description")
@@ -37,14 +37,13 @@ public class MiniQuiz {
     private String answer;
 
     @Column(name = "type")
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private MiniQuizType miniQuizType;
 
     @Column(name = "difficulty")
     private Difficulty difficulty;
 
     @Builder
-
     public MiniQuiz(String choiceOrInitials, String description, String explain, String answer, MiniQuizType miniQuizType, Difficulty difficulty) {
         this.choiceOrInitials = choiceOrInitials;
         this.description = description;

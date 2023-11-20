@@ -9,8 +9,10 @@ import com.nakaligoba.backend.service.dto.CheckTestcaseResult;
 import com.nakaligoba.backend.service.dto.InputDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,22 +31,43 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
 
     @Override
     public List<CheckTestcaseResult> checkTestcases(Long problemId, String language, String code) {
+        log.info("checkTestcases method call");
         Problem problem = problemService.getProblem(problemId);
         Language programmingLanguage = Language.findByName(language)
-                .orElse(Language.JAVA);
-        //.orElseThrow(NoSuchElementException::new);
+                .orElseThrow(EntityNotFoundException::new);
 
-        File mainFile = createFile("Main", programmingLanguage, programmingLanguage.getMainCode());
-        File solutionFile = createFile("Solution", programmingLanguage, code);
+        File mainFile = null;
+        File solutionFile = null;
+        switch (programmingLanguage) {
+            case JAVA:
+                mainFile = createFile("Main", programmingLanguage, programmingLanguage.getMainCode());
+                log.info("Create Main.java");
+
+                solutionFile = createFile("Solution", programmingLanguage, code);
+                log.info("Create Solution.java");
+                break;
+            case JAVASCRIPT:
+                solutionFile = createFile("solution", programmingLanguage, code);
+                log.info("Create solution.js");
+                break;
+            default:
+                log.warn("There is no suitable process to run code: {}", programmingLanguage.getName());
+                break;
+        }
+
         try {
+            log.info("Compile start");
             compileIfNeeded(programmingLanguage);
+            log.info("Compile end");
 
             List<Testcase> testcases = problem.getTestcases()
                     .stream()
                     .filter(Testcase::isTesting)
                     .collect(Collectors.toList());
 
+            log.info("Run code start");
             String[] outputs = runSolution(programmingLanguage, testcases);
+            log.info("Run code end");
 
             return getCheckTestcaseResults(testcases, outputs);
         } finally {
@@ -57,17 +80,34 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
         Member member = memberService.getMemberByEmail(memberEmail);
         Problem problem = problemService.getProblem(problemId);
         Language programmingLanguage = Language.findByName(language)
-                .orElse(Language.JAVA);
-        //.orElseThrow(NoSuchElementException::new);
+                .orElseThrow(EntityNotFoundException::new);
 
-        File mainFile = createFile("Main", programmingLanguage, programmingLanguage.getMainCode());
-        File solutionFile = createFile("Solution", programmingLanguage, code);
+        File mainFile = null;
+        File solutionFile = null;
+        switch (programmingLanguage) {
+            case JAVA:
+                mainFile = createFile("Main", programmingLanguage, programmingLanguage.getMainCode());
+                log.info("Create Main.java");
+
+                solutionFile = createFile("Solution", programmingLanguage, code);
+                log.info("Create Solution.java");
+                break;
+            case JAVASCRIPT:
+                solutionFile = createFile("solution", programmingLanguage, code);
+                log.info("Create solution.js");
+                break;
+            default:
+                log.warn("There is no suitable process to run code: {}", programmingLanguage.getName());
+                break;
+        }
 
         try {
             boolean isAnswer = true;
 
             try {
+                log.info("Compile start");
                 compileIfNeeded(programmingLanguage);
+                log.info("Compile end");
             } catch (UserCodeCompileErrorException e) {
                 submitService.save(code, Result.COMPILE_ERROR, problem, member);
                 return false;
@@ -81,7 +121,9 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
             String[] outputs;
 
             try {
+                log.info("Run code start");
                 outputs = runSolution(programmingLanguage, answerCase);
+                log.info("Run code end");
             } catch (UserCodeRuntimeErrorException e) {
                 submitService.save(code, Result.RUNTIME_ERROR, problem, member);
                 return false;
@@ -95,6 +137,10 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
                 String output = outputs[i];
                 String expected = expecteds.get(i);
                 isAnswer &= output.equals(expected);
+            }
+
+            if (ArrayUtils.isEmpty(outputs)) {
+                isAnswer = false;
             }
 
             submitService.save(code, Result.isResolved(isAnswer), problem, member);
@@ -203,6 +249,22 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
         List<List<InputDto>> testcaseInputs = testcases.stream()
                 .map(testcaseService::getInputs)
                 .collect(Collectors.toList());
+
+        if (ArrayUtils.isEmpty(outputs)) {
+            for (int i = 0; i < expecteds.size(); i++) {
+                List<InputDto> testcaseInput = testcaseInputs.get(i);
+                String expected = expecteds.get(i);
+                CheckTestcaseResult checkTestcaseResult = CheckTestcaseResult.builder()
+                        .number(i + 1)
+                        .isAnswer(false)
+                        .inputs(testcaseInput)
+                        .output("")
+                        .expected(expected)
+                        .build();
+                checkTestcaseResults.add(checkTestcaseResult);
+            }
+        }
+
         for (int i = 0; i < outputs.length; i++) {
             List<InputDto> testcaseInput = testcaseInputs.get(i);
             String output = outputs[i];
@@ -221,9 +283,13 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
     }
 
     private static void cleanFiles(File mainFile, File solutionFile) {
-        mainFile.delete();
-        solutionFile.delete();
-        new File("Main.class").delete();
-        new File("Solution.class").delete();
+        if (mainFile != null) {
+            mainFile.delete();
+        }
+        if (solutionFile != null) {
+            solutionFile.delete();
+        }
+        //new File("Main.class").delete();
+        //new File("Solution.class").delete();
     }
 }

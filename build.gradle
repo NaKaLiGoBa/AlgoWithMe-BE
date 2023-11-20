@@ -46,9 +46,7 @@ dependencies {
     implementation 'com.github.docker-java:docker-java:3.3.3'
     implementation 'com.github.docker-java:docker-java-transport-zerodep:3.3.3'
 
-//    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-    implementation 'software.amazon.awssdk:s3:2.20.157'
-
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 }
 

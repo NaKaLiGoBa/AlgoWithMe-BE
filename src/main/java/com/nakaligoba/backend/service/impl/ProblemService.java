@@ -1,6 +1,7 @@
 package com.nakaligoba.backend.service.impl;
 
 import com.nakaligoba.backend.domain.Language;
+import com.nakaligoba.backend.repository.TagRepository;
 import com.nakaligoba.backend.service.dto.ProblemPagingDto;
 import com.nakaligoba.backend.controller.payload.response.CustomPageResponse;
 import com.nakaligoba.backend.controller.payload.response.ProblemResponse;
@@ -33,8 +34,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProblemService {
 
-    private final ProblemRepository problemRepository;
     private final TestcaseService testcaseService;
+
+    private final ProblemRepository problemRepository;
+    private final TagRepository tagRepository;
 
     public CustomPageResponse<ProblemPagingDto> getProblemList(Pageable pageable) {
         Page<Problem> page = problemRepository.findAll(pageable);
@@ -59,6 +62,9 @@ public class ProblemService {
                 .numberOfElements(page.getNumberOfElements())
                 .first(page.isFirst())
                 .last(page.isLast())
+                .status(List.of("성공", "실패", "미해결"))
+                .difficulties(List.of("쉬움", "보통", "어려움"))
+                .tags(tagRepository.findAll().stream().map(Tag::getName).collect(Collectors.toList()))
                 .build();
         return response;
     }
@@ -147,7 +153,7 @@ public class ProblemService {
 
     @Transactional
     public Problem createProblem(String title, String description, String difficulty) {
-        int lastProblemNumber = getLastProblemNumber() + 1;
+        int lastProblemNumber = getLastProblemNumber();
 
         Problem problem = Problem.defaultBuilder()
                 .number(lastProblemNumber + 1)

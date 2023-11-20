@@ -41,6 +41,7 @@ public class MemberController {
 
     @PostMapping("/signin/kakao")
     public ResponseEntity<SigninResponse> kakaoSignin(@Valid @RequestBody KakaoSigninRequest request) {
+        log.info("Accept Auth Code: {}", request.getAuthCode());
         SigninResponse signinResponse = authService.kakaoSignin(request.getAuthCode());
 
         if (StringUtils.hasText(signinResponse.getAccessToken())) {

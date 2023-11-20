@@ -1,5 +1,6 @@
 package com.nakaligoba.backend.service.impl;
 
+import com.nakaligoba.backend.controller.payload.response.CoachAnswersResponse;
 import com.nakaligoba.backend.domain.Answer;
 import com.nakaligoba.backend.domain.Member;
 import com.nakaligoba.backend.domain.Problem;
@@ -17,6 +18,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -57,5 +59,26 @@ public class AICoachService {
         answerRepository.save(answer);
 
         return new AnswerDto(koreanQuestion, aiAnswer);
+    }
+
+    @Transactional(readOnly = true)
+    public CoachAnswersResponse getAnswerList(String email, Long problemId) {
+        Member member = memberService.getMemberByEmail(email);
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        List<Answer> answers = answerRepository.findByMemberAndProblem(member, problem);
+
+        List<CoachAnswersResponse.AnswerInfo> answerInfos = answers.stream()
+                .map(answer -> CoachAnswersResponse.AnswerInfo.builder()
+                        .question(answer.getQuestion().getQuestion())
+                        .answer(answer.getAnswer())
+                        .build())
+                .collect(Collectors.toList());
+
+        return CoachAnswersResponse.builder()
+                .answerCount((long)answers.size())
+                .answers(answerInfos)
+                .build();
     }
 }
