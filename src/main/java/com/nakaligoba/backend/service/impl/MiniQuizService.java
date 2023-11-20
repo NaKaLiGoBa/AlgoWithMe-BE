@@ -94,7 +94,7 @@ public class MiniQuizService {
         List<String> choiceOrInitials = miniQuiz.getMiniQuizType()
                 .mapToList(miniQuiz.getChoiceOrInitials());
         return MiniQuizDto.builder()
-                .type(miniQuiz.getMiniQuizType().name())
+                .type(miniQuiz.getMiniQuizType().name().toLowerCase())
                 .answer(miniQuiz.getAnswer())
                 .explain(miniQuiz.getExplain())
                 .description(miniQuiz.getDescription())
