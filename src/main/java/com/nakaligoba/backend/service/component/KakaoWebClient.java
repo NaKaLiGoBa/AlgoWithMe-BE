@@ -1,15 +1,20 @@
 package com.nakaligoba.backend.service.component;
 
-
 import com.nakaligoba.backend.service.dto.KakaoSigninTokenResponse;
 import com.nakaligoba.backend.service.dto.KakaoSigninUserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpHost;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -19,9 +24,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.transport.ProxyProvider;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
+import javax.net.ssl.SSLContext;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 
 @Slf4j
 @Component
@@ -41,13 +48,41 @@ public class KakaoWebClient {
             .clientConnector(new ReactorClientHttpConnector(build()))
             .build();
 
-    private final RestTemplate restTemplate;
+    private final RestTemplate restTemplate = getRestTemplate();
 
     private HttpClient build() {
         return HttpClient.create()
                 .tcpConfiguration(tcpClient -> tcpClient.proxy(proxy ->
-                    proxy.type(ProxyProvider.Proxy.HTTP).host("krmp-proxy.9rum.cc").port(3128)
+                        proxy.type(ProxyProvider.Proxy.HTTP).host("krmp-proxy.9rum.cc").port(3128)
                 ));
+    }
+
+    private RestTemplate getRestTemplate() {
+        // SSL 컨텍스트 설정
+        SSLContext sslContext;
+        try {
+            sslContext = SSLContextBuilder.create()
+                    .loadTrustMaterial(TrustSelfSignedStrategy.INSTANCE)
+                    .build();
+        } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
+            throw new RuntimeException(e);
+        }
+
+        // 프록시 설정
+        HttpHost proxy = new HttpHost("krmp-proxy.9rum.cc", 3128);
+
+        // HttpClient 설정
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setSSLContext(sslContext)
+                .setProxy(proxy)
+                .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                .build();
+
+        // RestTemplate 설정
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        requestFactory.setHttpClient(httpClient);
+
+        return new RestTemplate(requestFactory);
     }
 
     public KakaoSigninTokenResponse getKakaoSigninToken(String kakaoAuthCode) {
