@@ -93,9 +93,13 @@ public class MiniQuizService {
     private MiniQuizDto domainToDto(MiniQuiz miniQuiz) {
         List<String> choiceOrInitials = miniQuiz.getMiniQuizType()
                 .mapToList(miniQuiz.getChoiceOrInitials());
+        String answer = miniQuiz.getAnswer();
+        if (miniQuiz.getMiniQuizType().equals(MiniQuizType.CHOICE)) {
+            answer = choiceOrInitials.get(Integer.parseInt(answer));
+        }
         return MiniQuizDto.builder()
                 .type(miniQuiz.getMiniQuizType().name().toLowerCase())
-                .answer(miniQuiz.getAnswer())
+                .answer(answer)
                 .explain(miniQuiz.getExplain())
                 .description(miniQuiz.getDescription())
                 .choiceOrInitials(choiceOrInitials)
