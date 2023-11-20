@@ -17,6 +17,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class AICoachServiceTest {
 
+    private static final String testCode =
+            "class Solution {\\n    " +
+            "private int count = 0;\\n\\n    " +
+                "public int solution(int N, int S, int[] nums) {\\n        " +
+                    "dfs(nums, S, 0, 0);\\n        " +
+                    "return S == 0 ? count - 1 : count; \\n    " +
+                "}\\n\\n    " +
+            "private void dfs(int[] nums, int target, int depth, int sum) {\\n        " +
+                "if (depth == nums.length) {\\n            " +
+                    "if (sum == target) {\\n                " +
+                        "count++;\\n            " +
+                "   }\\n            " +
+                "return;\\n        }\\n\\n        " +
+            "dfs(nums, target, depth + 1, sum + nums[depth]); \\n        " +
+            "dfs(nums, target, depth + 1, sum); \\n    " +
+            "}\\n}";
+
+
     @Autowired
     private ProblemFacade problemFacade;
 
@@ -46,10 +64,10 @@ class AICoachServiceTest {
     @Test
     @DisplayName("AI Coach와 나눴던 질문과 답변을 리스트로 조회를 할 수 있다.")
     void readAiCoachList() {
-        aiCoachService.createAnswer("test1@test.com", createdProblemId, "알고리즘 선택과 설계", "class Solution {\n    public String solve(int a, int b, int[] arr) {\n        int answer = \"\";\n        return answer;\n    }\n}");
-        aiCoachService.createAnswer("test1@test.com", createdProblemId, "엣지 케이스", "class Solution {\n    public String solve(int a, int b, int[] arr) {\n        int answer = \"\";\n        return answer;\n    }\n}");
-        aiCoachService.createAnswer("test1@test.com", createdProblemId, "코드 구조와 가독성", "class Solution {\n    public String solve(int a, int b, int[] arr) {\n        int answer = \"\";\n        return answer;\n    }\n}");
-        aiCoachService.createAnswer("test1@test.com", createdProblemId, "코드 최적화", "class Solution {\n    public String solve(int a, int b, int[] arr) {\n        int answer = \"\";\n        return answer;\n    }\n}");
+        aiCoachService.createAnswer("test1@test.com", createdProblemId, "알고리즘 선택과 설계", testCode);
+        aiCoachService.createAnswer("test1@test.com", createdProblemId, "엣지 케이스", testCode);
+        aiCoachService.createAnswer("test1@test.com", createdProblemId, "코드 구조와 가독성", testCode);
+        aiCoachService.createAnswer("test1@test.com", createdProblemId, "코드 최적화", testCode);
 
         Long count = aiCoachService.getAnswerList("test1@test.com", createdProblemId).getAnswerCount();
         assertThat(count).isEqualTo(4);
