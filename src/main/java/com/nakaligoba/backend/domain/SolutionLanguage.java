@@ -20,12 +20,8 @@ public class SolutionLanguage extends BaseEntity {
     @JoinColumn(name = "solution_id")
     private Solution solution;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "programming_language_id")
-//    private ProgrammingLanguage programmingLanguage;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "avaialbe_language_id")
+    @JoinColumn(name = "available_language_id")
     private AvailableLanguage availableLanguage;
 
     @Builder
