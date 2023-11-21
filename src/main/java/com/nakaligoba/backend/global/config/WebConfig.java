@@ -12,9 +12,12 @@ import java.net.Proxy;
 public class WebConfig {
     @Bean
     public RestTemplate restTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("krmp-proxy.9rum.cc", 3128));
         requestFactory.setProxy(proxy);
-        return new RestTemplate(requestFactory);
+        restTemplate.setRequestFactory(requestFactory);
+
+        return restTemplate;
     }
 }
