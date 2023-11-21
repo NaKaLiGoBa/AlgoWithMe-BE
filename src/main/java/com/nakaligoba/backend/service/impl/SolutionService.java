@@ -11,6 +11,7 @@ import com.nakaligoba.backend.domain.*;
 import com.nakaligoba.backend.repository.*;
 import com.nakaligoba.backend.service.dto.AuthorDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class SolutionService {
@@ -55,7 +57,8 @@ public class SolutionService {
                 .problem(problem)
                 .build();
 
-        solutionRepository.save(solution);
+        Solution savedSolution = solutionRepository.save(solution);
+        log.info("Save new Solution. Id: {}", savedSolution.getId());
 
         ArrayList<SolutionLanguage> solutionLanguages = new ArrayList<>();
 
@@ -63,8 +66,9 @@ public class SolutionService {
             ProgrammingLanguage programmingLanguage = programmingLanguageRepository.findByName(Language.findByName(language).orElseThrow())
                     .orElseThrow(EntityNotFoundException::new);
 
+            log.info("ProgrammingLanguage Id: {}", programmingLanguage.getId());
             SolutionLanguage solutionLanguage = SolutionLanguage.builder()
-                    .solution(solution)
+                    .solution(savedSolution)
                     .programmingLanguage(programmingLanguage)
                     .build();
 
