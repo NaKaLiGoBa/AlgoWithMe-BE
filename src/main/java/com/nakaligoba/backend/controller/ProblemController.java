@@ -9,15 +9,12 @@ import com.nakaligoba.backend.service.impl.ProblemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,8 +25,13 @@ public class ProblemController {
     private final ProblemFacade problemAggregateService;
 
     @GetMapping
-    public ResponseEntity<CustomPageResponse<ProblemPagingDto>> readAllProblems(Pageable pageable) {
-        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(pageable);
+    public ResponseEntity<CustomPageResponse<ProblemPagingDto>> readAllProblems(
+            Pageable pageable,
+            @RequestParam Optional<String> status,
+            @RequestParam Optional<String> difficulty,
+            @RequestParam Optional<List<String>> tags
+            ) {
+        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(pageable, status, difficulty, tags);
         return ResponseEntity.ok(response);
     }
 
