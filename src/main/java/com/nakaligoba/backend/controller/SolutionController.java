@@ -64,9 +64,9 @@ public class SolutionController {
     @GetMapping("/{id}/solutions")
     public ResponseEntity<SolutionsResponse> readSolutions(
             @PathVariable("id") Long id,
-            @RequestParam Long cursor,
-            @RequestParam Integer size,
-            @RequestParam String sort
+            @RequestParam(defaultValue = "-100") Long cursor,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "recent") String sort
     ) {
         SolutionsResponse solutionsResponse = solutionService.readSolutions(id, cursor, size, sort);
 
