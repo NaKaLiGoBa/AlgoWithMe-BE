@@ -29,7 +29,9 @@ public class ProblemService {
     private final ProblemRepository problemRepository;
     private final TagRepository tagRepository;
 
-    public CustomPageResponse<ProblemPagingDto> getProblemList(Pageable pageable) {
+    public CustomPageResponse<ProblemPagingDto> getProblemList(Pageable pageable, Optional<String> status, Optional<String> difficulty, Optional<List<String>> tags) {
+
+
         Page<Problem> page = problemRepository.findAll(pageable);
         List<ProblemPagingDto> dtos = page.getContent().stream()
                 .map(problem -> new ProblemPagingDto(
