@@ -23,6 +23,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,6 +41,7 @@ public class SolutionService {
     private final ProgrammingLanguageRepository programmingLanguageRepository;
     private final SolutionLanguageRepository solutionLanguageRepository;
     private final SolutionLikeRepository solutionLikeRepository;
+    private final AvailableLanguageRepository availableLanguageRepository;
 
     @Transactional(readOnly = true)
     public Solution getSolution(Long id) {
@@ -62,17 +65,26 @@ public class SolutionService {
 
         ArrayList<SolutionLanguage> solutionLanguages = new ArrayList<>();
 
-        for (String language : request.getLanguages()) {
-            ProgrammingLanguage programmingLanguage = programmingLanguageRepository.findByName(Language.findByName(language).orElseThrow())
+        for (String languageName : request.getLanguages()) {
+            Language language = Language.findByName(languageName)
+                            .orElseThrow(NoSuchElementException::new);
+            ProgrammingLanguage programmingLanguage = programmingLanguageRepository.findByName(language)
                     .orElseThrow(EntityNotFoundException::new);
-
             log.info("ProgrammingLanguage Id: {}", programmingLanguage.getId());
-            SolutionLanguage solutionLanguage = SolutionLanguage.builder()
-                    .solution(savedSolution)
-                    .programmingLanguage(programmingLanguage)
-                    .build();
+            List<AvailableLanguage> availableLanguages = problem.getAvailableLanguages();
 
-            solutionLanguages.add(solutionLanguage);
+            for (AvailableLanguage al : availableLanguages) {
+                ProgrammingLanguage pl = al.getProgrammingLanguage();
+                if (pl.equals(programmingLanguage)) {
+                    SolutionLanguage solutionLanguage = SolutionLanguage.builder()
+                            .solution(savedSolution)
+                            .availableLanguage(al)
+                            .build();
+
+                    solutionLanguages.add(solutionLanguage);
+                    break;
+                }
+            }
         }
 
         solutionLanguageRepository.saveAll(solutionLanguages);
@@ -89,12 +101,18 @@ public class SolutionService {
         solution.changeTitle(request.getTitle());
         solution.changeContent(request.getContent());
 
+        List<AvailableLanguage> availableLanguages = new ArrayList<>();
         List<ProgrammingLanguage> programmingLanguages = request.getLanguages().stream()
                 .map(language -> programmingLanguageRepository.findByName(Language.findByName(language).orElseThrow())
                         .orElseThrow(EntityNotFoundException::new))
                 .collect(Collectors.toList());
 
-        solution.updateSolutionLanguages(programmingLanguages);
+        for (ProgrammingLanguage programmingLanguage : programmingLanguages) {
+            availableLanguageRepository.findByProgrammingLanguage(programmingLanguage)
+                    .ifPresent(availableLanguages::add);
+        }
+
+        solution.updateSolutionLanguages(availableLanguages);
         solutionRepository.save(solution);
 
         return solution.getId();
@@ -217,7 +235,7 @@ public class SolutionService {
 
     private List<String> getLanguages(List<SolutionLanguage> solutionLanguages, Long solutionId) {
         return solutionLanguages.stream()
-                .map(solutionLanguage -> solutionLanguage.getProgrammingLanguage().getName().getName())
+                .map(solutionLanguage -> solutionLanguage.getAvailableLanguage().getProgrammingLanguage().getName().getName())
                 .collect(Collectors.toList());
     }
 

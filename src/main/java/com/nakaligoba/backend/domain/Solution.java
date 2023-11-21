@@ -60,10 +60,10 @@ public class Solution extends BaseEntity {
         this.content = content;
     }
 
-    public void updateSolutionLanguages(List<ProgrammingLanguage> programmingLanguages) {
+    public void updateSolutionLanguages(List<AvailableLanguage> availableLanguages) {
         this.solutionLanguages.clear();
-        for (ProgrammingLanguage programmingLanguage : programmingLanguages) {
-            this.solutionLanguages.add(new SolutionLanguage(this, programmingLanguage));
+        for (AvailableLanguage availableLanguage : availableLanguages) {
+            this.solutionLanguages.add(new SolutionLanguage(this, availableLanguage));
         }
     }
 }
