@@ -109,5 +109,35 @@ class ProblemServiceTest {
 
         assertThat(hardProblemResponse.getEasierProblemUrl()).isEqualTo(baseUrl + dfsMediumProblemId);
         assertThat(hardProblemResponse.getHarderProblemUrl()).isEqualTo(baseUrl + dfsHardProblemId2);
+
+    }
+
+    @DisplayName("카테고리 조건들이 null이면 문제 목록리스트를 모두 불러온다.")
+    void getAllProblemList() {
+
+    }
+
+    @Test
+    @DisplayName("status를 제외한 다른 조건들은 null이면 설정한 status에 해당하는 문제 목록리스트를 불러온다.")
+    void getProblemList_status() {
+
+    }
+
+    @Test
+    @DisplayName("difficulty를 제외한 다른 조건들이 null이면 설정한 difficulty에 해당하는 문제 목록리스트를 불러온다.")
+    void getProblemList_difficulty() {
+
+    }
+
+    @Test
+    @DisplayName("tags를 제외한 다른 조건들이 null이면 설정한 tags에 해당하는 문제 목록리스트를 불러온다.")
+    void getProblemList_tags() {
+
+    }
+
+    @Test
+    @DisplayName("status, difficulty, tags 모두 설정된 값에 해당하는 문제 목록리스트를 불러온다.")
+    void getProblemList_allCategories() {
+
     }
 }

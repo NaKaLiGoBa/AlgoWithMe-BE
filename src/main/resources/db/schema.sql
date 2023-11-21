@@ -160,7 +160,7 @@ CREATE TABLE `solution_likes`
     PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `solution_views
+CREATE TABLE `solution_views`
 (
     `id`          BIGINT   NOT NULL AUTO_INCREMENT,
     `member_id`   BIGINT   NOT NULL,
