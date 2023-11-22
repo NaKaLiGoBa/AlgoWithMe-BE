@@ -1,16 +1,14 @@
 package com.nakaligoba.backend.domain;
 
 import com.nakaligoba.backend.global.BaseEntity;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "submits")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Submit extends BaseEntity {
 
