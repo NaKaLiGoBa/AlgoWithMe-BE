@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityExistsException;
@@ -31,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 @SpringBootTest
+@ActiveProfiles("test")
 class ProblemServiceTest {
 
     private static final String baseUrl = "https://kde05c63df3aaa.user-app.krampoline.com/api/v1/problems/";
@@ -151,6 +153,7 @@ class ProblemServiceTest {
         createdProblemIds.add(problemFacade.createProblem(requestBody5));
         createdProblemIds.add(problemFacade.createProblem(requestBody6));
     }
+
     private void testSignUp(String email, String password, String nickname, String role) {
         authService.signup(MemberDto.builder()
                 .email(email)
@@ -235,9 +238,9 @@ class ProblemServiceTest {
     void getAllProblemList() {
         Pageable pageable = PageRequest.of(0, 3);
 
-        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(pageable, Optional.empty(), Optional.empty(), Optional.empty());
+        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(pageable, null, null, null);
 
-//        assertThat(response.getProblems()).hasSize(3);
+        assertThat(response.getProblems()).hasSize(3);
         assertThat(response.getTotalElements()).isEqualTo(6);
         assertThat(response.getTotalPages()).isEqualTo(2);
     }
@@ -245,13 +248,10 @@ class ProblemServiceTest {
     @Test
     @DisplayName("상태에 따른 문제 필터링 테스트")
     void testFilterByStatus() {
-        // 상태를 '성공'으로 설정
-        Optional<String> status = Optional.of("성공");
+        String status = "성공";
 
-        // 필터링 로직 호출
-        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(PageRequest.of(0, 10), status, Optional.empty(), Optional.empty());
+        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(PageRequest.of(0, 10), status, null, null);
 
-        // 모든 반환된 문제들이 '성공' 상태인지 검증
         assertTrue(response.getProblems().stream().allMatch(problem -> problem.getStatus().equals("미해결")));
     }
 
@@ -262,34 +262,30 @@ class ProblemServiceTest {
         Member member = memberService.getMemberByEmail("test2@test.com");
         String code = "hello world";
         int count = 0;
-
-//        for (Long problemId : createdProblemIds) {
-//            Problem problem = problemRepository.findById(problemId)
-//                    .orElseThrow(EntityExistsException::new);
-//            submitService.save(code, Result.RESOLVED, problem, member);
-//        }
         for (Long problemId : createdProblemIds) {
             Problem problem = problemRepository.findById(problemId)
                     .orElseThrow(EntityExistsException::new);
 
-            if (count < 3) {
+            if (count < 2) {
                 submitService.save(code, Result.RESOLVED, problem, member);
             } else {
                 submitService.save(code, Result.UN_RESOLVED, problem, member);
             }
-            count++;
+            count += 1;
         }
 
         // 제출 결과에 따른 문제 목록 조회
-        Pageable pageable = PageRequest.of(0, 3);
-        Optional<String> statusOpt = Optional.of("성공");
-
-        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(pageable, statusOpt, Optional.empty(), Optional.empty());
+        Pageable pageable = PageRequest.of(0, 6);
+        String statusOpt = "성공";
+        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(pageable, statusOpt, null, null);
 
         // 검증: 반환된 문제들이 모두 해당 `status`를 가지고 있는지 확인
-//        assertThat(response.getProblems().stream().allMatch(p -> p.getStatus().equals(Result.RESOLVED.name()))).isTrue();
-        assertThat(response.getNumberOfElements()).isEqualTo(3);
-        assertThat(response.getTotalElements()).isEqualTo(3);
+        for (ProblemPagingDto problem : response.getProblems()) {
+            assertThat(problem.getStatus()).isEqualTo("성공");
+        }
+        assertThat(response.getProblems()).hasSize(2);
+        assertThat(response.getNumberOfElements()).isEqualTo(6);
+        assertThat(response.getTotalElements()).isEqualTo(6);
         assertThat(response.getTotalPages()).isEqualTo(1);
     }
 
@@ -297,17 +293,17 @@ class ProblemServiceTest {
     @DisplayName("difficulty를 제외한 다른 조건들이 null이면 설정한 difficulty에 해당하는 문제 목록리스트를 불러온다.")
     void getProblemList_difficulty() {
         // given
-        Pageable pageable = PageRequest.of(0, 3);
+        Pageable pageable = PageRequest.of(0, 6);
 
-        Optional<String> difficultyOpt = Optional.of("어려움");
+        String difficultyOpt = "어려움";
 
         // when
-        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(pageable, Optional.empty(), difficultyOpt, Optional.empty());
+        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(pageable, null, difficultyOpt, null);
 //       getProblem.getDifficulty().getKorean().equals("어려움"))
 
         // then
-//        assertThat(response.getProblems()).hasSize(1);
-//        assertThat(response.getTotalElements()).isEqualTo(1);
+        assertThat(response.getProblems()).hasSize(1);
+        assertThat(response.getTotalElements()).isEqualTo(6);
         assertThat(response.getTotalPages()).isEqualTo(1);
     }
 
@@ -316,10 +312,9 @@ class ProblemServiceTest {
     void getProblemList_tags() {
         Pageable pageable = PageRequest.of(0, 3);
 
-        List<String> tagsList = Arrays.asList("DP");
-        Optional<List<String>> tagsOpt = Optional.of(tagsList);
+        List<String> tagsList = List.of("DP");
 
-        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(pageable, Optional.empty(), Optional.empty(), tagsOpt);
+        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(pageable, null, null, tagsList);
         assertThat(response.getProblems()).hasSize(2);
         assertThat(response.getTotalPages()).isEqualTo(2);
     }
@@ -328,10 +323,14 @@ class ProblemServiceTest {
     @DisplayName("status, difficulty, tags 모두 설정된 값에 해당하는 문제 목록리스트를 불러온다.")
     void getProblemList_allCategories() {
         Pageable pageable = PageRequest.of(0, 3);
-        Optional<String> statusOpt = Optional.of(Result.RESOLVED.name());
+        String statusOpt = "성공";
 
-        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(pageable, statusOpt, Optional.empty(), Optional.empty());
-        assertThat(response.getProblems().stream().allMatch(p -> p.getStatus().equals(Result.RESOLVED.name()))).isTrue();
+        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(pageable, statusOpt, null, null);
+        List<ProblemPagingDto> problems = response.getProblems();
+
+        for (ProblemPagingDto problem : problems) {
+            assertThat(problem.getStatus()).isEqualTo("성공");
+        }
     }
 
 /*
