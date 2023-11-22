@@ -12,4 +12,4 @@ FROM openjdk:11-jdk-slim-stretch
 
 COPY --from=build /usr/src/app/build/libs/*.jar ./app.jar
 
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "-Dhttp.proxyHost=krmp-proxy.9rum.cc", "-Dhttp.proxyPort=3128", "app.jar"]
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "-Dhttp.proxyHost=krmp-proxy.9rum.cc", "-Dhttp.proxyPort=3128", "-Dhttps.proxyHost=krmp-proxy.9rum.cc", "-Dhttps.proxyPort=3128", "app.jar"]
