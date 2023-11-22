@@ -2,6 +2,7 @@ package com.nakaligoba.backend.service.impl;
 
 import com.github.dockerjava.api.exception.UnauthorizedException;
 import com.nakaligoba.backend.controller.payload.request.SolutionRequest;
+import com.nakaligoba.backend.controller.payload.response.ProblemResponse;
 import com.nakaligoba.backend.controller.payload.response.SolutionResponse;
 import com.nakaligoba.backend.controller.payload.response.SolutionsResponse;
 import com.nakaligoba.backend.controller.payload.response.SolutionsResponse.Link;
@@ -134,7 +135,8 @@ public class SolutionService {
 
     @Transactional(readOnly = true)
     public SolutionsResponse readSolutions(Long problemId, Long nextCursorId, Integer size, String sort) {
-        Long solutionTotalCount = solutionRepository.countByProblemId(problemId);
+        Problem problem = problemService.getProblem(problemId);
+        Long solutionTotalCount = solutionRepository.countByProblem(problem);
         List<Solution> solutions = getSolutions(problemId, nextCursorId, size, sort);
         List<Solutions> responseSolutions = getResponseSolutions(solutions);
         Long nextCursor = getNextCursorId(responseSolutions, sort);

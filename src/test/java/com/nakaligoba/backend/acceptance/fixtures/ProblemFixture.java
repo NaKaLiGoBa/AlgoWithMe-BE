@@ -38,6 +38,30 @@ public class ProblemFixture {
             "3 4\n7",
             Arrays.asList("DFS", "BFS"));
 
+    public final static CreateProblemRequest CREATE_PROBLEM_REQUEST_DFS_EASY = new CreateProblemRequest("쉬운 DFS 문제",
+            "쉬움",
+            "# 설명\\n#쉬운 난이도의 DFS 문제 설명\\n## 소제목",
+            Arrays.asList("a", "b"),
+            "1 2\n3",
+            "3 4\n7",
+            Arrays.asList("DFS"));
+
+    public final static CreateProblemRequest CREATE_PROBLEM_REQUEST_DFS_MEDIUM = new CreateProblemRequest("보통 난이도 DFS 문제",
+            "보통",
+            "# 설명\\n#보통 난이도의 DFS 문제 설명\\n## 소제목",
+            Arrays.asList("a", "b"),
+            "1 2\n3",
+            "3 4\n7",
+            Arrays.asList("DFS"));
+
+    public final static CreateProblemRequest CREATE_PROBLEM_REQUEST_DFS_HARD = new CreateProblemRequest("어려운 DFS 문제",
+            "어려움",
+            "# 설명\\n#어려운 난이도의 DFS 문제 설명\\n## 소제목",
+            Arrays.asList("a", "b"),
+            "1 2\n3",
+            "3 4\n7",
+            Arrays.asList("DFS"));
+
     public static ExtractableResponse<Response> createProblem() {
         return given()
                 .log().all()
