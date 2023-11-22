@@ -20,6 +20,10 @@ public class Submit extends BaseEntity {
     @Column(name = "code", nullable = false)
     private String code;
 
+    @Column(name = "language")
+    @Enumerated(EnumType.STRING)
+    private Language language;
+
     @Column(name = "result", nullable = false)
     @Enumerated(EnumType.STRING)
     private Result result;
@@ -33,8 +37,9 @@ public class Submit extends BaseEntity {
     private Member member;
 
     @Builder
-    public Submit(String code, Result result, Problem problem, Member member) {
+    public Submit(String code, Language language, Result result, Problem problem, Member member) {
         this.code = code;
+        this.language = language;
         this.result = result;
         this.problem = problem;
         this.member = member;

@@ -109,7 +109,7 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
                 compileIfNeeded(programmingLanguage);
                 log.info("Compile end");
             } catch (UserCodeCompileErrorException e) {
-                submitService.save(code, Result.COMPILE_ERROR, problem, member);
+                submitService.create(code, programmingLanguage, Result.COMPILE_ERROR, problem, member);
                 return false;
             }
 
@@ -125,7 +125,7 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
                 outputs = runSolution(programmingLanguage, answerCase);
                 log.info("Run code end");
             } catch (UserCodeRuntimeErrorException e) {
-                submitService.save(code, Result.RUNTIME_ERROR, problem, member);
+                submitService.create(code, programmingLanguage, Result.RUNTIME_ERROR, problem, member);
                 return false;
             }
 
@@ -143,7 +143,7 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
                 isAnswer = false;
             }
 
-            submitService.save(code, Result.isResolved(isAnswer), problem, member);
+            submitService.create(code, programmingLanguage, Result.isResolved(isAnswer), problem, member);
 
             return isAnswer;
         } finally {
