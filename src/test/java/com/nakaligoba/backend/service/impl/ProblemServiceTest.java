@@ -7,6 +7,7 @@ import com.nakaligoba.backend.controller.payload.response.ProblemResponse;
 import com.nakaligoba.backend.domain.Member;
 import com.nakaligoba.backend.domain.Problem;
 import com.nakaligoba.backend.domain.Result;
+import com.nakaligoba.backend.domain.Submit;
 import com.nakaligoba.backend.repository.ProblemRepository;
 import com.nakaligoba.backend.service.dto.MemberDto;
 import com.nakaligoba.backend.service.dto.ProblemPagingDto;
@@ -21,6 +22,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -71,7 +75,8 @@ class ProblemServiceTest {
         dfsHardProblemId = problemFacade.createProblem(ProblemFixture.CREATE_PROBLEM_REQUEST_DFS_HARD);
         dfsHardProblemId2 = problemFacade.createProblem(ProblemFixture.CREATE_PROBLEM_REQUEST_DFS_HARD);
 
-        testSignUp("test2@test.com", "1234", "gd2", "");
+        testSignUp("gyu@gyu.com", "1234", "gyujin1", "");
+        testSignUp("jin@jin.com", "1234", "gyujin2", "");
 
         // status: 정답, difficulty: 어려움, tags: DFS, BFS
         String testcase1 = "1 2\n3";
@@ -333,31 +338,27 @@ class ProblemServiceTest {
         }
     }
 
-/*
     @Test
-    @DisplayName("제출 결과에 따른 문제 목록 조회")
-    void getProblemListByStatus() {
-        // 문제 생성
-        String testcase = "1 2\n3";
-        String answerCase = "3 4\n7";
-        CreateProblemRequest requestBody = new CreateProblemRequest(
-                "겁나 어려운 문제", "어려움", "# 설명", Arrays.asList("a", "b"), testcase, answerCase, Arrays.asList("DFS", "BFS"));
-        Long problemId = problemFacade.createProblem(requestBody);
-        Problem problem = problemRepository.findById(problemId).orElseThrow();
+    @DisplayName("정답제출 수와 총 제출 수를 이용해 문제 정답률을 구할 수 있다.")
+    void getAcceptance_problem() {
+        Member member1 = memberService.getMemberByEmail("gyu@gyu.com");
+        Member member2 = memberService.getMemberByEmail("jin@jin.com");
+        String code = "hello world";
 
-        // 사용자와 제출 생성
-        Member member = memberService.getMemberByEmail("test2@test.com");
-        String code = "정답 코드 또는 오답 코드";
-        submitService.save(code, Result.RESOLVED, problem, member);
+        Long createdProblemId = problemFacade.createProblem(ProblemFixture.CREATE_PROBLEM_REQUEST);
+        Problem findProblem = problemRepository.findById(createdProblemId).orElseThrow(EntityNotFoundException::new);
+        submitService.save(code, Result.FAIL, findProblem, member1);
+        submitService.save(code, Result.FAIL, findProblem, member1);
+        submitService.save(code, Result.FAIL, findProblem, member2);
+        submitService.save(code, Result.COMPILE_ERROR, findProblem, member1);
+        submitService.save(code, Result.RESOLVED, findProblem, member1);
+        submitService.save(code, Result.FAIL, findProblem, member2);
+        submitService.save(code, Result.RESOLVED, findProblem, member2);
 
-        // 제출 결과에 따른 문제 목록 조회
-        Pageable pageable = PageRequest.of(0, 3);
-        Optional<String> statusOpt = Optional.of(Result.RESOLVED.name());
+        BigDecimal seven = new BigDecimal("7");
+        BigDecimal two = new BigDecimal("2");
+        BigDecimal result = two.divide(seven, 2, RoundingMode.HALF_UP);
 
-        CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(pageable, statusOpt, Optional.empty(), Optional.empty());
-
-        // 검증: 반환된 문제들이 모두 해당 `status`를 가지고 있는지 확인
-        assertThat(response.getProblems().stream().allMatch(p -> p.getStatus().equals(Result.RESOLVED.name()))).isTrue();
+        assertThat(findProblem.getAcceptance()).isEqualByComparingTo(result);
     }
- */
 }
