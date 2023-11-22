@@ -41,6 +41,7 @@ public class MiniQuiz {
     private MiniQuizType miniQuizType;
 
     @Column(name = "difficulty")
+    @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
 
     @Builder
