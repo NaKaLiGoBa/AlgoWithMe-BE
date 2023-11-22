@@ -16,13 +16,6 @@ spring:
     hibernate:
       ddl-auto: create
 
-  data:
-    web:
-      pageable:
-        default-page-size: 5
-        max-page-size: 2000
-        one-indexed-parameters: true
-
   redis:
     host: '127.0.0.1'
     port: 6379
