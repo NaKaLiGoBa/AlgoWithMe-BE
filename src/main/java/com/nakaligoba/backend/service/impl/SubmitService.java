@@ -19,9 +19,10 @@ public class SubmitService {
     private final ProblemService problemService;
 
     @Transactional
-    public void save(String code, Result result, Problem problem, Member member) {
+    public void create(String code, Language language, Result result, Problem problem, Member member) {
         Submit submit = Submit.builder()
                 .code(code)
+                .language(language)
                 .result(result)
                 .problem(problem)
                 .member(member)
