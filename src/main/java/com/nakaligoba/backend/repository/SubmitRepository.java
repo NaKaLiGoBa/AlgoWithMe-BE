@@ -8,7 +8,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SubmitRepository extends JpaRepository<Submit, Long> {
-    Optional<Submit> findTopByProblemOrderByCreatedAtDesc(Problem problem);
-
     List<Submit> findAllByProblem(Problem problem);
 }
