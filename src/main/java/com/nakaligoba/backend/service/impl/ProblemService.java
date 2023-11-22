@@ -1,10 +1,19 @@
 package com.nakaligoba.backend.service.impl;
 
+
 import com.nakaligoba.backend.controller.payload.response.CustomPageResponse;
 import com.nakaligoba.backend.controller.payload.response.ProblemResponse;
-import com.nakaligoba.backend.domain.*;
+import com.nakaligoba.backend.domain.Difficulty;
+import com.nakaligoba.backend.domain.Language;
+import com.nakaligoba.backend.domain.Problem;
+import com.nakaligoba.backend.domain.ProblemTag;
+import com.nakaligoba.backend.domain.Result;
+import com.nakaligoba.backend.domain.Submit;
+import com.nakaligoba.backend.domain.Tag;
+import com.nakaligoba.backend.domain.Testcase;
 import com.nakaligoba.backend.repository.ProblemRepository;
 import com.nakaligoba.backend.repository.SolutionRepository;
+import com.nakaligoba.backend.repository.SubmitRepository;
 import com.nakaligoba.backend.repository.TagRepository;
 import com.nakaligoba.backend.service.dto.InputDto;
 import com.nakaligoba.backend.service.dto.ProblemPagingDto;
@@ -15,8 +24,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Transactional(readOnly = true)
 @Service
@@ -28,12 +45,42 @@ public class ProblemService {
     private final SolutionRepository solutionRepository;
     private final ProblemRepository problemRepository;
     private final TagRepository tagRepository;
+    private final SubmitRepository submitRepository;
 
     public CustomPageResponse<ProblemPagingDto> getProblemList(Pageable pageable, Optional<String> status, Optional<String> difficulty, Optional<List<String>> tags) {
-
-
         Page<Problem> page = problemRepository.findAll(pageable);
-        List<ProblemPagingDto> dtos = page.getContent().stream()
+        Stream<Problem> problemStream = page.getContent().stream();
+
+        if (status.isPresent()) {
+            String statusValue = status.get();
+            problemStream = problemStream.filter(problem -> {
+                Optional<Submit> latestSubmit = submitRepository.findTopByProblemOrderByCreatedAtDesc(problem);
+
+                switch (statusValue) {
+                    case "성공":
+                        return latestSubmit.map(submit -> submit.getResult() == Result.RESOLVED).orElse(false);
+                    case "미해결":
+                        // '미해결'의 경우, 제출이 없거나 최신 제출이 '미해결' 상태인 경우
+                        return latestSubmit.map(submit -> submit.getResult() == Result.UN_RESOLVED).orElse(true);
+                    case "실패":
+                        return latestSubmit.map(submit -> submit.getResult() == Result.FAIL).orElse(false);
+                    default:
+                        return false;
+                }
+            });
+        }
+
+        if (difficulty.isPresent()) {
+            Difficulty difficultyEnum = Difficulty.getByKorean(difficulty.get());
+            problemStream = problemStream.filter(problem -> problem.getDifficulty() == difficultyEnum);
+        }
+
+        if (tags.isPresent() && !tags.get().isEmpty()) {
+            Set<String> tagsSet = new HashSet<>(tags.get());
+            problemStream = problemStream.filter(problem -> getTags(problem).stream().anyMatch(tagsSet::contains));
+        }
+
+        List<ProblemPagingDto> dtos = problemStream
                 .map(problem -> new ProblemPagingDto(
                         problem.getId(),
                         problem.getNumber(),
