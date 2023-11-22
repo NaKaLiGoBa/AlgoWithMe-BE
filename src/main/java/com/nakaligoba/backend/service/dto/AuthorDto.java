@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthorDto {
+    private Long id;
     private String avatar;
     private String nickname;
 }
