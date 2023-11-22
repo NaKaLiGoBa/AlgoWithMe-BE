@@ -41,4 +41,12 @@ public class Submit extends BaseEntity {
         this.problem = problem;
         this.member = member;
     }
+
+    public boolean isSuccess() {
+        return result == Result.RESOLVED;
+    }
+
+    public boolean isFail() {
+        return !isSuccess();
+    }
 }
