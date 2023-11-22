@@ -4,6 +4,7 @@ import com.nakaligoba.backend.acceptance.fixtures.ProblemFixture;
 import com.nakaligoba.backend.controller.payload.request.CreateProblemRequest;
 import com.nakaligoba.backend.controller.payload.response.CustomPageResponse;
 import com.nakaligoba.backend.controller.payload.response.ProblemResponse;
+import com.nakaligoba.backend.domain.Language;
 import com.nakaligoba.backend.domain.Member;
 import com.nakaligoba.backend.domain.Problem;
 import com.nakaligoba.backend.domain.Result;
@@ -29,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -272,9 +272,9 @@ class ProblemServiceTest {
                     .orElseThrow(EntityExistsException::new);
 
             if (count < 2) {
-                submitService.save(code, Result.RESOLVED, problem, member);
+                submitService.create(code, Language.JAVA, Result.RESOLVED, problem, member);
             } else {
-                submitService.save(code, Result.UN_RESOLVED, problem, member);
+                submitService.create(code, Language.JAVA, Result.UN_RESOLVED, problem, member);
             }
             count += 1;
         }
