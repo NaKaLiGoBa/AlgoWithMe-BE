@@ -7,7 +7,6 @@ import com.nakaligoba.backend.domain.Difficulty;
 import com.nakaligoba.backend.domain.Language;
 import com.nakaligoba.backend.domain.Problem;
 import com.nakaligoba.backend.domain.ProblemTag;
-import com.nakaligoba.backend.domain.Result;
 import com.nakaligoba.backend.domain.Submit;
 import com.nakaligoba.backend.domain.Tag;
 import com.nakaligoba.backend.domain.Testcase;
@@ -30,7 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,36 +46,34 @@ public class ProblemService {
     private final TagRepository tagRepository;
     private final SubmitRepository submitRepository;
 
-    public CustomPageResponse<ProblemPagingDto> getProblemList(Pageable pageable, Optional<String> status, Optional<String> difficulty, Optional<List<String>> tags) {
+    public CustomPageResponse<ProblemPagingDto> getProblemList(Pageable pageable, String status, String difficulty, List<String> tags) {
         Page<Problem> page = problemRepository.findAll(pageable);
         Stream<Problem> problemStream = page.getContent().stream();
 
-        if (status.isPresent()) {
-            String statusValue = status.get();
+        if (Objects.nonNull(status)) {
             problemStream = problemStream.filter(problem -> {
-                Optional<Submit> latestSubmit = submitRepository.findTopByProblemOrderByCreatedAtDesc(problem);
+                List<Submit> submits = submitRepository.findAllByProblem(problem);
 
-                switch (statusValue) {
+                switch (status) {
                     case "성공":
-                        return latestSubmit.map(submit -> submit.getResult() == Result.RESOLVED).orElse(false);
+                        return submits.stream().anyMatch(Submit::isSuccess);
                     case "미해결":
-                        // '미해결'의 경우, 제출이 없거나 최신 제출이 '미해결' 상태인 경우
-                        return latestSubmit.map(submit -> submit.getResult() == Result.UN_RESOLVED).orElse(true);
+                        return submits.isEmpty();
                     case "실패":
-                        return latestSubmit.map(submit -> submit.getResult() == Result.FAIL).orElse(false);
+                        return submits.stream().anyMatch(Submit::isFail);
                     default:
-                        return false;
+                        return true;
                 }
             });
         }
 
-        if (difficulty.isPresent()) {
-            Difficulty difficultyEnum = Difficulty.getByKorean(difficulty.get());
+        if (Objects.nonNull(difficulty)) {
+            Difficulty difficultyEnum = Difficulty.getByKorean(difficulty);
             problemStream = problemStream.filter(problem -> problem.getDifficulty() == difficultyEnum);
         }
 
-        if (tags.isPresent() && !tags.get().isEmpty()) {
-            Set<String> tagsSet = new HashSet<>(tags.get());
+        if (Objects.nonNull(tags) && !tags.isEmpty()) {
+            Set<String> tagsSet = new HashSet<>(tags);
             problemStream = problemStream.filter(problem -> getTags(problem).stream().anyMatch(tagsSet::contains));
         }
 
@@ -233,14 +230,16 @@ public class ProblemService {
                 ));
     }
 
-    private String getStatus(Problem problem) {
-        if (problem.getSubmits().isEmpty()) {
+    @Transactional
+    public String getStatus(Problem problem) {
+        List<Submit> submits = submitRepository.findAllByProblem(problem);
+        if (submits.isEmpty()) {
             return "미해결";
         }
 
-        boolean isSuccess = problem.getSubmits().stream()
-                .map(Submit::getResult)
-                .anyMatch(r -> r.equals(Result.RESOLVED));
+        boolean isSuccess = submits.stream()
+                .map(Submit::isSuccess)
+                .reduce(false, Boolean::logicalOr);
 
         if (isSuccess) {
             return "성공";

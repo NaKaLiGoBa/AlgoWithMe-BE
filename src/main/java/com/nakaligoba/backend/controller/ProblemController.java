@@ -7,6 +7,7 @@ import com.nakaligoba.backend.service.dto.ProblemPagingDto;
 import com.nakaligoba.backend.service.impl.ProblemFacade;
 import com.nakaligoba.backend.service.impl.ProblemService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/problems")
@@ -27,9 +29,9 @@ public class ProblemController {
     @GetMapping
     public ResponseEntity<CustomPageResponse<ProblemPagingDto>> readAllProblems(
             Pageable pageable,
-            @RequestParam Optional<String> status,
-            @RequestParam Optional<String> difficulty,
-            @RequestParam Optional<List<String>> tags
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String difficulty,
+            @RequestParam(required = false) List<String> tags
             ) {
         CustomPageResponse<ProblemPagingDto> response = problemService.getProblemList(pageable, status, difficulty, tags);
         return ResponseEntity.ok(response);
