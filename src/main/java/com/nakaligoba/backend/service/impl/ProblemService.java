@@ -144,6 +144,10 @@ public class ProblemService {
         return String.join(",", problemUrls);
          */
 
+        if(problemUrls.size() == 0) {
+            return "";
+        }
+
         return problemUrls.get(0);
     }
 
