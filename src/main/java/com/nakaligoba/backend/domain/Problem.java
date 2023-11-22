@@ -2,10 +2,7 @@ package com.nakaligoba.backend.domain;
 
 
 import com.nakaligoba.backend.global.BaseEntity;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -93,5 +90,14 @@ public class Problem extends BaseEntity {
         ProblemTag problemTag = new ProblemTag(this, tag);
         this.problemTags.add(problemTag);
         tag.getProblemTags().add(problemTag);
+    }
+
+    public void updateAcceptance(BigDecimal acceptance) {
+        this.acceptance = acceptance;
+    }
+
+    public void addSubmit(final Submit submit) {
+        this.submits.add(submit);
+        submit.setProblem(this);
     }
 }

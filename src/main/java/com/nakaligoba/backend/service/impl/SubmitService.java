@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SubmitService {
 
     private final SubmitRepository submitRepository;
+    private final ProblemService problemService;
 
     @Transactional
     public void save(String code, Result result, Problem problem, Member member) {
@@ -26,5 +27,7 @@ public class SubmitService {
                 .member(member)
                 .build();
         submitRepository.save(submit);
+        problem.addSubmit(submit);
+        problemService.updateProblemAcceptance(problem.getId());
     }
 }

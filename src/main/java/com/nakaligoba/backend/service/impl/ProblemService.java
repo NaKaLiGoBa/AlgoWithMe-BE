@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -289,4 +291,26 @@ public class ProblemService {
                 .orElseThrow(EntityNotFoundException::new);
     }
 
+    @Transactional
+    public BigDecimal getAcceptance(Long problemId) {
+        Problem findProblem = problemRepository.findById(problemId).orElseThrow();
+        List<Submit> findProblemSubmits = findProblem.getSubmits();
+
+        long totalSubmits = findProblemSubmits.size();
+        long successfulSubmits = findProblemSubmits.stream()
+                .filter(Submit::isSuccess)
+                .count();
+
+        if (totalSubmits == 0) {
+            return BigDecimal.ZERO;
+        }
+        return BigDecimal.valueOf(successfulSubmits)
+                .divide(BigDecimal.valueOf(totalSubmits), 2, RoundingMode.HALF_UP);
+    }
+    @Transactional
+    public void updateProblemAcceptance(Long problemId) {
+        BigDecimal acceptanceRate = getAcceptance(problemId);
+        Problem problem = problemRepository.findById(problemId).orElseThrow();
+        problem.updateAcceptance(acceptanceRate);
+    }
 }
