@@ -1,5 +1,6 @@
 package com.nakaligoba.backend.repository;
 
+import com.nakaligoba.backend.domain.Problem;
 import com.nakaligoba.backend.domain.Solution;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.ArrayList;
 
 public interface SolutionRepository extends JpaRepository<Solution, Long> {
-    Long countByProblemId(Long problemId);
+    Long countByProblem(Problem problem);
 
     // 최신순
     ArrayList<Solution> findByProblemIdOrderByCreatedAtDesc(Long problemId, Pageable pageable); // 처음
