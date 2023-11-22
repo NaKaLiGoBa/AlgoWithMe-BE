@@ -3,26 +3,45 @@ package com.nakaligoba.backend.service.impl;
 import com.nakaligoba.backend.acceptance.fixtures.ProblemFixture;
 import com.nakaligoba.backend.controller.payload.request.CreateProblemRequest;
 import com.nakaligoba.backend.controller.payload.response.ProblemResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Transactional
 @SpringBootTest
 class ProblemServiceTest {
+
+    private static final String baseUrl = "https://kde05c63df3aaa.user-app.krampoline.com/api/v1/problems/";
 
     @Autowired
     private ProblemService problemService;
 
     @Autowired
     private ProblemFacade problemFacade;
+
+    private Long dfsEasyProblemId;
+    private Long dfsEasyProblemId2;
+    private Long dfsMediumProblemId;
+    private Long dfsHardProblemId;
+    private Long dfsHardProblemId2;
+
+    @BeforeEach
+    void beforeEach() {
+        dfsEasyProblemId = problemFacade.createProblem(ProblemFixture.CREATE_PROBLEM_REQUEST_DFS_EASY);
+        dfsEasyProblemId2 = problemFacade.createProblem(ProblemFixture.CREATE_PROBLEM_REQUEST_DFS_EASY);
+        dfsMediumProblemId = problemFacade.createProblem(ProblemFixture.CREATE_PROBLEM_REQUEST_DFS_MEDIUM);
+        dfsHardProblemId = problemFacade.createProblem(ProblemFixture.CREATE_PROBLEM_REQUEST_DFS_HARD);
+        dfsHardProblemId2 = problemFacade.createProblem(ProblemFixture.CREATE_PROBLEM_REQUEST_DFS_HARD);
+    }
 
     @Test
     @DisplayName("문제 식별자로 문제 정보를 읽을 수 있다.")
@@ -63,5 +82,32 @@ class ProblemServiceTest {
                 .map(ProblemResponse.TestcaseResponse::getInputs)
                 .flatMap(Collection::stream)
                 .forEach((v) -> assertThat(v).isNotIn("3", "4"));
+    }
+
+    @Test
+    @DisplayName("쉬운 난이도의 문제를 조회 시, 동일한 태그의 쉬운 난이도의 문제와 보통 난이도의 문제를 반환한다.")
+    void readEasyProblem_withEasyProblemAndMediumProblem() {
+        ProblemResponse easyProblemResponse = problemService.readProblem(dfsEasyProblemId);
+
+        assertThat(easyProblemResponse.getEasierProblemUrl()).isEqualTo(baseUrl + dfsEasyProblemId2);
+        assertThat(easyProblemResponse.getHarderProblemUrl()).isEqualTo(baseUrl + dfsMediumProblemId);
+    }
+
+    @Test
+    @DisplayName("보통 난이도의 문제를 조회 시, 동일한 태그의 쉬운 난이도의 문제와 어려움 난이도의 문제를 반환한다.")
+    void readMediumProblem_withEasyProblemAndHardProblem() {
+        ProblemResponse mediumProblemResponse = problemService.readProblem(dfsMediumProblemId);
+
+        assertThat(mediumProblemResponse.getEasierProblemUrl()).isEqualTo(baseUrl + dfsEasyProblemId);
+        assertThat(mediumProblemResponse.getHarderProblemUrl()).isEqualTo(baseUrl + dfsHardProblemId);
+    }
+
+    @Test
+    @DisplayName("어려운 난이도의 문제를 조회 시, 동일한 태그의 보통 난이도의 문제와 어려운 난이도의 문제를 반환한다.")
+    void readHardProblem_withMediumProblemAndHardProblem() {
+        ProblemResponse hardProblemResponse = problemService.readProblem(dfsHardProblemId);
+
+        assertThat(hardProblemResponse.getEasierProblemUrl()).isEqualTo(baseUrl + dfsMediumProblemId);
+        assertThat(hardProblemResponse.getHarderProblemUrl()).isEqualTo(baseUrl + dfsHardProblemId2);
     }
 }

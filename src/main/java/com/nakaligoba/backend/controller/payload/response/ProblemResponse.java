@@ -18,6 +18,9 @@ public class ProblemResponse {
     private final Map<String, String> defaultCodes;
     private final List<TestcaseResponse> testcases;
     private final List<String> tags;
+    private Long totalSolutionCount;
+    private String easierProblemUrl;
+    private String harderProblemUrl;
 
     @Data
     @Builder
