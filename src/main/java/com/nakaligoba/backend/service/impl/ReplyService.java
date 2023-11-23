@@ -77,7 +77,7 @@ public class ReplyService {
         List<ReplyDto> replyDtos = replies.stream()
                 .map(reply ->
                     ReplyDto.builder()
-                            .commentId(commentId)
+                            .replyId(reply.getId())
                             .content(reply.getContent())
                             .author(AuthorDto.builder()
                                     .avatar("")
