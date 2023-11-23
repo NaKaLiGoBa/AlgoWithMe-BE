@@ -1,5 +1,6 @@
 package com.nakaligoba.backend.controller;
 
+import com.nakaligoba.backend.controller.payload.response.SubmitCodeResponse;
 import com.nakaligoba.backend.controller.payload.response.SubmitsResponse;
 import com.nakaligoba.backend.service.dto.SubmitDto;
 import com.nakaligoba.backend.service.impl.SubmitService;
@@ -26,5 +27,13 @@ public class SubmitController {
         Collection<SubmitDto> submits = submitService.readAll(email, problemId);
         SubmitsResponse response = new SubmitsResponse(submits.size(), submits);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{submitId}")
+    public ResponseEntity<SubmitCodeResponse> getSubmitCode(@PathVariable Long problemId, @PathVariable Long submitId) {
+        String submitCode = submitService.getSubmitCode(submitId);
+        SubmitCodeResponse submitCodeResponse = new SubmitCodeResponse(submitCode);
+
+        return ResponseEntity.ok(submitCodeResponse);
     }
 }

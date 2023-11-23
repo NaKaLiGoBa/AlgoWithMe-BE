@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -27,13 +28,17 @@ public class SubmitService {
     private final ProblemRepository problemRepository;
 
     @Transactional
-    public void create(String code, Language language, Result result, Problem problem, Member member) {
+    public void create(String code, Language language, Result result, Problem problem, Member member, String runtime, String memory, String timeComplexity, String spaceComplexity) {
         Submit submit = Submit.builder()
                 .code(code)
                 .language(language)
                 .result(result)
                 .problem(problem)
                 .member(member)
+                .runtime(runtime)
+                .memory(memory)
+                .timeComplexity(timeComplexity)
+                .spaceComplexity(spaceComplexity)
                 .build();
         submitRepository.save(submit);
         problem.addSubmit(submit);
@@ -59,10 +64,17 @@ public class SubmitService {
                 .id(submit.getId())
                 .status(submit.getResult().getKorean())
                 .language(submit.getLanguage().getName())
-                .runtime("N/A")
-                .memory("N/A")
-                .timeComplexity("N/A")
-                .spaceComplexity("N/A")
+                .runtime(submit.getRuntime())
+                .memory(submit.getMemory())
+                .timeComplexity(submit.getTimeComplexity())
+                .spaceComplexity(submit.getSpaceComplexity())
                 .build();
+    }
+
+    public String getSubmitCode(Long submitId) {
+        Submit submit = submitRepository.findById(submitId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        return submit.getCode();
     }
 }
