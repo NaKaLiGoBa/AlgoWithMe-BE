@@ -272,9 +272,9 @@ class ProblemServiceTest {
                     .orElseThrow(EntityExistsException::new);
 
             if (count < 2) {
-                submitService.create(code, Language.JAVA, Result.RESOLVED, problem, member);
+                submitService.create(code, Language.JAVA, Result.RESOLVED, problem, member, "0.82ms", "N/A", "N/A", "N/A");
             } else {
-                submitService.create(code, Language.JAVA, Result.UN_RESOLVED, problem, member);
+                submitService.create(code, Language.JAVA, Result.UN_RESOLVED, problem, member, "N/A", "N/A", "N/A", "N/A");
             }
             count += 1;
         }

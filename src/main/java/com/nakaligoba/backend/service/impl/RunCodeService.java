@@ -102,6 +102,9 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
         }
 
         try {
+            long startTime = System.nanoTime();
+            long endTime;
+
             boolean isAnswer = true;
 
             try {
@@ -109,7 +112,7 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
                 compileIfNeeded(programmingLanguage);
                 log.info("Compile end");
             } catch (UserCodeCompileErrorException e) {
-                submitService.create(code, programmingLanguage, Result.COMPILE_ERROR, problem, member);
+                submitService.create(code, programmingLanguage, Result.COMPILE_ERROR, problem, member, "N/A", "N/A", "N/A", "N/A");
                 return false;
             }
 
@@ -123,9 +126,10 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
             try {
                 log.info("Run code start");
                 outputs = runSolution(programmingLanguage, answerCase);
+                endTime = System.nanoTime();
                 log.info("Run code end");
             } catch (UserCodeRuntimeErrorException e) {
-                submitService.create(code, programmingLanguage, Result.RUNTIME_ERROR, problem, member);
+                submitService.create(code, programmingLanguage, Result.RUNTIME_ERROR, problem, member, "N/A", "N/A", "N/A", "N/A");
                 return false;
             }
 
@@ -140,16 +144,21 @@ public class RunCodeService implements CheckTestcasesUseCase, SubmitUseCase {
             }
 
             if (ArrayUtils.isEmpty(outputs)) {
-                isAnswer = false;
+                submitService.create(code, programmingLanguage, Result.isResolved(false), problem, member, "N/A", "N/A", "N/A", "N/A");
+                return false;
             }
 
-            submitService.create(code, programmingLanguage, Result.isResolved(isAnswer), problem, member);
-
+            submitService.create(code, programmingLanguage, Result.isResolved(isAnswer), problem, member, getRunTime(startTime, endTime), "N/A", "N/A", "N/A");
             return isAnswer;
         } finally {
             cleanFiles(mainFile, solutionFile);
         }
 
+    }
+
+    private String getRunTime(long startTime, long endTime) {
+        double codeRunTime = (endTime - startTime) / 1000000.0;
+        return String.format("%.2fms", codeRunTime);
     }
 
     private File createFile(String fileName, Language programmingLanguage, String code) {
