@@ -297,13 +297,14 @@ public class ProblemService {
         List<Submit> findProblemSubmits = findProblem.getSubmits();
 
         long totalSubmits = findProblemSubmits.size();
+        if (totalSubmits == 0) {
+            return BigDecimal.ZERO;
+        }
+
         long successfulSubmits = findProblemSubmits.stream()
                 .filter(Submit::isSuccess)
                 .count();
 
-        if (totalSubmits == 0) {
-            return BigDecimal.ZERO;
-        }
         return BigDecimal.valueOf(successfulSubmits)
                 .divide(BigDecimal.valueOf(totalSubmits), 2, RoundingMode.HALF_UP);
     }
