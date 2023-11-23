@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReplyDto {
 
-    private Long commentId;
+    private Long replyId;
     private AuthorDto author;
     private String content;
     private Long likeCount;
