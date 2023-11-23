@@ -5,12 +5,15 @@ import com.nakaligoba.backend.domain.Reply;
 import com.nakaligoba.backend.domain.ReplyLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface ReplyLikeRepository extends JpaRepository<ReplyLike, Long> {
     void deleteByReplyId(Long replyId);
 
-    boolean existsByMemberAndReply(Member member, Reply reply);
+    Optional<ReplyLike> findByMemberAndReply(Member member, Reply reply);
 
-    void deleteByMemberAndReply(Member member, Reply reply);
+
+   boolean existsByMemberIdAndReplyId(Long memberId, Long replyId);
 
     Long countByReplyId(Long replyId);
 }

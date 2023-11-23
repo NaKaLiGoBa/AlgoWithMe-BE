@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Transactional(readOnly = true)
 @Service
@@ -30,23 +31,28 @@ public class ReplyLikeService {
         return replyLikeRepository.countByReplyId(replyId);
     }
 
+    public boolean getIsReplyLike(Long memberId, Long replyId) {
+        return replyLikeRepository.existsByMemberIdAndReplyId(memberId, replyId);
+    }
+
     @Transactional
-    public boolean likeReply(String loggedInEmail, Long commentId, Long replyId, LocalDateTime time) {
+    public boolean toggleLike(String loggedInEmail, Long commentId, Long replyId, LocalDateTime time) {
         Member member = memberService.getMemberByEmail(loggedInEmail);
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(EntityNotFoundException::new);
         Reply reply = replyRepository.findById(replyId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        boolean isAlreadyLiked = replyLikeRepository.existsByMemberAndReply(member, reply);
+        Optional<ReplyLike> optionalReplyLike = replyLikeRepository.findByMemberAndReply(member, reply);
 
-        if (isAlreadyLiked) {
-            replyLikeRepository.deleteByMemberAndReply(member, reply);
-            return false;
+        if (optionalReplyLike.isEmpty()) {
+            ReplyLike replyLike = new ReplyLike(member, reply);
+            replyLikeRepository.save(replyLike);
+            return true;
         }
 
-        ReplyLike newLike = new ReplyLike(reply, member);
-        replyLikeRepository.save(newLike);
-        return true;
+        ReplyLike replyLike = optionalReplyLike.get();
+        replyLikeRepository.delete(replyLike);
+        return false;
     }
 }
