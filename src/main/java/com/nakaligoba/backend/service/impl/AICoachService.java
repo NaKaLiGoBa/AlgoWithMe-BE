@@ -5,6 +5,7 @@ import com.nakaligoba.backend.domain.Answer;
 import com.nakaligoba.backend.domain.Member;
 import com.nakaligoba.backend.domain.Problem;
 import com.nakaligoba.backend.domain.Question;
+import com.nakaligoba.backend.exception.ExternalApiCallException;
 import com.nakaligoba.backend.repository.AnswerRepository;
 import com.nakaligoba.backend.repository.ProblemRepository;
 import com.nakaligoba.backend.service.component.OpenAIAssistant;
@@ -49,7 +50,12 @@ public class AICoachService {
         if (question.isRequireCode()) {
             messages.add(code);
         }
-        String aiAnswer = openAIAssistant.answer(question.getAssistant(), messages);
+        String aiAnswer;
+        try {
+            aiAnswer = openAIAssistant.answer(question.getAssistant(), messages);
+        } catch (ExternalApiCallException ex) {
+            aiAnswer = "적당한 답변입니다! AI는 죽어버렸어요!";
+        }
         Answer answer = Answer.builder()
                 .question(question)
                 .answer(aiAnswer)
