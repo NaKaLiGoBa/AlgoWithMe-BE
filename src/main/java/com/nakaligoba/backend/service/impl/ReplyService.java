@@ -80,7 +80,7 @@ public class ReplyService {
                             .replyId(reply.getId())
                             .content(reply.getContent())
                             .author(AuthorDto.builder()
-                                    .id(member.getId())
+                                    .id(reply.getMember().getId())
                                     .avatar("")
                                     .nickname(reply.getMember().getNickname())
                                     .build())

@@ -120,7 +120,7 @@ public class CommentService {
         return commentPage.getContent().stream()
                 .map(comment -> Comments.builder()
                         .author(AuthorDto.builder()
-                                .id(memberId)
+                                .id(comment.getMember().getId())
                                 .avatar("")
                                 .nickname(comment.getMember().getNickname())
                                 .build())
