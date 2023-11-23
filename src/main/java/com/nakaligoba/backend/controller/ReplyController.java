@@ -24,13 +24,13 @@ import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/comments")
+@RequestMapping("/api/v1/comments/{commentId}/replies")
 public class ReplyController {
 
     private final ReplyService replyService;
     private final ReplyLikeService replyLikeService;
 
-    @PostMapping("/{commentId}/replies")
+    @PostMapping
     public ResponseEntity<Void> createReply(
             @PathVariable Long commentId,
             @Valid @RequestBody ReplyRequest request
@@ -43,7 +43,7 @@ public class ReplyController {
                 .build();
     }
 
-    @PutMapping("/{commentId}/replies/{replyId}")
+    @PutMapping("/{replyId}")
     public ResponseEntity<Void> updateReply(
             @PathVariable Long commentId,
             @PathVariable Long replyId,
@@ -55,7 +55,7 @@ public class ReplyController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("{commentId}/replies")
+    @GetMapping
     public ResponseEntity<RepliesResponse> readReplies(@PathVariable Long commentId) {
         String loggedInEmail = JwtUtils.getEmailFromSpringSession();
         RepliesResponse repliesResponse = replyService.readReplies(loggedInEmail, commentId);
@@ -63,19 +63,19 @@ public class ReplyController {
         return ResponseEntity.status(HttpStatus.OK).body(repliesResponse);
     }
 
-    @PostMapping("/{commentId}/replies/{replyId}/like")
+    @PostMapping("/{replyId}/like")
     public ResponseEntity<ReplyLikeResponse> likeReply(
             @PathVariable Long commentId,
             @PathVariable Long replyId,
             @RequestBody ReplyLikeRequest request
     ) {
         String loggedInEmail = JwtUtils.getEmailFromSpringSession();
-        boolean isLiked = replyLikeService.likeReply(loggedInEmail, commentId, replyId, request.getRequestDateTime());
+        boolean isLiked = replyLikeService.toggleLike(loggedInEmail, commentId, replyId, request.getRequestDateTime());
 
         return ResponseEntity.status(HttpStatus.OK).body(new ReplyLikeResponse(isLiked));
     }
 
-    @DeleteMapping("/{commentId}/replies/{replyId}")
+    @DeleteMapping("/{replyId}")
     public ResponseEntity<Void> deleteReply(
             @PathVariable Long commentId,
             @PathVariable Long replyId

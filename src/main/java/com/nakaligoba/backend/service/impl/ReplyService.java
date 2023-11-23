@@ -80,10 +80,12 @@ public class ReplyService {
                             .replyId(reply.getId())
                             .content(reply.getContent())
                             .author(AuthorDto.builder()
+                                    .id(member.getId())
                                     .avatar("")
                                     .nickname(reply.getMember().getNickname())
                                     .build())
                             .likeCount(replyLikeService.getReplyLikeCount(reply.getId()))
+                            .isLike(replyLikeService.getIsReplyLike(member.getId(), reply.getId()))
                             .build()
                 )
                 .collect(Collectors.toList());

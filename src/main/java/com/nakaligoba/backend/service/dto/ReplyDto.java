@@ -15,4 +15,5 @@ public class ReplyDto {
     private AuthorDto author;
     private String content;
     private Long likeCount;
+    private boolean isLike;
 }
