@@ -27,8 +27,8 @@ public class ReplyLike extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public ReplyLike(Reply reply, Member member) {
-        this.reply = reply;
+    public ReplyLike(Member member, Reply reply) {
         this.member = member;
+        this.reply = reply;
     }
 }
