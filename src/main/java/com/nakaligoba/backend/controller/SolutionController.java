@@ -36,7 +36,7 @@ public class SolutionController {
                 .build();
     }
 
-    @PutMapping("{problemId}/solutions/{solutionId}")
+    @PutMapping("/{problemId}/solutions/{solutionId}")
     public ResponseEntity<Void> updateSolution(
             @PathVariable Long problemId,
             @PathVariable Long solutionId,
