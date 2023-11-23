@@ -53,7 +53,7 @@ public class AICoachService {
         String aiAnswer;
         try {
             aiAnswer = openAIAssistant.answer(question.getAssistant(), messages);
-        } catch (ExternalApiCallException ex) {
+        } catch (Exception ex) {
             aiAnswer = "적당한 답변입니다! AI는 죽어버렸어요!";
         }
         Answer answer = Answer.builder()
