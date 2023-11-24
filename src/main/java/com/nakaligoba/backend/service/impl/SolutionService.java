@@ -43,6 +43,7 @@ public class SolutionService {
     private final SolutionLanguageRepository solutionLanguageRepository;
     private final SolutionLikeRepository solutionLikeRepository;
     private final AvailableLanguageRepository availableLanguageRepository;
+    private final SubmitRepository submitRepository;
 
     @Transactional(readOnly = true)
     public Solution getSolution(Long id) {
@@ -54,6 +55,16 @@ public class SolutionService {
     public Long createSolution(String loggedInEmail, Long problemId, SolutionRequest request) {
         Member member = memberService.getMemberByEmail(loggedInEmail);
         Problem problem = problemService.getProblem(problemId);
+
+        List<Submit> findProblemSubmits = problem.getSubmits();
+        boolean hasSuccessfulSubmit = findProblemSubmits.stream()
+                .filter(submit -> submit.getMember().equals(member))
+                .anyMatch(Submit::isSuccess);
+
+        if (!hasSuccessfulSubmit) {
+            throw new UnauthorizedException("권한이 없습니다.");
+        }
+
         Solution solution = Solution.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
@@ -98,6 +109,10 @@ public class SolutionService {
         Member member = memberService.getMemberByEmail(writerEmail);
         Problem problem = problemService.getProblem(problemId);
         Solution solution = getSolution(solutionId);
+
+        if (!solution.getMember().equals(member)) {
+            throw new UnauthorizedException("권한이 없습니다.");
+        }
 
         solution.changeTitle(request.getTitle());
         solution.changeContent(request.getContent());
