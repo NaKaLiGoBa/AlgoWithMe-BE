@@ -54,6 +54,8 @@ public class AICoachService {
         try {
             aiAnswer = openAIAssistant.answer(question.getAssistant(), messages);
         } catch (Exception ex) {
+            log.error("OpenAI fail");
+            log.error(ex.getMessage());
             aiAnswer = "적당한 답변입니다! AI는 죽어버렸어요!";
         }
         Answer answer = Answer.builder()
