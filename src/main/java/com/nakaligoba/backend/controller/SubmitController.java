@@ -19,6 +19,7 @@ import java.util.Collection;
 @RequestMapping("/api/v1/problems/{problemId}/submits")
 @RestController
 @RequiredArgsConstructor
+@RestController
 public class SubmitController {
 
     private final SubmitService submitService;
