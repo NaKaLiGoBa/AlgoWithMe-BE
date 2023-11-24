@@ -347,13 +347,13 @@ class ProblemServiceTest {
 
         Long createdProblemId = problemFacade.createProblem(ProblemFixture.CREATE_PROBLEM_REQUEST);
         Problem findProblem = problemRepository.findById(createdProblemId).orElseThrow(EntityNotFoundException::new);
-        submitService.save(code, Result.FAIL, findProblem, member1);
-        submitService.save(code, Result.FAIL, findProblem, member1);
-        submitService.save(code, Result.FAIL, findProblem, member2);
-        submitService.save(code, Result.COMPILE_ERROR, findProblem, member1);
-        submitService.save(code, Result.RESOLVED, findProblem, member1);
-        submitService.save(code, Result.FAIL, findProblem, member2);
-        submitService.save(code, Result.RESOLVED, findProblem, member2);
+        submitService.create(code, Language.JAVA, Result.FAIL, findProblem, member1, "N/A", "N/A", "N/A", "N/A");
+        submitService.create(code, Language.JAVA, Result.FAIL, findProblem, member1, "N/A", "N/A", "N/A", "N/A");
+        submitService.create(code, Language.JAVA, Result.FAIL, findProblem, member2, "N/A", "N/A", "N/A", "N/A");
+        submitService.create(code, Language.JAVA, Result.COMPILE_ERROR, findProblem, member1, "N/A", "N/A", "N/A", "N/A");
+        submitService.create(code, Language.JAVA, Result.RESOLVED, findProblem, member1, "N/A", "N/A", "N/A", "N/A");
+        submitService.create(code, Language.JAVA, Result.FAIL, findProblem, member2, "N/A", "N/A", "N/A", "N/A");
+        submitService.create(code, Language.JAVA, Result.RESOLVED, findProblem, member2, "N/A", "N/A", "N/A", "N/A");
 
         BigDecimal seven = new BigDecimal("7");
         BigDecimal two = new BigDecimal("2");
