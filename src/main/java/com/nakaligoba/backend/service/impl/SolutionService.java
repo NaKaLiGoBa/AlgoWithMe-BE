@@ -124,7 +124,7 @@ public class SolutionService {
                 .collect(Collectors.toList());
 
         for (ProgrammingLanguage programmingLanguage : programmingLanguages) {
-            availableLanguageRepository.findByProgrammingLanguage(programmingLanguage)
+            availableLanguageRepository.findByProgrammingLanguageAndProblem(programmingLanguage, problem)
                     .ifPresent(availableLanguages::add);
         }
 
