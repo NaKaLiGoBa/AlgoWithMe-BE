@@ -176,6 +176,7 @@ public class SolutionService {
                                 .solution(SolutionsData.builder()
                                         .id(solution.getId())
                                         .title(solution.getTitle())
+                                        .languages(getLanguages(solution.getSolutionLanguages(), solution.getId()))
                                         .likeCount(getLikeCount(solution.getId()))
                                         .viewCount(getViewCount(solution.getId()))
                                         .commentCount(getCommentCount(solution.getId()))
