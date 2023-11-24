@@ -1,4 +1,4 @@
-FROM krmp-d2hub-idock.9rum.cc/goorm/gradle:7.3.1-jdk17 AS build
+FROM krmp-d2hub-idock.9rum.cc/goorm/gradle:7.3.1-jdk17
 
 WORKDIR /usr/src/app
 
@@ -8,8 +8,6 @@ COPY . .
 RUN echo "systemProp.http.proxyHost=krmp-proxy.9rum.cc\nsystemProp.http.proxyPort=3128\nsystemProp.https.proxyHost=krmp-proxy.9rum.cc\nsystemProp.https.proxyPort=3128" > /root/.gradle/gradle.properties && \
     ./gradlew clean bootJar
 
-FROM openjdk:11-jdk-slim-stretch
-
-COPY --from=build /usr/src/app/build/libs/*.jar ./app.jar
+COPY /usr/src/app/build/libs/*.jar ./app.jar
 
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "-Dhttp.proxyHost=krmp-proxy.9rum.cc", "-Dhttp.proxyPort=3128", "-Dhttps.proxyHost=krmp-proxy.9rum.cc", "-Dhttps.proxyPort=3128", "app.jar"]
