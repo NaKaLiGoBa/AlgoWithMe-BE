@@ -34,6 +34,7 @@ public class SolutionsResponse {
     public static class SolutionsData {
         private Long id;
         private String title;
+        private List<String> languages;
         private Long likeCount;
         private Long viewCount;
         private Long commentCount;
