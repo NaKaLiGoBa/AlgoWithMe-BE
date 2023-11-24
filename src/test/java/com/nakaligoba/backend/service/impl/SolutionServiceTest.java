@@ -5,8 +5,9 @@ import com.nakaligoba.backend.acceptance.fixtures.ProblemFixture;
 import com.nakaligoba.backend.controller.payload.request.SolutionRequest;
 import com.nakaligoba.backend.controller.payload.response.SolutionResponse;
 import com.nakaligoba.backend.controller.payload.response.SolutionsResponse;
-import com.nakaligoba.backend.domain.ProgrammingLanguage;
-import com.nakaligoba.backend.domain.Solution;
+import com.nakaligoba.backend.domain.*;
+import com.nakaligoba.backend.exception.PermissionDeniedException;
+import com.nakaligoba.backend.repository.ProblemRepository;
 import com.nakaligoba.backend.repository.ProgrammingLanguageRepository;
 import com.nakaligoba.backend.repository.SolutionRepository;
 import com.nakaligoba.backend.service.dto.MemberDto;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +47,15 @@ class SolutionServiceTest {
 
     @Autowired
     private SolutionRepository solutionRepository;
+
+    @Autowired
+    private MemberService memberService;
+
+    @Autowired
+    private ProblemRepository problemRepository;
+
+    @Autowired
+    private SubmitService submitService;
 
     private Long createdProblemId;
 
@@ -184,6 +195,46 @@ class SolutionServiceTest {
 
         // then
         assertThat(viewCount).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("문제해결에 성공한 유저만 풀이글을 작성할 수 있다.")
+    void validateSolutionCreate() {
+        SolutionRequest request = new SolutionRequest();
+        ArrayList<String> languages = new ArrayList<>();
+        languages.add("Java");
+        request.setLanguages(languages);
+        request.setTitle("테스트 풀이글");
+        request.setContent("테스트 풀이글 내용");
+
+        // when
+        // 성공 시나리오
+        Member member1 = memberService.getMemberByEmail("test1@test.com");
+        String code1 = "hello world";
+
+        Long createdProblemId1 = problemFacade.createProblem(ProblemFixture.CREATE_PROBLEM_REQUEST);
+        Problem findProblem1 = problemRepository.findById(createdProblemId).orElseThrow(EntityNotFoundException::new);
+        submitService.create(code1, Language.JAVA, Result.FAIL, findProblem1, member1, "N/A", "N/A", "N/A", "N/A");
+        submitService.create(code1, Language.JAVA, Result.RESOLVED, findProblem1, member1, "N/A", "N/A", "N/A", "N/A");
+        submitService.create(code1, Language.JAVA, Result.FAIL, findProblem1, member1, "N/A", "N/A", "N/A", "N/A");
+
+        assertDoesNotThrow(() -> {
+            solutionService.createSolution("test1@test.com", createdProblemId, request);
+        });
+
+        // 실패 시나리오
+        Member member2 = memberService.getMemberByEmail("test2@test.com");
+        String code2 = "hello world";
+
+        Long createdProblemId2 = problemFacade.createProblem(ProblemFixture.CREATE_PROBLEM_REQUEST);
+        Problem findProblem2 = problemRepository.findById(createdProblemId).orElseThrow(EntityNotFoundException::new);
+        submitService.create(code2, Language.JAVA, Result.FAIL, findProblem2, member2, "N/A", "N/A", "N/A", "N/A");
+        submitService.create(code2, Language.JAVA, Result.FAIL, findProblem2, member2, "N/A", "N/A", "N/A", "N/A");
+        submitService.create(code2, Language.JAVA, Result.FAIL, findProblem2, member2, "N/A", "N/A", "N/A", "N/A");
+
+        assertThrows(UnauthorizedException.class, () -> {
+            solutionService.createSolution("test2@test.com", createdProblemId, request);
+        });
     }
 
 //    @Test
