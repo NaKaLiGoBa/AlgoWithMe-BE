@@ -2,6 +2,8 @@ package com.nakaligoba.backend.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.nakaligoba.backend.domain.JwtDetails;
 import com.nakaligoba.backend.domain.Member;
 import com.nakaligoba.backend.service.component.jwt.JwtProperties;
@@ -34,6 +36,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String jwtHeader = request.getHeader(jwtProperties.getHEADER_STRING());
+        String email = "";
 
         if (jwtHeader == null || !jwtHeader.startsWith(jwtProperties.getTOKEN_PREFIX())) {
             chain.doFilter(request, response);
@@ -41,7 +44,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         String jwt = request.getHeader(jwtProperties.getHEADER_STRING()).replace(jwtProperties.getTOKEN_PREFIX(), "");
-        String email = JWT.require(Algorithm.HMAC512(jwtProperties.getSECRET_KEY())).build().verify(jwt).getClaim(jwtProperties.getCLAIM()).asString();
+
+        try {
+            email = JWT.require(Algorithm.HMAC512(jwtProperties.getSECRET_KEY())).build().verify(jwt).getClaim(jwtProperties.getCLAIM()).asString();
+        } catch (TokenExpiredException e) {
+            request.setAttribute(jwtProperties.getHEADER_STRING(), JwtAuthenticationEntryPoint.EXPIRATION_JWT);
+        } catch (JWTVerificationException e) {
+            request.setAttribute(jwtProperties.getHEADER_STRING(), JwtAuthenticationEntryPoint.NOT_VALIDATE_JWT);
+        }
 
         if (email != null) {
             Member memberEntity = memberRepository.findByEmail(email)
