@@ -19,6 +19,7 @@ public class ProblemResponse {
     private final List<TestcaseResponse> testcases;
     private final List<String> tags;
     private Long totalSolutionCount;
+    private Long totalSubmitCount;
     private String easierProblemUrl;
     private String harderProblemUrl;
 

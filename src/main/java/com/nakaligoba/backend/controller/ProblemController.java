@@ -6,6 +6,7 @@ import com.nakaligoba.backend.controller.payload.response.ProblemResponse;
 import com.nakaligoba.backend.service.dto.ProblemPagingDto;
 import com.nakaligoba.backend.service.impl.ProblemFacade;
 import com.nakaligoba.backend.service.impl.ProblemService;
+import com.nakaligoba.backend.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +40,8 @@ public class ProblemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProblemResponse> readProblem(@PathVariable Long id) {
-        ProblemResponse response = problemService.readProblem(id);
+        String email = JwtUtils.getEmailFromSpringSession();
+        ProblemResponse response = problemService.readProblem(email, id);
 
         return ResponseEntity.ok(response);
     }
