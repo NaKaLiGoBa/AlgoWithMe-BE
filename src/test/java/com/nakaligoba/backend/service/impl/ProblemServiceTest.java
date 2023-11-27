@@ -169,15 +169,25 @@ class ProblemServiceTest {
     }
 
     @Test
-    @DisplayName("문제 식별자로 문제 정보를 읽을 수 있다.")
+    @DisplayName("로그인 여부에 상관없이 문제 식별자로 문제 정보를 읽을 수 있다.")
     void readByProblemId() {
         Long problemId = problemFacade.createProblem(ProblemFixture.CREATE_PROBLEM_REQUEST);
 
-        ProblemResponse problem = problemService.readProblem(problemId);
+        ProblemResponse problem = problemService.readProblem("gyu@gyu.com", problemId);
+        ProblemResponse nonLoginProblem = problemService.readProblem("", problemId);
 
         System.out.println(problem);
         assertThat(problem.getDefaultCodes()).isNotEmpty();
         assertThat(problem.getDefaultCodes().get("java")).contains("class Solution {\n" +
+                "    public String solve(String a, String b) {\n" +
+                "        String answer = \"\";\n" +
+                "        return answer;\n" +
+                "    }\n" +
+                "}");
+
+        System.out.println(nonLoginProblem);
+        assertThat(nonLoginProblem.getDefaultCodes()).isNotEmpty();
+        assertThat(nonLoginProblem.getDefaultCodes().get("java")).contains("class Solution {\n" +
                 "    public String solve(String a, String b) {\n" +
                 "        String answer = \"\";\n" +
                 "        return answer;\n" +
@@ -200,7 +210,7 @@ class ProblemServiceTest {
                 Arrays.asList("DFS", "BFS"));
         Long problemId = problemFacade.createProblem(requestBody);
 
-        ProblemResponse problem = problemService.readProblem(problemId);
+        ProblemResponse problem = problemService.readProblem("gyu@gyu.com", problemId);
 
         problem.getTestcases()
                 .stream()
@@ -212,7 +222,7 @@ class ProblemServiceTest {
     @Test
     @DisplayName("쉬운 난이도의 문제를 조회 시, 동일한 태그의 쉬운 난이도의 문제와 보통 난이도의 문제를 반환한다.")
     void readEasyProblem_withEasyProblemAndMediumProblem() {
-        ProblemResponse easyProblemResponse = problemService.readProblem(dfsEasyProblemId);
+        ProblemResponse easyProblemResponse = problemService.readProblem("gyu@gyu.com", dfsEasyProblemId);
 
         assertThat(easyProblemResponse.getEasierProblemUrl()).isEqualTo(baseUrl + dfsEasyProblemId2);
         assertThat(easyProblemResponse.getHarderProblemUrl()).isEqualTo(baseUrl + dfsMediumProblemId);
@@ -221,7 +231,7 @@ class ProblemServiceTest {
     @Test
     @DisplayName("보통 난이도의 문제를 조회 시, 동일한 태그의 쉬운 난이도의 문제와 어려움 난이도의 문제를 반환한다.")
     void readMediumProblem_withEasyProblemAndHardProblem() {
-        ProblemResponse mediumProblemResponse = problemService.readProblem(dfsMediumProblemId);
+        ProblemResponse mediumProblemResponse = problemService.readProblem("gyu@gyu.com", dfsMediumProblemId);
 
         assertThat(mediumProblemResponse.getEasierProblemUrl()).isEqualTo(baseUrl + dfsEasyProblemId);
         assertThat(mediumProblemResponse.getHarderProblemUrl()).isEqualTo(baseUrl + dfsHardProblemId);
@@ -230,7 +240,7 @@ class ProblemServiceTest {
     @Test
     @DisplayName("어려운 난이도의 문제를 조회 시, 동일한 태그의 보통 난이도의 문제와 어려운 난이도의 문제를 반환한다.")
     void readHardProblem_withMediumProblemAndHardProblem() {
-        ProblemResponse hardProblemResponse = problemService.readProblem(dfsHardProblemId);
+        ProblemResponse hardProblemResponse = problemService.readProblem("gyu@gyu.com", dfsHardProblemId);
 
         assertThat(hardProblemResponse.getEasierProblemUrl()).isEqualTo(baseUrl + dfsMediumProblemId);
         assertThat(hardProblemResponse.getHarderProblemUrl()).isEqualTo(baseUrl + dfsHardProblemId2);

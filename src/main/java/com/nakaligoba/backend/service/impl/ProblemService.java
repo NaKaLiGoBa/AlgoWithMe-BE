@@ -3,20 +3,12 @@ package com.nakaligoba.backend.service.impl;
 
 import com.nakaligoba.backend.controller.payload.response.CustomPageResponse;
 import com.nakaligoba.backend.controller.payload.response.ProblemResponse;
-import com.nakaligoba.backend.domain.Difficulty;
-import com.nakaligoba.backend.domain.Language;
-import com.nakaligoba.backend.domain.Problem;
-import com.nakaligoba.backend.domain.ProblemTag;
-import com.nakaligoba.backend.domain.Submit;
-import com.nakaligoba.backend.domain.Tag;
-import com.nakaligoba.backend.domain.Testcase;
-import com.nakaligoba.backend.repository.ProblemRepository;
-import com.nakaligoba.backend.repository.SolutionRepository;
-import com.nakaligoba.backend.repository.SubmitRepository;
-import com.nakaligoba.backend.repository.TagRepository;
+import com.nakaligoba.backend.domain.*;
+import com.nakaligoba.backend.repository.*;
 import com.nakaligoba.backend.service.dto.InputDto;
 import com.nakaligoba.backend.service.dto.ProblemPagingDto;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,6 +34,7 @@ import java.util.stream.Stream;
 public class ProblemService {
 
     private final TestcaseService testcaseService;
+    private final MemberService memberService;
 
     private final SolutionRepository solutionRepository;
     private final ProblemRepository problemRepository;
@@ -107,9 +100,15 @@ public class ProblemService {
         return response;
     }
 
-    public ProblemResponse readProblem(Long id) {
+    public ProblemResponse readProblem(String email, Long id) {
         Problem problem = problemRepository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
+        Long totalSubmitCount = 0L;
+
+        if(!StringUtils.isEmpty(email)) {
+            Member member = memberService.getMemberByEmail(email);
+            totalSubmitCount = submitRepository.countByMemberAndProblem(member, problem);
+        }
 
         return ProblemResponse.builder()
                 .number(problem.getNumber())
@@ -122,6 +121,7 @@ public class ProblemService {
                 .testcases(getTestcases(problem))
                 .tags(getTags(problem))
                 .totalSolutionCount(solutionRepository.countByProblem(problem))
+                .totalSubmitCount(totalSubmitCount)
                 .easierProblemUrl(getEasierProblems(problem))
                 .harderProblemUrl(getHarderProblems(problem))
                 .build();
