@@ -17,6 +17,7 @@ import java.util.Collection;
 
 @Slf4j
 @RequestMapping("/api/v1/problems/{problemId}/submits")
+@RestController
 @RequiredArgsConstructor
 @RestController
 public class SubmitController {

@@ -8,8 +8,11 @@ import com.nakaligoba.backend.service.component.openai.ThreadRun;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.transport.ProxyProvider;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -28,7 +31,14 @@ public class OpenAIAssistant {
 
     @PostConstruct
     public void init() {
+        HttpClient httpClient = HttpClient.create()
+                .proxy(proxy -> proxy
+                        .type(ProxyProvider.Proxy.HTTP)
+                        .host("krmp-proxy.9rum.cc")
+                        .port(3128)
+                );
         webClient = WebClient.builder()
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .defaultHeaders(headers -> {
                     headers.setBearerAuth(secret);
                     headers.setContentType(MediaType.APPLICATION_JSON);

@@ -14,4 +14,7 @@ public interface SubmitRepository extends JpaRepository<Submit, Long> {
     List<Submit> findAllByMemberAndProblem(Member member, Problem problem);
 
     Long countByMemberAndProblem(Member member, Problem problem);
+
+    List<Submit> findAllByMemberAndProblemOrderByCreatedAtDesc(Member member, Problem problem);
+
 }

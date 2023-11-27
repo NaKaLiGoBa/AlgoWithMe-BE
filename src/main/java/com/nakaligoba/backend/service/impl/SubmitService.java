@@ -51,7 +51,7 @@ public class SubmitService {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        List<Submit> submits = submitRepository.findAllByMemberAndProblem(member, problem);
+        List<Submit> submits = submitRepository.findAllByMemberAndProblemOrderByCreatedAtDesc(member, problem);
 
         return submits.stream()
                 .map(this::mapToDto)

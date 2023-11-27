@@ -24,6 +24,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.transport.ProxyProvider;
 
+import javax.annotation.PostConstruct;
 import javax.net.ssl.SSLContext;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
@@ -44,45 +45,19 @@ public class KakaoWebClient {
     @Value("${kakao.login.redirect-url}")
     private String REDIRECT_URL;
 
-    private final WebClient webClient = WebClient.builder()
-            .clientConnector(new ReactorClientHttpConnector(build()))
-            .build();
+    private WebClient webClient;
 
-    private final RestTemplate restTemplate = getRestTemplate();
-
-    private HttpClient build() {
-        return HttpClient.create()
-                .tcpConfiguration(tcpClient -> tcpClient.proxy(proxy ->
-                        proxy.type(ProxyProvider.Proxy.HTTP).host("krmp-proxy.9rum.cc").port(3128)
-                ));
-    }
-
-    private RestTemplate getRestTemplate() {
-        // SSL 컨텍스트 설정
-        SSLContext sslContext;
-        try {
-            sslContext = SSLContextBuilder.create()
-                    .loadTrustMaterial(TrustSelfSignedStrategy.INSTANCE)
-                    .build();
-        } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
-            throw new RuntimeException(e);
-        }
-
-        // 프록시 설정
-        HttpHost proxy = new HttpHost("krmp-proxy.9rum.cc", 3128);
-
-        // HttpClient 설정
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .setSSLContext(sslContext)
-                .setProxy(proxy)
-                .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+    @PostConstruct
+    private void init() {
+        HttpClient httpClient = HttpClient.create()
+                .proxy(proxy -> proxy
+                        .type(ProxyProvider.Proxy.HTTP)
+                        .host("krmp-proxy.9rum.cc")
+                        .port(3128)
+                );
+        webClient = WebClient.builder()
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();
-
-        // RestTemplate 설정
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-        requestFactory.setHttpClient(httpClient);
-
-        return new RestTemplate(requestFactory);
     }
 
     public KakaoSigninTokenResponse getKakaoSigninToken(String kakaoAuthCode) {
@@ -101,21 +76,6 @@ public class KakaoWebClient {
                 .retrieve()
                 .bodyToMono(KakaoSigninTokenResponse.class)
                 .block();
-    }
-
-    public KakaoSigninTokenResponse getKakaoSigninTokenV2(String kakaoAuthCode) {
-        log.info("kakao signin v2");
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("grant_type", GRANT_TYPE);
-        formData.add("client_id", CLIENT_ID);
-        formData.add("redirect_url", REDIRECT_URL);
-        formData.add("code", kakaoAuthCode);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType(MediaType.APPLICATION_FORM_URLENCODED, StandardCharsets.UTF_8));
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
-        return restTemplate.postForObject("https://kauth.kakao.com/oauth/token", request, KakaoSigninTokenResponse.class);
     }
 
     public KakaoSigninUserInfoResponse getKakaoSigninUserInfo(String accessToken) {
